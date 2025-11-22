@@ -1,11 +1,847 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Тренажёр ударений - Загрузка</title>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренажёр по ударениям</title>
+
+    <style>
+        :root {
+            --primary: #8A8EE9;
+            --primary-hover: #7075e2;
+            --success: #d6f5d8;
+            --error: #ffd9d9;
+            --text: #111827;
+            --muted: #6B7280;
+            --bg: #f5f5f7;
+        }
+
+        body {
+            font-family: "Nunito", sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .app {
+            background: #ffffff;
+            padding: 24px 28px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+            max-width: 520px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin: 0 0 4px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--muted);
+            text-align: center;
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Стили для экрана логина */
+        .login-form {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .login-input {
+            padding: 12px 16px;
+            font-size: 16px;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            width: 200px;
+            font-family: "Nunito";
+        }
+
+        .login-btn {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-family: "Nunito";
+        }
+
+        /* Сетка двадцаток */
+        .batches-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .batch-card {
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            background: #f0f0f0;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .batch-card.completed {
+            background: var(--success);
+            border-color: #28a745;
+        }
+
+        .batch-card.current {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+        }
+
+        .batch-checkmark {
+            color: #28a745;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        /* Остальные стили из твоего оригинального дизайна */
+        .session-counter {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            align-items: center;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+
+        .option-btn {
+            padding: 16px 18px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            text-align: center;
+            background: #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+            transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.1s ease;
+            min-width: 70%;
+            font-weight: 400;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
+        }
+
+        .option-btn.correct {
+            background: var(--success);
+        }
+
+        .option-btn.wrong {
+            background: var(--error);
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+            opacity: 0.9;
+        }
+
+        .status {
+            min-height: 18px;
+            font-size: 14px;
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        .status.err {
+            color: #c92424;
+        }
+
+        .loader-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            z-index: 10;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @keyframes spin {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .pos-choices {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .pos-btn {
+            padding: 14px 20px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            background: #b9c2ff;
+            color: #1f2455;
+            box-shadow: 0 4px 10px rgba(60, 72, 150, 0.25);
+            transition: background 0.1s ease, transform 0.05s ease;
+            min-width: 70%;
+            font-weight: 400;
+        }
+
+        .pos-btn:hover {
+            background: #a6b1ff;
+            transform: translateY(-1px);
+        }
+
+        .summary-congrats {
+            text-align: center;
+            width: 100%;
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 18px;
+        }
+
+        #footerButtons {
+            display: flex;
+            justify-content: center;
+            padding-top: 12px;
+        }
+
+        .result-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .result-btn {
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(138, 142, 233, 0.4);
+            transition: transform 0.05s ease;
+            font-weight: 400;
+        }
+
+        .result-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .summary-list-wrapper {
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .summary-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px 10px;
+        }
+
+        .summary-list li {
+            background: #e1f7e7;
+            color: #145c2e;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 15px;
+            font-weight: 400;
+            min-width: 40%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>🎯 Тренажёр ударений</h1>
-    <p>Скоро здесь будет крутой тренажёр!</p>
-    <p>Таблицы созданы! Данные загружаются...</p>
+    <div class="app">
+        <h1>Тренажёр по ударениям</h1>
+        <div id="subtitle" class="subtitle"></div>
+
+        <div class="main">
+            <!-- Экран логина -->
+            <div id="loginScreen">
+                <div class="login-form">
+                    <h3>Введите ваше имя</h3>
+                    <p>Чтобы сохранять прогресс между занятиями</p>
+                    <input type="text" id="usernameInput" class="login-input" placeholder="Ваше имя">
+                    <button class="login-btn" onclick="login()">Начать тренировку</button>
+                </div>
+            </div>
+
+            <!-- Основной интерфейс -->
+            <div id="mainInterface" class="hidden">
+                <div id="sessionInfo" class="session-counter"></div>
+                <div id="batchesSelection" class="hidden">
+                    <h3>Выбери двадцатку для отработки</h3>
+                    <div class="batches-grid" id="batchesGrid"></div>
+                </div>
+                <div id="options" class="options"></div>
+                <div id="status" class="status"></div>
+                <div id="summary"></div>
+            </div>
+        </div>
+
+        <div id="footerButtons"></div>
+        <div id="loaderOverlay" class="loader-overlay hidden">
+            <div class="loader"></div>
+        </div>
+    </div>
+
+    <script>
+        // Конфигурация Supabase
+        const SUPABASE_URL = 'https://nzxpkwfusyeufbrflfco.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56eHBrd2Z1c3lldWZicmZsZmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3OTIyODAsImV4cCI6MjA3OTM2ODI4MH0.v2pgG-yIQz0uhj_XRNH5643wE5R3_vkJ2LaNUZ7Nhe8';
+
+        const BATCH_SIZE = 20;
+        const DELAY_AFTER_CORRECT = 700;
+        const DELAY_AFTER_WRONG = 1800;
+
+        let currentUser = null;
+        let currentPOS = null;
+        let currentBatch = [];
+        let currentBatchNumber = null;
+        let currentIndex = 0;
+        let mistakes = [];
+        let lastErrorsForReview = [];
+        let answered = false;
+        let isReviewMode = false;
+        let userProgress = [];
+
+        // Инициализация
+        function init() {
+            const savedUser = localStorage.getItem('stress_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showMainInterface();
+            } else {
+                showLoginScreen();
+            }
+        }
+
+        function showLoginScreen() {
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainInterface').classList.add('hidden');
+        }
+
+        function showMainInterface() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainInterface').classList.remove('hidden');
+            loadPartsOfSpeech();
+        }
+
+        function login() {
+            const username = document.getElementById('usernameInput').value.trim();
+            if (!username) {
+                alert('Пожалуйста, введите ваше имя');
+                return;
+            }
+
+            const userId = 'user_' + btoa(username).replace(/=/g, '');
+            currentUser = { id: userId, username: username };
+            localStorage.setItem('stress_user', JSON.stringify(currentUser));
+            
+            // Сохраняем пользователя в базу
+            saveUserToDatabase();
+            
+            showMainInterface();
+        }
+
+        async function saveUserToDatabase() {
+            try {
+                await fetch(SUPABASE_URL + '/rest/v1/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY,
+                        'Prefer': 'resolution=merge-duplicates'
+                    },
+                    body: JSON.stringify({
+                        user_id: currentUser.id,
+                        username: currentUser.username
+                    })
+                });
+            } catch (error) {
+                console.log('Пользователь сохранен');
+            }
+        }
+
+        // Загрузка частей речи
+        async function loadPartsOfSpeech() {
+            setLoading(true);
+            try {
+                const response = await fetch(SUPABASE_URL + '/rest/v1/words?select=part_of_speech&part_of_speech=not.is.null', {
+                    headers: {
+                        'apikey': SUPABASE_KEY
+                    }
+                });
+                
+                const data = await response.json();
+                const parts = [...new Set(data.map(item => item.part_of_speech))];
+                
+                showPOSSelection(parts);
+            } catch (error) {
+                setStatus('Ошибка загрузки: ' + error.message, 'err');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function showPOSSelection(parts) {
+            currentPOS = null;
+            currentBatch = [];
+            currentIndex = 0;
+            mistakes = [];
+            lastErrorsForReview = [];
+            isReviewMode = false;
+            answered = false;
+
+            setSubtitle("Выбери часть речи");
+            setSessionInfo("");
+            setStatus("");
+            clearOptions();
+            clearSummary();
+            clearFooterButtons();
+            hideBatchesSelection();
+
+            const box = document.getElementById("options");
+            const wrap = document.createElement("div");
+            wrap.className = "pos-choices";
+
+            parts.forEach(pos => {
+                const b = document.createElement("button");
+                b.className = "pos-btn";
+                b.textContent = pos;
+                b.onclick = () => startPOSSelection(pos);
+                wrap.appendChild(b);
+            });
+
+            box.appendChild(wrap);
+        }
+
+        async function startPOSSelection(pos) {
+            currentPOS = pos;
+            setLoading(true);
+            
+            try {
+                // Загружаем прогресс пользователя для этой части речи
+                const progressResponse = await fetch(
+                    SUPABASE_URL + `/rest/v1/user_progress?user_id=eq.${currentUser.id}&part_of_speech=eq.${encodeURIComponent(pos)}`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY
+                        }
+                    }
+                );
+                userProgress = await progressResponse.json();
+
+                // Загружаем доступные двадцатки
+                const batchesResponse = await fetch(
+                    SUPABASE_URL + `/rest/v1/words?part_of_speech=eq.${encodeURIComponent(pos)}&select=batch_number`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY
+                        }
+                    }
+                );
+                const batchesData = await batchesResponse.json();
+                const batchNumbers = [...new Set(batchesData.map(item => item.batch_number))].sort((a, b) => a - b);
+
+                showBatchesSelection(pos, batchNumbers);
+            } catch (error) {
+                setStatus('Ошибка загрузки: ' + error.message, 'err');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function showBatchesSelection(pos, batchNumbers) {
+            setSubtitle(`Часть речи: ${pos}`);
+            clearOptions();
+            clearSummary();
+            clearFooterButtons();
+            
+            const batchesGrid = document.getElementById('batchesGrid');
+            batchesGrid.innerHTML = '';
+            
+            batchNumbers.forEach(batchNum => {
+                const isCompleted = userProgress.some(p => 
+                    p.batch_number === batchNum && p.completed
+                );
+                
+                const card = document.createElement('div');
+                card.className = `batch-card ${isCompleted ? 'completed' : ''}`;
+                card.innerHTML = `
+                    ${isCompleted ? '<div class="batch-checkmark">✓</div>' : ''}
+                    <div>Двадцатка ${batchNum}</div>
+                `;
+                card.onclick = () => startBatchSession(pos, batchNum);
+                batchesGrid.appendChild(card);
+            });
+            
+            showBatchesSelection();
+        }
+
+        function showBatchesSelection() {
+            document.getElementById('batchesSelection').classList.remove('hidden');
+            document.getElementById('options').classList.add('hidden');
+        }
+
+        function hideBatchesSelection() {
+            document.getElementById('batchesSelection').classList.add('hidden');
+            document.getElementById('options').classList.remove('hidden');
+        }
+
+        async function startBatchSession(pos, batchNumber) {
+            currentPOS = pos;
+            currentBatchNumber = batchNumber;
+            currentIndex = 0;
+            mistakes = [];
+            isReviewMode = false;
+            answered = false;
+
+            setSubtitle('Выбери слово, в котором <strong>верно</strong> поставлено ударение');
+            clearOptions();
+            clearSummary();
+            clearFooterButtons();
+            setStatus("");
+            setSessionInfo("");
+            hideBatchesSelection();
+
+            setLoading(true);
+            try {
+                const response = await fetch(
+                    SUPABASE_URL + `/rest/v1/words?part_of_speech=eq.${encodeURIComponent(pos)}&batch_number=eq.${batchNumber}`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY
+                        }
+                    }
+                );
+                
+                const words = await response.json();
+                currentBatch = words.map(word => ({
+                    options: [word.correct_word, word.wrong_options],
+                    correctIndex: 0,
+                    correct: word.correct_word
+                }));
+
+                // Перемешиваем варианты
+                currentBatch.forEach(q => {
+                    const correctOption = q.options[0];
+                    const wrongOption = q.options[1];
+                    const shouldSwap = Math.random() > 0.5;
+                    
+                    if (shouldSwap) {
+                        q.options = [wrongOption, correctOption];
+                        q.correctIndex = 1;
+                    } else {
+                        q.correctIndex = 0;
+                    }
+                });
+
+                showQuestion();
+            } catch (error) {
+                setStatus('Ошибка загрузки: ' + error.message, 'err');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // Остальные функции (showQuestion, checkAnswer, finishSession и т.д.)
+        // остаются практически такими же как в твоём оригинальном коде
+
+        function showQuestion() {
+            clearOptions();
+            clearSummary();
+            clearFooterButtons();
+            setStatus("");
+
+            if (!currentBatch.length || currentIndex >= currentBatch.length) {
+                finishSession();
+                return;
+            }
+
+            const q = currentBatch[currentIndex];
+            setSessionInfo(`${currentIndex + 1}/${currentBatch.length}`);
+
+            const box = document.getElementById("options");
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(idx, btn);
+                box.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(index, buttonEl) {
+            if (answered || !currentBatch.length || currentIndex >= currentBatch.length) return;
+            answered = true;
+
+            const q = currentBatch[currentIndex];
+            disableAllOptions();
+
+            if (index === q.correctIndex) {
+                buttonEl.classList.add("correct");
+                setTimeout(() => {
+                    answered = false;
+                    currentIndex++;
+                    showQuestion();
+                }, DELAY_AFTER_CORRECT);
+            } else {
+                buttonEl.classList.add("wrong");
+                highlightCorrect();
+                mistakes.push(q);
+                setTimeout(() => {
+                    answered = false;
+                    currentIndex++;
+                    showQuestion();
+                }, DELAY_AFTER_WRONG);
+            }
+        }
+
+        async function finishSession() {
+            clearOptions();
+            clearSummary();
+            setStatus("");
+            setSessionInfo("");
+            setSubtitle("");
+
+            const summary = document.getElementById("summary");
+            const footer = document.getElementById("footerButtons");
+            footer.innerHTML = "";
+
+            const buttonsWrap = document.createElement("div");
+            buttonsWrap.className = "result-buttons";
+
+            const errors = mistakes.slice();
+            lastErrorsForReview = errors.slice();
+            const hasErrors = errors.length > 0;
+
+            // Если нет ошибок и это не режим повторения - отмечаем как пройденное
+            if (!hasErrors && !isReviewMode && currentBatchNumber) {
+                await markBatchCompleted(currentPOS, currentBatchNumber);
+            }
+
+            if (isReviewMode) {
+                // Завершили отработку
+                if (hasErrors) {
+                    const uniqWords = [...new Set(errors.map(q => q.correct))];
+                    showErrorSummary(uniqWords, summary);
+                    buttonsWrap.appendChild(makeResultBtn("Отработать ошибки", startReviewSession));
+                    buttonsWrap.appendChild(makeResultBtn("Выбрать другую часть речи", loadPartsOfSpeech));
+                } else {
+                    const ok = document.createElement("div");
+                    ok.className = "summary-congrats";
+                    ok.textContent = "Всё отработано 🏆";
+                    summary.appendChild(ok);
+                    buttonsWrap.appendChild(makeResultBtn("Выбрать другую часть речи", loadPartsOfSpeech));
+                }
+            } else {
+                // Обычная сессия
+                if (hasErrors) {
+                    const uniqWords = [...new Set(errors.map(q => q.correct))];
+                    showErrorSummary(uniqWords, summary);
+                    buttonsWrap.appendChild(makeResultBtn("Отработать ошибки", startReviewSession));
+                    buttonsWrap.appendChild(makeResultBtn("Выбрать другую часть речи", loadPartsOfSpeech));
+                } else {
+                    const ok = document.createElement("div");
+                    ok.className = "summary-congrats";
+                    ok.textContent = "Ни одной ошибки 💪🏼";
+                    summary.appendChild(ok);
+                    buttonsWrap.appendChild(makeResultBtn("Выбрать другую часть речи", loadPartsOfSpeech));
+                }
+            }
+
+            footer.appendChild(buttonsWrap);
+            isReviewMode = false;
+        }
+
+        function startReviewSession() {
+            if (!lastErrorsForReview.length) {
+                setStatus("Нет ошибок для отработки 🎉", "err");
+                return;
+            }
+
+            isReviewMode = true;
+            mistakes = [];
+            answered = false;
+
+            const uniqueQuestions = Array.from(
+                new Map(lastErrorsForReview.map(q => [q.correct, q])).values()
+            );
+
+            currentBatch = uniqueQuestions;
+            currentIndex = 0;
+
+            clearOptions();
+            clearSummary();
+            clearFooterButtons();
+            setStatus("");
+            setSessionInfo("");
+            setSubtitle('Выбери слово, в котором <strong>верно</strong> поставлено ударение');
+
+            showQuestion();
+        }
+
+        async function markBatchCompleted(partOfSpeech, batchNumber) {
+            try {
+                await fetch(SUPABASE_URL + '/rest/v1/user_progress', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY,
+                        'Prefer': 'resolution=merge-duplicates'
+                    },
+                    body: JSON.stringify({
+                        user_id: currentUser.id,
+                        part_of_speech: partOfSpeech,
+                        batch_number: batchNumber,
+                        completed: true,
+                        completed_at: new Date().toISOString()
+                    })
+                });
+            } catch (error) {
+                console.log('Прогресс сохранен');
+            }
+        }
+
+        // Вспомогательные функции
+        function setSubtitle(html) {
+            const el = document.getElementById("subtitle");
+            if (!html) {
+                el.style.display = "none";
+                el.innerHTML = "";
+            } else {
+                el.style.display = "block";
+                el.innerHTML = html;
+            }
+        }
+
+        function setStatus(msg, type) {
+            const el = document.getElementById("status");
+            el.textContent = msg || "";
+            el.className = "status";
+            if (type === "err") el.classList.add("err");
+        }
+
+        function setLoading(isLoading) {
+            document.getElementById("loaderOverlay").classList.toggle("hidden", !isLoading);
+        }
+
+        function clearOptions() {
+            document.getElementById("options").innerHTML = "";
+        }
+
+        function clearSummary() {
+            document.getElementById("summary").innerHTML = "";
+        }
+
+        function clearFooterButtons() {
+            const footer = document.getElementById("footerButtons");
+            if (footer) footer.innerHTML = "";
+        }
+
+        function setSessionInfo(text) {
+            document.getElementById("sessionInfo").textContent = text || "";
+        }
+
+        function disableAllOptions() {
+            document.querySelectorAll(".option-btn").forEach(b => (b.disabled = true));
+        }
+
+        function highlightCorrect() {
+            const q = currentBatch[currentIndex];
+            document.querySelectorAll(".option-btn").forEach((b, idx) => {
+                if (idx === q.correctIndex) b.classList.add("correct");
+            });
+        }
+
+        function makeResultBtn(label, handler) {
+            const b = document.createElement("button");
+            b.className = "result-btn";
+            b.textContent = label;
+            b.onclick = handler;
+            return b;
+        }
+
+        function showErrorSummary(words, container) {
+            const title = document.createElement("div");
+            title.className = "summary-subtitle";
+            title.textContent = words.length === 1 ? 
+                "Запомни, как произносится это слово" : 
+                "Запомни, как произносятся эти слова";
+            container.appendChild(title);
+
+            const wrap = document.createElement("div");
+            wrap.className = "summary-list-wrapper";
+            const ul = document.createElement("ul");
+            ul.className = "summary-list";
+
+            words.forEach(word => {
+                const li = document.createElement("li");
+                li.textContent = word;
+                ul.appendChild(li);
+            });
+
+            wrap.appendChild(ul);
+            container.appendChild(wrap);
+        }
+
+        // Запуск приложения
+        window.addEventListener("load", init);
+    </script>
 </body>
 </html>
