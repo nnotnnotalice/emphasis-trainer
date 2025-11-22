@@ -3,6 +3,8 @@
 <head>
     <base target="_top">
     <meta charset="UTF-8">
+    <!-- ПОДКЛЮЧАЕМ SUPABASE JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Тренажёр по ударениям</title>
@@ -444,20 +446,25 @@
     }
 
     function login() {
-        const username = document.getElementById('usernameInput').value.trim();
-        if (!username) {
-            alert('Пожалуйста, введите ваше имя');
-            return;
-        }
-
-        const userId = 'user_' + btoa(encodeURIComponent(username)).replace(/=/g, '');
-        currentUser = { id: userId, username: username };
-        localStorage.setItem('stress_user', JSON.stringify(currentUser));
-        
-        saveUserToDatabase();
-        
-        showMainInterface();
+    const username = document.getElementById('usernameInput').value.trim();
+    if (!username) {
+        alert('Пожалуйста, введите ваше имя');
+        return;
     }
+
+    const userId = 'user_' + btoa(encodeURIComponent(username)).replace(/=/g, '');
+    currentUser = { id: userId, username: username };
+    localStorage.setItem('stress_user', JSON.stringify(currentUser));
+    
+    // Показываем основной интерфейс сразу, а сохранение в БД делаем в фоне
+    showMainInterface();
+    
+    // Сохраняем пользователя в базу (асинхронно, без ожидания)
+    saveUserToDatabase();
+}
+
+// И убедитесь, что эта строка в начале скрипта корректна:
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     async function saveUserToDatabase() {
         try {
