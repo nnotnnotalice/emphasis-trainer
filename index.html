@@ -360,27 +360,41 @@
         let userProgress = [];
 
         // Инициализация
-        function init() {
-            const savedUser = localStorage.getItem('stress_user');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                showMainInterface();
-            } else {
-                showLoginScreen();
-            }
+       function init() {
+    console.log('=== ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ===');
+    
+    const savedUser = localStorage.getItem('stress_user');
+    console.log('Сохраненный пользователь:', savedUser);
+    
+    if (savedUser) {
+        try {
+            currentUser = JSON.parse(savedUser);
+            console.log('Текущий пользователь:', currentUser);
+            showMainInterface();
+        } catch (error) {
+            console.error('Ошибка парсинга пользователя:', error);
+            showLoginScreen();
         }
+    } else {
+        console.log('Пользователь не найден, показываем логин');
+        showLoginScreen();
+    }
+}
 
         function showLoginScreen() {
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('mainInterface').classList.add('hidden');
         }
 
-        function showMainInterface() {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('mainInterface').classList.remove('hidden');
-            loadPartsOfSpeech();
-        }
-
+      function showMainInterface() {
+    console.log('=== ПОКАЗЫВАЕМ ОСНОВНОЙ ИНТЕРФЕЙС ===');
+    
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('mainInterface').classList.remove('hidden');
+    
+    console.log('Запускаем loadPartsOfSpeech...');
+    loadPartsOfSpeech();
+}
         function login() {
     const username = document.getElementById('usernameInput').value.trim();
     if (!username) {
@@ -423,48 +437,19 @@
     }
 }
         // Загрузка частей речи
-      async function loadPartsOfSpeech() {
+    async function loadPartsOfSpeech() {
+    console.log('=== ЗАПУСК loadPartsOfSpeech ===');
     setLoading(true);
-    try {
-        console.log('Начинаю загрузку частей речи...');
-        
-        const response = await fetch(SUPABASE_URL + '/rest/v1/words?select=part_of_speech', {
-            headers: {
-                'apikey': SUPABASE_KEY,
-                'Authorization': `Bearer ${SUPABASE_KEY}`
-            }
-        });
-        
-        console.log('Статус ответа:', response.status);
-        console.log('Ответ:', response);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Получены данные:', data);
-        
-        const parts = [...new Set(data.map(item => item.part_of_speech))].filter(Boolean);
-        console.log('Уникальные части речи:', parts);
-        
-        if (parts.length === 0) {
-            setStatus('В базе нет данных. Добавьте слова в таблицу words.', 'err');
-            return;
-        }
-        
-        showPOSSelection(parts);
-    } catch (error) {
-        console.error('Ошибка загрузки:', error);
-        setStatus('Ошибка загрузки: ' + error.message, 'err');
-        
-        // Покажем временные данные для тестирования
-        console.log('Показываю тестовые данные...');
-        const testParts = ['Существительные', 'Глаголы', 'Прилагательные'];
+    
+    // ВРЕМЕННО: показываем тестовые данные
+    console.log('Использую тестовые данные');
+    const testParts = ['Существительные', 'Глаголы', 'Прилагательные'];
+    
+    setTimeout(() => {
+        console.log('Показываю части речи:', testParts);
         showPOSSelection(testParts);
-    } finally {
         setLoading(false);
-    }
+    }, 1000);
 }
         function showPOSSelection(parts) {
             currentPOS = null;
