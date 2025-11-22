@@ -90,38 +90,42 @@
 
         /* Сетка двадцаток */
         .batches-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin: 20px 0;
-        }
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+}
 
-        .batch-card {
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            background: #f0f0f0;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
+.batch-card {
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    background: #f0f0f0;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
-        .batch-card.completed {
-            background: var(--success);
-            border-color: #28a745;
-        }
+.batch-card.completed {
+    background: #d4edda;
+    border-color: #28a745;
+}
 
-        .batch-card.current {
-            background: #d1ecf1;
-            border-color: #17a2b8;
-        }
+.batch-card.current {
+    background: #d1ecf1;
+    border-color: #17a2b8;
+}
 
-        .batch-checkmark {
-            color: #28a745;
-            font-size: 20px;
-            margin-bottom: 5px;
-        }
-
+.batch-checkmark {
+    color: #28a745;
+    font-size: 20px;
+    margin-bottom: 5px;
+}
         /* Остальные стили из твоего оригинального дизайна */
         .session-counter {
             font-size: 13px;
@@ -461,13 +465,17 @@
     }
 }
         // Загрузка частей речи
-    async function loadPartsOfSpeech() {
+   async function loadPartsOfSpeech() {
     console.log('=== ЗАПУСК loadPartsOfSpeech ===');
     setLoading(true);
     
-    // ВРЕМЕННО: показываем тестовые данные
-    console.log('Использую тестовые данные');
-    const testParts = ['Существительные', 'Глаголы', 'Прилагательные'];
+    // Обновленные тестовые данные
+    const testParts = [
+        'Существительные', 
+        'Глаголы', 
+        'Прилагательные и причастия',
+        'Деепричастия и наречия'
+    ];
     
     setTimeout(() => {
         console.log('Показываю части речи:', testParts);
@@ -513,9 +521,20 @@
     setLoading(true);
     
     try {
-        // ВРЕМЕННО: используем тестовые двадцатки
-        console.log('Использую тестовые двадцатки');
-        const testBatches = [1, 2, 3, 4, 5];
+        // ТЕСТОВЫЕ ДВАДЦАТКИ ДЛЯ КАЖДОЙ ЧАСТИ РЕЧИ
+        let testBatches = [];
+        
+        if (pos === 'Существительные') {
+            testBatches = [1, 2, 3, 4, 5];
+        } else if (pos === 'Глаголы') {
+            testBatches = [1, 2, 3];
+        } else if (pos === 'Прилагательные и причастия') {
+            testBatches = [1, 2];
+        } else if (pos === 'Деепричастия и наречия') {
+            testBatches = [1];
+        }
+        
+        console.log('Тестовые двадцатки:', testBatches);
         
         // Тестовый прогресс
         userProgress = [];
@@ -533,32 +552,41 @@
 }
 
         function showBatchesSelection(pos, batchNumbers) {
-            setSubtitle(`Часть речи: ${pos}`);
-            clearOptions();
-            clearSummary();
-            clearFooterButtons();
-            
-            const batchesGrid = document.getElementById('batchesGrid');
-            batchesGrid.innerHTML = '';
-            
-            batchNumbers.forEach(batchNum => {
-                const isCompleted = userProgress.some(p => 
-                    p.batch_number === batchNum && p.completed
-                );
-                
-                const card = document.createElement('div');
-                card.className = `batch-card ${isCompleted ? 'completed' : ''}`;
-                card.innerHTML = `
-                    ${isCompleted ? '<div class="batch-checkmark">✓</div>' : ''}
-                    <div>Двадцатка ${batchNum}</div>
-                `;
-                card.onclick = () => startBatchSession(pos, batchNum);
-                batchesGrid.appendChild(card);
-            });
-            
-            showBatchesSelection();
-        }
-
+    console.log('Показываем выбор двадцаток для:', pos, batchNumbers);
+    
+    setSubtitle(`Часть речи: ${pos}`);
+    clearOptions();
+    clearSummary();
+    clearFooterButtons();
+    
+    const batchesGrid = document.getElementById('batchesGrid');
+    batchesGrid.innerHTML = '';
+    
+    console.log('Создаем карточки двадцаток...');
+    
+    batchNumbers.forEach(batchNum => {
+        const isCompleted = userProgress.some(p => 
+            p.batch_number === batchNum && p.completed
+        );
+        
+        console.log(`Двадцатка ${batchNum}, пройдена: ${isCompleted}`);
+        
+        const card = document.createElement('div');
+        card.className = `batch-card ${isCompleted ? 'completed' : ''}`;
+        card.innerHTML = `
+            ${isCompleted ? '<div class="batch-checkmark">✓</div>' : ''}
+            <div>Двадцатка ${batchNum}</div>
+        `;
+        card.onclick = () => startBatchSession(pos, batchNum);
+        batchesGrid.appendChild(card);
+    });
+    
+    // ПОКАЗЫВАЕМ СЕТКУ ДВАДЦАТОК
+    document.getElementById('batchesSelection').classList.remove('hidden');
+    document.getElementById('options').classList.add('hidden');
+    
+    console.log('Сетка двадцаток отображена');
+}
         function showBatchesSelection() {
             document.getElementById('batchesSelection').classList.remove('hidden');
             document.getElementById('options').classList.add('hidden');
