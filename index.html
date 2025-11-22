@@ -504,6 +504,9 @@
             line-height: normal;
             font-weight: 700;
             white-space: nowrap;
+            border: 0;
+            cursor: default;
+            font-family: inherit;
         }
 
         .student-header-avatar {
@@ -546,12 +549,10 @@
         }
 
         body.student-pos-selection-screen .back-btn {
-            top: 16px;
-            left: 24px;
-            width: 48px;
-            height: 48px;
-            color: #ffffff;
-            z-index: 30;
+            top: 18px;
+            left: 36px;
+            width: 44px;
+            height: 44px;
         }
 
         body.student-pos-selection-screen .back-btn svg {
@@ -562,14 +563,14 @@
 
         body.student-pos-selection-screen .back-btn::before {
             content: "";
-            width: 24px;
-            height: 24px;
+            width: 36px;
+            height: 36px;
             display: block;
-            background: url("https://www.figma.com/api/mcp/asset/94243482-f4f9-420c-b9c3-25f2eb962014") center / contain no-repeat;
+            background: url("https://www.figma.com/api/mcp/asset/7bd03888-7413-4baa-8811-0c655395ee6f") center / contain no-repeat;
         }
 
         body.student-pos-selection-screen .back-btn:hover {
-            transform: translateX(-2px);
+            transform: translateY(-2px) scale(1.03);
         }
 
         body.student-pos-selection-screen .pos-choices {
@@ -1173,6 +1174,11 @@
             color: #9ca3af;
         }
 
+        .teacher-login-input.password-masked {
+            -webkit-text-security: disc;
+            text-security: disc;
+        }
+
         .teacher-login-eye-btn {
             width: 24px;
             height: 24px;
@@ -1546,16 +1552,22 @@
         }
 
         .teacher-progress-label {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
             margin: 0;
             color: var(--teacher-text-secondary);
             font-size: 16px;
             line-height: normal;
             font-weight: 400;
+            white-space: nowrap;
         }
 
         .teacher-progress-percent {
-            color: var(--teacher-progress-accent);
-            font-weight: 700;
+            color: var(--teacher-text-secondary);
+            font-weight: 400;
         }
 
         .teacher-pos-list {
@@ -1615,6 +1627,106 @@
         .teacher-errors.no-errors {
             background: var(--teacher-success-bg);
             color: var(--teacher-success);
+        }
+
+        .teacher-problems-shell {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            min-height: 56px;
+        }
+
+        .teacher-problems-toggle,
+        .teacher-no-errors {
+            width: 100%;
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 16px;
+            border: 0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 16px;
+            line-height: normal;
+            text-align: left;
+        }
+
+        .teacher-problems-toggle {
+            cursor: pointer;
+            background: #fff8e7;
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .teacher-problems-shell.expanded .teacher-problems-toggle {
+            border-radius: 12px 12px 0 0;
+        }
+
+        .teacher-no-errors {
+            background: #dcfce7;
+            color: #15803d;
+            font-weight: 600;
+        }
+
+        .teacher-problems-panel {
+            display: grid;
+            grid-template-rows: 0fr;
+            overflow: hidden;
+            opacity: 0;
+            background: #fff8e7;
+            border-radius: 0 0 12px 12px;
+            transition: grid-template-rows 0.32s ease, opacity 0.22s ease;
+        }
+
+        .teacher-problems-shell.expanded .teacher-problems-panel {
+            grid-template-rows: 1fr;
+            opacity: 1;
+        }
+
+        .teacher-problem-chips {
+            min-height: 0;
+            overflow: visible;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px 16px;
+            padding: 16px 16px 24px;
+        }
+
+        .teacher-problem-chip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            min-height: 30px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: #fef3c7;
+            color: #d97706;
+            font-size: 15px;
+            line-height: normal;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .teacher-problem-count {
+            position: absolute;
+            top: -9px;
+            right: -9px;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            border-radius: 999px;
+            background: var(--teacher-danger-bg);
+            color: var(--teacher-danger);
+            font-size: 10px;
+            line-height: 1;
+            font-weight: 800;
+            vertical-align: baseline;
         }
 
         .teacher-errors-list {
@@ -1910,23 +2022,29 @@
 
             body.student-pos-selection-screen .app-header {
                 height: 72px;
-                padding: 0 18px;
+                padding: 0 12px;
             }
 
             body.student-pos-selection-screen .app-header h1 {
-                top: 18px;
+                left: 64px;
+                right: 150px;
+                top: 19px;
+                transform: none;
+                width: auto;
                 margin: 0;
-                font-size: 28px;
+                font-size: clamp(22px, 7vw, 28px);
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             body.student-pos-selection-screen .student-header-pill {
                 top: 17px;
-                right: 18px;
-                max-width: 138px;
+                right: 12px;
+                max-width: 132px;
                 min-height: 38px;
-                padding: 6px 10px;
+                padding: 6px 9px;
                 font-size: 12px;
-                gap: 8px;
+                gap: 7px;
             }
 
             .student-header-avatar {
@@ -1934,14 +2052,24 @@
                 height: 24px;
             }
 
+            .student-header-avatar img {
+                width: 24px;
+                height: 24px;
+            }
+
             body.student-pos-selection-screen .back-btn {
-                top: 12px;
-                left: 10px;
-                width: 48px;
-                height: 48px;
+                top: 14px;
+                left: 14px;
+                width: 42px;
+                height: 42px;
             }
 
             body.student-pos-selection-screen .back-btn svg {
+                width: 30px;
+                height: 30px;
+            }
+
+            body.student-pos-selection-screen .back-btn::before {
                 width: 30px;
                 height: 30px;
             }
@@ -1972,6 +2100,27 @@
             body.student-pos-selection-screen .pos-card.expanded {
                 height: auto;
                 min-height: 0;
+            }
+
+            @media (max-width: 360px) {
+                body.student-pos-selection-screen .app-header h1 {
+                    left: 58px;
+                    right: 128px;
+                    font-size: 22px;
+                }
+
+                body.student-pos-selection-screen .student-header-pill {
+                    max-width: 116px;
+                    padding: 6px 8px;
+                    font-size: 11px;
+                    gap: 6px;
+                }
+
+                .student-header-avatar,
+                .student-header-avatar img {
+                    width: 22px;
+                    height: 22px;
+                }
             }
 
             .pos-card-header {
@@ -2024,6 +2173,23 @@
             .teacher-errors {
                 padding: 4px 10px;
                 font-size: 12px;
+            }
+
+            .teacher-problems-toggle,
+            .teacher-no-errors {
+                min-height: 40px;
+                padding: 10px 14px;
+                font-size: 14px;
+            }
+
+            .teacher-problem-chips {
+                gap: 13px 14px;
+                padding: 14px 14px 20px;
+            }
+
+            .teacher-problem-chip {
+                padding: 6px 12px;
+                font-size: 14px;
             }
 
             .teacher-small-bar {
@@ -2496,6 +2662,17 @@
 
             body.question-screen .question-progress-title {
                 font-size: 25px !important;
+                white-space: nowrap !important;
+            }
+
+            body.question-screen .question-progress-title.long-title {
+                max-width: calc(100vw - 156px) !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                font-size: clamp(21px, 5.7vw, 25px) !important;
+                line-height: 1.08 !important;
+                white-space: normal !important;
+                overflow-wrap: normal;
             }
 
             body.question-screen .back-btn {
@@ -2514,12 +2691,86 @@
             }
 
             body.question-screen .options {
-                margin-top: 32px;
+                width: calc(100vw - 16px) !important;
+                max-width: 420px !important;
+                margin: clamp(96px, 15vh, 140px) auto 0 !important;
+                gap: 20px !important;
+                align-items: center !important;
             }
 
             body.question-screen .option-btn {
-                min-height: 72px;
-                font-size: 24px;
+                width: 100% !important;
+                min-height: 96px !important;
+                padding: 0 24px !important;
+                font-size: 25px;
+            }
+
+            @media (max-height: 740px) {
+                body.question-screen .options {
+                    margin-top: 56px !important;
+                    gap: 16px !important;
+                }
+
+                body.question-screen .option-btn {
+                    min-height: 88px !important;
+                }
+            }
+
+            @media (max-width: 390px) {
+                body.question-screen .question-progress-title.long-title {
+                    max-width: calc(100vw - 138px) !important;
+                    font-size: 20px !important;
+                }
+            }
+        }
+
+        @media (min-width: 700px) and (min-height: 700px) and (max-width: 1366px) {
+            body.question-screen .main {
+                padding-top: clamp(180px, 20vh, 240px);
+            }
+
+            .question-card {
+                width: min(980px, calc(100vw - 96px));
+                min-height: clamp(104px, 12vh, 132px);
+                padding: 30px 36px;
+                border-radius: 28px;
+                gap: 18px;
+            }
+
+            .question-card-accent {
+                width: 6px;
+            }
+
+            .question-card-icon {
+                width: 22px;
+                height: 22px;
+            }
+
+            .question-card-text {
+                font-size: clamp(28px, 3vw, 36px);
+                line-height: 1.18;
+            }
+
+            body.question-screen .options {
+                width: min(760px, calc(100vw - 96px)) !important;
+                max-width: 760px !important;
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: clamp(24px, 3vw, 36px) !important;
+                align-items: center !important;
+                justify-content: center;
+                margin: clamp(52px, 7vh, 84px) auto 0 !important;
+            }
+
+            body.question-screen .option-btn {
+                width: 100% !important;
+                aspect-ratio: 1 / 1;
+                min-height: 0 !important;
+                height: auto;
+                padding: 28px !important;
+                border-radius: 28px;
+                font-size: clamp(32px, 3.4vw, 44px);
+                line-height: 1.08;
             }
         }
 
@@ -2718,12 +2969,11 @@ body.final-error-screen .result-screen-content {
 }
 
 .result-sparkle-layer {
-    position: absolute;
-    top: 0;
-    left: 50%;
+    position: fixed;
+    inset: 0;
     width: 100vw;
-    height: 320px;
-    transform: translateX(-50%);
+    height: 100vh;
+    transform: none;
     pointer-events: none;
     overflow: visible;
     z-index: 1;
@@ -2838,6 +3088,10 @@ body.final-error-screen .result-screen-content {
         font-size: 38px;
     }
 
+    .result-sparkle-layer {
+        height: 500px;
+    }
+
     .summary-subtitle {
         font-size: 28px;
     }
@@ -2935,10 +3189,11 @@ body.final-error-screen .result-screen-content {
         let teacherDashboardNotice = "";
         let teacherDashboardSearch = "";
         let expandedTeacherStudentId = "";
+        let expandedTeacherErrorListId = "";
         let expandedPOSProblem = "";
 
         // Ссылка на опубликованную Google Таблицу с контентом
-        const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQiiyi8kWapw_kNy19fZ-X4M35Redd3AJdxqAwmMREkwgupYij_HGpUMz42TvV1kz1V_uC0doLbvIxE/pub?gid=0&single=true&output=csv";
+        const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTDdC5lavnQYQbH_FusZ_u7Kaxe-PpGP5A4ERKWV3MVdyJWHKuAxYZ6ivOTQr6d3e2_A_hxDdiQw-yH/pub?gid=413569060&single=true&output=csv";
         const FIGMA_ASSETS = {
             avatar: "https://www.figma.com/api/mcp/asset/408fc647-be61-47f3-991c-08edd884b12a",
             alertCircle: "https://www.figma.com/api/mcp/asset/092a276f-3a8b-48ff-84aa-006ddb77c049",
@@ -3703,7 +3958,7 @@ body.final-error-screen .result-screen-content {
             answered = false;
 
             document.getElementById('mainInterface').classList.remove('hidden');
-            document.getElementById('backButton').classList.add('hidden');
+            document.getElementById('backButton').classList.remove('hidden');
             document.getElementById('studentInfo').classList.add('hidden');
             document.getElementById('studentInfo').innerHTML = "";
 
@@ -3775,21 +4030,27 @@ body.final-error-screen .result-screen-content {
             passwordShell.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="10" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
 
             const passwordInput = document.createElement("input");
-            passwordInput.className = "teacher-login-input";
-            passwordInput.type = "password";
+            passwordInput.className = "teacher-login-input password-masked";
+            passwordInput.type = "text";
             passwordInput.placeholder = "••••••••";
             passwordInput.autocomplete = "current-password";
+            passwordInput.autocapitalize = "none";
+            passwordInput.spellcheck = false;
             passwordShell.appendChild(passwordInput);
 
             const passwordEyeBtn = document.createElement("button");
             passwordEyeBtn.className = "teacher-login-eye-btn";
             passwordEyeBtn.type = "button";
             passwordEyeBtn.setAttribute("aria-label", "Показать пароль");
-            passwordEyeBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.8 12s3.2-5 9.2-5 9.2 5 9.2 5-3.2 5-9.2 5-9.2-5-9.2-5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
+            const eyeOpenIcon = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.8 12s3.2-5 9.2-5 9.2 5 9.2 5-3.2 5-9.2 5-9.2-5-9.2-5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
+            const eyeClosedIcon = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.2 4.8 20.8 19.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9.7 7.4A10.2 10.2 0 0 1 12 7c6 0 9.2 5 9.2 5a16.7 16.7 0 0 1-2.8 3.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.2 14.4A2.4 2.4 0 0 1 9.6 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M6.6 8.7A16.9 16.9 0 0 0 2.8 12s3.2 5 9.2 5c1.1 0 2.1-.2 3-.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            passwordEyeBtn.innerHTML = eyeClosedIcon;
             passwordEyeBtn.onclick = () => {
-                const shouldShow = passwordInput.type === "password";
-                passwordInput.type = shouldShow ? "text" : "password";
+                const shouldShow = passwordInput.classList.contains("password-masked");
+                passwordInput.classList.toggle("password-masked", !shouldShow);
                 passwordEyeBtn.setAttribute("aria-label", shouldShow ? "Скрыть пароль" : "Показать пароль");
+                passwordEyeBtn.innerHTML = shouldShow ? eyeOpenIcon : eyeClosedIcon;
+                passwordInput.focus();
             };
             passwordShell.appendChild(passwordEyeBtn);
 
@@ -4174,11 +4435,15 @@ body.final-error-screen .result-screen-content {
 
                 const progressLabel = document.createElement("p");
                 progressLabel.className = "teacher-progress-label";
-                progressLabel.appendChild(document.createTextNode(`${totalSeen} из ${totalWords} слов · `));
+
+                const teacherProgressCount = document.createElement("span");
+                teacherProgressCount.textContent = `${totalSeen} / ${totalWords} ${getWordCountLabel(totalWords)}`;
 
                 const progressPercent = document.createElement("span");
                 progressPercent.className = "teacher-progress-percent";
                 progressPercent.textContent = `${totalPercent}%`;
+
+                progressLabel.appendChild(teacherProgressCount);
                 progressLabel.appendChild(progressPercent);
 
                 const totalBar = document.createElement("div");
@@ -4193,18 +4458,86 @@ body.final-error-screen .result-screen-content {
                 progressSection.appendChild(totalBar);
                 card.appendChild(progressSection);
 
-                const errors = document.createElement("div");
-                errors.className = "teacher-errors";
+                const problemsShell = document.createElement("div");
+                problemsShell.className = "teacher-problems-shell";
 
                 if (errorWords.length) {
-                    errors.textContent = `${errorWords.length} ошибки`;
+                    const isProblemsExpanded = expandedTeacherErrorListId === student.id;
+                    if (isProblemsExpanded) problemsShell.classList.add("expanded");
+
+                    const toggle = document.createElement("button");
+                    toggle.type = "button";
+                    toggle.className = "teacher-problems-toggle";
+                    toggle.setAttribute("aria-expanded", String(isProblemsExpanded));
+                    toggle.setAttribute("aria-label", `${isProblemsExpanded ? "Скрыть" : "Показать"} проблемные слова ученика ${student.display_name || student.id}`);
+                    toggle.onclick = event => {
+                        event.stopPropagation();
+                        expandedTeacherErrorListId = isProblemsExpanded ? "" : student.id;
+                        renderTeacherStudentsList(container, students);
+                    };
+
+                    const label = document.createElement("span");
+                    label.className = "pos-problems-label";
+
+                    const alertIcon = document.createElement("span");
+                    alertIcon.className = "pos-alert-icon";
+                    alertIcon.setAttribute("aria-hidden", "true");
+                    const alertImg = document.createElement("img");
+                    alertImg.alt = "";
+                    alertImg.src = FIGMA_ASSETS.alertCircle;
+                    alertIcon.appendChild(alertImg);
+
+                    const labelText = document.createElement("span");
+                    labelText.textContent = "Проблемные слова";
+
+                    label.appendChild(alertIcon);
+                    label.appendChild(labelText);
+
+                    const chevron = document.createElement("span");
+                    chevron.className = "pos-chevron";
+                    chevron.setAttribute("aria-hidden", "true");
+                    const chevronImg = document.createElement("img");
+                    chevronImg.alt = "";
+                    chevronImg.src = isProblemsExpanded ? FIGMA_ASSETS.chevronUp : FIGMA_ASSETS.chevronDown;
+                    chevron.appendChild(chevronImg);
+
+                    toggle.appendChild(label);
+                    toggle.appendChild(chevron);
+
+                    const panel = document.createElement("div");
+                    panel.className = "teacher-problems-panel";
+
+                    const chips = document.createElement("div");
+                    chips.className = "teacher-problem-chips";
+
+                    errorWords.forEach(item => {
+                        const chip = document.createElement("span");
+                        chip.className = "teacher-problem-chip";
+
+                        const word = document.createElement("span");
+                        word.textContent = item.correct_word || item.word_id || "Слово";
+
+                        const count = document.createElement("sup");
+                        count.className = "teacher-problem-count";
+                        count.textContent = String(Number(item.wrong_count || 0));
+
+                        chip.appendChild(word);
+                        chip.appendChild(count);
+                        chips.appendChild(chip);
+                    });
+
+                    panel.appendChild(chips);
+                    problemsShell.appendChild(toggle);
+                    problemsShell.appendChild(panel);
                 } else {
-                    errors.classList.add("no-errors");
-                    errors.textContent = "Ошибок пока нет ✓";
+                    const noErrors = document.createElement("div");
+                    noErrors.className = "teacher-no-errors";
+                    noErrors.textContent = "Ошибок пока нет";
+                    problemsShell.appendChild(noErrors);
                 }
 
                 if (!isExpanded) {
-                    card.appendChild(errors);
+                    card.appendChild(problemsShell);
                     container.appendChild(card);
                     return;
                 }
@@ -4228,35 +4561,7 @@ body.final-error-screen .result-screen-content {
                 });
 
                 card.appendChild(posList);
-                card.appendChild(errors);
-
-                if (errorWords.length) {
-                    const errorsList = document.createElement("ul");
-                    errorsList.className = "teacher-errors-list";
-
-                    errorWords.slice(0, 8).forEach(item => {
-                        const errorItem = document.createElement("li");
-
-                        const word = document.createElement("span");
-                        word.textContent = item.correct_word || item.word_id || "Слово";
-
-                        const count = document.createElement("span");
-                        count.className = "teacher-error-count";
-                        count.textContent = `${Number(item.wrong_count || 0)} ошибок`;
-
-                        errorItem.appendChild(word);
-                        errorItem.appendChild(count);
-                        errorsList.appendChild(errorItem);
-                    });
-
-                    if (errorWords.length > 8) {
-                        const restItem = document.createElement("li");
-                        restItem.textContent = `Ещё ${errorWords.length - 8} ошибок`;
-                        errorsList.appendChild(restItem);
-                    }
-
-                    card.appendChild(errorsList);
-                }
+                card.appendChild(problemsShell);
 
                 const actions = document.createElement("div");
                 actions.className = "teacher-card-actions";
@@ -4506,12 +4811,12 @@ body.final-error-screen .result-screen-content {
 
 // Инициализация
 async function init() {
-    console.log('=== ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ===');
-    
-    document.getElementById('backButton').classList.add('hidden');
-    document.getElementById('backButton').addEventListener('click', goBack);
+	    console.log('=== ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ===');
+	    
+		    document.getElementById('backButton').classList.add('hidden');
+		    document.getElementById('backButton').addEventListener('click', goBack);
 
-    setLoading(true);
+		    setLoading(true);
     setSubtitle("Загружаем слова...");
     setStatus("");
 
@@ -4642,7 +4947,7 @@ async function init() {
 
                 const title = document.createElement("div");
                 title.className = "pos-title";
-                title.textContent = pos;
+                renderPOSTitle(title, pos);
 
                 const statusBadge = document.createElement("div");
                 statusBadge.className = `pos-status-badge${isCompleted ? " completed" : ""}${isNotStarted ? " not-started" : ""}`;
@@ -4658,7 +4963,7 @@ async function init() {
                 progressText.className = "pos-progress-text";
 
                 const progressCount = document.createElement("span");
-                progressCount.textContent = `${progress.seenCount} / ${progress.totalCount} слов`;
+                progressCount.textContent = `${progress.seenCount} / ${progress.totalCount} ${getWordCountLabel(progress.totalCount)}`;
 
                 const progressPercent = document.createElement("span");
                 progressPercent.textContent = `${progress.percent}%`;
@@ -4917,7 +5222,7 @@ async function init() {
             }
 
             const titleEl = el.querySelector(".question-progress-title");
-            if (titleEl) titleEl.textContent = title;
+            if (titleEl) renderQuestionProgressTitle(titleEl, title);
 
             requestAnimationFrame(() => {
                 const fill = el.querySelector(".question-progress-fill");
@@ -5217,6 +5522,53 @@ function goBack() {
             return b;
         }
 
+        function getWordCountLabel(total) {
+            const n = Math.abs(Number(total) || 0);
+            const lastTwo = n % 100;
+            const lastOne = n % 10;
+
+            return lastOne === 1 && lastTwo !== 11 ? "слова" : "слов";
+        }
+
+        function renderPOSTitle(titleEl, pos) {
+            const wrappedTitles = {
+                "Прилагательные и причастия": ["Прилагательные", "и причастия"],
+                "Деепричастия и наречия": ["Деепричастия", "и наречия"]
+            };
+            const titleParts = wrappedTitles[pos];
+
+            titleEl.textContent = "";
+
+            if (!titleParts) {
+                titleEl.textContent = pos;
+                return;
+            }
+
+            titleEl.appendChild(document.createTextNode(titleParts[0]));
+            titleEl.appendChild(document.createElement("br"));
+            titleEl.appendChild(document.createTextNode(titleParts[1]));
+        }
+
+        function renderQuestionProgressTitle(titleEl, title) {
+            const wrappedTitles = {
+                "Прилагательные и причастия": ["Прилагательные", "и причастия"],
+                "Деепричастия и наречия": ["Деепричастия", "и наречия"]
+            };
+            const titleParts = wrappedTitles[title];
+
+            titleEl.classList.toggle("long-title", Boolean(titleParts));
+            titleEl.textContent = "";
+
+            if (!titleParts) {
+                titleEl.textContent = title;
+                return;
+            }
+
+            titleEl.appendChild(document.createTextNode(titleParts[0]));
+            titleEl.appendChild(document.createElement("br"));
+            titleEl.appendChild(document.createTextNode(titleParts[1]));
+        }
+
         function getRandomPerfectResultTitle() {
             return PERFECT_RESULT_TITLES[Math.floor(Math.random() * PERFECT_RESULT_TITLES.length)];
         }
@@ -5231,68 +5583,119 @@ function goBack() {
             const headline = document.createElement("div");
             headline.className = "result-headline";
 
-            const sparkleLayout = [
-                { left: "7.03%", top: "74px", size: "22px", delay: "0s" },
-                { left: "19.92%", top: "46px", size: "14px", delay: "0.34s" },
-                { left: "60.84%", top: "39px", size: "14px", delay: "0.68s" },
-                { left: "44.14%", top: "28px", size: "18px", delay: "1.02s" },
-                { left: "73.44%", top: "85px", size: "12px", delay: "1.36s" },
-                { left: "87.89%", top: "36px", size: "20px", delay: "1.7s" },
-                { left: "7.03%", top: "264px", size: "16px", delay: "2.04s" },
-                { left: "89.84%", top: "264px", size: "16px", delay: "0.18s" },
-                { left: "48.05%", top: "254px", size: "10px", delay: "0.52s" },
-                { left: "77.44%", top: "259px", size: "18px", delay: "0.86s" },
-                { left: "29.98%", top: "73px", size: "12px", delay: "1.2s" },
-                { left: "26.56%", top: "224px", size: "20px", delay: "1.54s" },
-                { left: "87.89%", top: "155px", size: "14px", delay: "1.88s" },
-                { left: "52.93%", top: "97px", size: "18px", delay: "2.22s" },
-                { left: "12.7%", top: "162px", size: "12px", delay: "2.56s" }
+            const desktopSparkleLayout = [
+                { left: "5%", top: "7%", size: "20px" },
+                { left: "15%", top: "4%", size: "12px" },
+                { left: "28%", top: "8%", size: "16px" },
+                { left: "42%", top: "5%", size: "10px" },
+                { left: "58%", top: "7%", size: "18px" },
+                { left: "72%", top: "4%", size: "14px" },
+                { left: "86%", top: "8%", size: "16px" },
+                { left: "96%", top: "5%", size: "10px" },
+                { left: "10%", top: "18%", size: "12px" },
+                { left: "22%", top: "15%", size: "14px" },
+                { left: "78%", top: "16%", size: "12px" },
+                { left: "92%", top: "19%", size: "18px" },
+                { left: "4%", top: "31%", size: "14px" },
+                { left: "15%", top: "34%", size: "18px" },
+                { left: "85%", top: "32%", size: "18px" },
+                { left: "96%", top: "35%", size: "10px" },
+                { left: "7%", top: "47%", size: "18px" },
+                { left: "18%", top: "51%", size: "10px" },
+                { left: "82%", top: "49%", size: "14px" },
+                { left: "94%", top: "45%", size: "20px" },
+                { left: "5%", top: "62%", size: "12px" },
+                { left: "16%", top: "68%", size: "16px" },
+                { left: "84%", top: "66%", size: "16px" },
+                { left: "96%", top: "61%", size: "12px" },
+                { left: "10%", top: "79%", size: "14px" },
+                { left: "23%", top: "84%", size: "10px" },
+                { left: "37%", top: "78%", size: "16px" },
+                { left: "51%", top: "86%", size: "18px" },
+                { left: "65%", top: "79%", size: "12px" },
+                { left: "79%", top: "85%", size: "14px" },
+                { left: "92%", top: "80%", size: "18px" },
+                { left: "6%", top: "92%", size: "10px" },
+                { left: "31%", top: "93%", size: "14px" },
+                { left: "48%", top: "95%", size: "10px" },
+                { left: "70%", top: "93%", size: "16px" },
+                { left: "96%", top: "92%", size: "10px" }
             ];
+            const mobileSparkleLayout = [
+                { left: "9%", top: "13%", size: "18px" },
+                { left: "22%", top: "8%", size: "14px" },
+                { left: "46%", top: "6%", size: "18px" },
+                { left: "68%", top: "9%", size: "16px" },
+                { left: "90%", top: "12%", size: "18px" },
+                { left: "12%", top: "28%", size: "16px" },
+                { left: "88%", top: "27%", size: "12px" },
+                { left: "8%", top: "43%", size: "12px" },
+                { left: "92%", top: "42%", size: "18px" },
+                { left: "15%", top: "61%", size: "14px" },
+                { left: "86%", top: "60%", size: "12px" },
+                { left: "23%", top: "77%", size: "10px" },
+                { left: "50%", top: "83%", size: "14px" },
+                { left: "78%", top: "76%", size: "12px" },
+                { left: "9%", top: "91%", size: "14px" },
+                { left: "91%", top: "90%", size: "10px" }
+            ];
+            const isMobileResult = window.matchMedia("(max-width: 760px)").matches;
+            const sparkleLayout = isMobileResult ? mobileSparkleLayout : desktopSparkleLayout;
             const sparkleSources = mode === "finished"
                 ? [
-                    "https://www.figma.com/api/mcp/asset/6a80ea68-390a-4524-86fc-0b563732ef15",
-                    "https://www.figma.com/api/mcp/asset/ade9417e-a3e9-443a-b2f5-2b514c992201",
-                    "https://www.figma.com/api/mcp/asset/ade9417e-a3e9-443a-b2f5-2b514c992201",
-                    "https://www.figma.com/api/mcp/asset/ae43e1d5-426e-4e3c-a80c-be77b54e29c3",
-                    "https://www.figma.com/api/mcp/asset/1e65410e-a1d3-4c76-b64e-4b3c7071ef7d",
-                    "https://www.figma.com/api/mcp/asset/c7a6a6d2-f8b1-4a6d-8352-7db11ff1e0fe",
-                    "https://www.figma.com/api/mcp/asset/7bcf89b1-92fe-4f6f-b474-00935b7f080c",
-                    "https://www.figma.com/api/mcp/asset/7bcf89b1-92fe-4f6f-b474-00935b7f080c",
-                    "https://www.figma.com/api/mcp/asset/d3456943-e49e-4408-bf80-08aeb8cbcec0",
-                    "https://www.figma.com/api/mcp/asset/339cf4e1-e3b4-4651-963f-016864f2d248",
-                    "https://www.figma.com/api/mcp/asset/724beef3-24df-443d-98b6-c2b7c92f4a73",
-                    "https://www.figma.com/api/mcp/asset/b0ad86d4-efdd-490e-bda3-fd77a4c7aa0f",
-                    "https://www.figma.com/api/mcp/asset/e0cfbb89-2508-4d9d-93ff-1896587639c9",
-                    "https://www.figma.com/api/mcp/asset/72b0b30a-6e0f-4523-84a9-ad1ad20b327b",
-                    "https://www.figma.com/api/mcp/asset/7e0a5d40-d9b0-4cb5-88cd-97c1cdf6172c"
+                    "https://www.figma.com/api/mcp/asset/9403cf25-776e-4192-a8c8-55283efc385a",
+                    "https://www.figma.com/api/mcp/asset/0b74f01b-7a77-4907-8d6f-04230aa7af96",
+                    "https://www.figma.com/api/mcp/asset/739d569e-be89-416b-a8b6-89bdc95e1ee7",
+                    "https://www.figma.com/api/mcp/asset/6913e902-1e3f-4090-9904-70b8b7b7e0a7",
+                    "https://www.figma.com/api/mcp/asset/d0345831-9dc2-40e0-94fd-951fe2b0f386",
+                    "https://www.figma.com/api/mcp/asset/967a165d-c71e-4f5b-aefb-b6e3bf80ad9c",
+                    "https://www.figma.com/api/mcp/asset/10f60259-ebd4-4982-a55c-731c195c050b",
+                    "https://www.figma.com/api/mcp/asset/a0d3150d-6d2e-4081-bd22-acc495462331",
+                    "https://www.figma.com/api/mcp/asset/f62b1df9-7fff-4e0d-a377-b1783a6bef27",
+                    "https://www.figma.com/api/mcp/asset/7a1ebd1d-d7df-4e7b-aafe-09eb05f03161",
+                    "https://www.figma.com/api/mcp/asset/58d691d6-262a-48ac-bc55-7a5372635b06",
+                    "https://www.figma.com/api/mcp/asset/6576159e-5a6b-4ba0-a972-32fa03116f80",
+                    "https://www.figma.com/api/mcp/asset/3360b200-d4d7-47b2-88c6-64a95c6baef5",
+                    "https://www.figma.com/api/mcp/asset/7bec7350-c6df-4783-af4a-c71c912baf03",
+                    "https://www.figma.com/api/mcp/asset/306fbf02-a2a1-45ab-a39f-a291b9246fef",
+                    "https://www.figma.com/api/mcp/asset/15f3a512-420a-4109-bd1c-e58cd029ab4e",
+                    "https://www.figma.com/api/mcp/asset/4b003dcf-5698-48c9-94f2-8e52d2cfed4f",
+                    "https://www.figma.com/api/mcp/asset/28b8412a-5bf8-43ae-8683-bec441edeccd",
+                    "https://www.figma.com/api/mcp/asset/b63ac69e-f79f-4141-9194-5b319c09ef81",
+                    "https://www.figma.com/api/mcp/asset/aee091c6-8dd5-47e6-8139-f8721862751e"
                 ]
                 : [
-                    "https://www.figma.com/api/mcp/asset/62082525-c68f-4c99-b9a9-5fbce7d3fc1d",
-                    "https://www.figma.com/api/mcp/asset/a930e1e8-c06b-4e4e-93de-1dd5f769c0a8",
-                    "https://www.figma.com/api/mcp/asset/a930e1e8-c06b-4e4e-93de-1dd5f769c0a8",
-                    "https://www.figma.com/api/mcp/asset/12b352f7-05b1-4b59-939b-7fde241537b1",
-                    "https://www.figma.com/api/mcp/asset/fb9a041b-324a-4fd4-be20-cdd562b1f4e6",
-                    "https://www.figma.com/api/mcp/asset/0a0366d5-3458-439e-b6c8-1463a20e8c75",
-                    "https://www.figma.com/api/mcp/asset/781aba73-d725-4a31-a4b4-c44ca175202d",
-                    "https://www.figma.com/api/mcp/asset/781aba73-d725-4a31-a4b4-c44ca175202d",
-                    "https://www.figma.com/api/mcp/asset/d46c8e9f-9757-4e23-9f12-21619fffc49d",
-                    "https://www.figma.com/api/mcp/asset/dcba2c63-f30b-48b6-b233-ed5c61be806b",
-                    "https://www.figma.com/api/mcp/asset/c48a94fc-67d4-4e4f-a684-65f9104182db",
-                    "https://www.figma.com/api/mcp/asset/f88b2d24-aa99-4cd8-96f3-43dd22d3c931",
-                    "https://www.figma.com/api/mcp/asset/30e409e1-4dae-4862-be79-78dc9d5d6331",
-                    "https://www.figma.com/api/mcp/asset/fc08011e-9ee1-4086-a1cb-2a8a245c82af",
-                    "https://www.figma.com/api/mcp/asset/d2659070-61b9-4f40-9f13-28654f2f94de"
+                    "https://www.figma.com/api/mcp/asset/165d9520-3bf5-4163-a311-ea4195f68bce",
+                    "https://www.figma.com/api/mcp/asset/ae2469dc-a0e5-44e4-9d57-e175abfda9e3",
+                    "https://www.figma.com/api/mcp/asset/e3565735-ff37-45a0-ae16-c2ef01b42104",
+                    "https://www.figma.com/api/mcp/asset/2821d208-5d90-4a81-aa3f-db3b6006cac6",
+                    "https://www.figma.com/api/mcp/asset/5236f06c-8f43-4941-ad0d-eae3c6048b9b",
+                    "https://www.figma.com/api/mcp/asset/5fe8254a-43b1-4b44-9ca0-6acac32ab068",
+                    "https://www.figma.com/api/mcp/asset/0b51f204-461c-4b07-b642-c0020caba32c",
+                    "https://www.figma.com/api/mcp/asset/727738ce-5f93-42c1-b55d-a693e170bae7",
+                    "https://www.figma.com/api/mcp/asset/55ab3e97-0268-4e41-80e2-0df911ac29f5",
+                    "https://www.figma.com/api/mcp/asset/8647cc0e-4ea5-45d8-87bb-c1d0c744bd9b",
+                    "https://www.figma.com/api/mcp/asset/b66b38c7-33ec-4cd5-9010-9668bb201934",
+                    "https://www.figma.com/api/mcp/asset/1f494571-f211-4d5a-b0cb-104a453aee75",
+                    "https://www.figma.com/api/mcp/asset/e8845d78-f55d-413d-9820-c432331b1c27",
+                    "https://www.figma.com/api/mcp/asset/4ba89230-bb4e-4719-8020-14f75dcc93c3",
+                    "https://www.figma.com/api/mcp/asset/cc3103aa-5fa1-4cf4-83b3-94dfa0f6d468",
+                    "https://www.figma.com/api/mcp/asset/fc301093-06f8-4401-8b8d-00b1837ce366",
+                    "https://www.figma.com/api/mcp/asset/b4cbb16e-2a8f-4892-9a52-d65bf137d600",
+                    "https://www.figma.com/api/mcp/asset/2fc35f04-fe5f-496d-9b5b-6f47f23ac7ee",
+                    "https://www.figma.com/api/mcp/asset/a5c84cda-8e44-4364-a250-16379a3ba83a",
+                    "https://www.figma.com/api/mcp/asset/e5f1a192-88d4-4fed-bed2-212cfdd79a53"
                 ];
 
             sparkleLayout.forEach((sparkle, index) => {
                 const img = document.createElement("img");
                 img.className = "result-sparkle";
                 img.alt = "";
-                img.src = sparkleSources[index];
+                img.src = sparkleSources[index % sparkleSources.length];
                 img.style.setProperty("--left", sparkle.left);
                 img.style.setProperty("--top", sparkle.top);
                 img.style.setProperty("--size", sparkle.size);
-                img.style.setProperty("--delay", sparkle.delay);
+                img.style.setProperty("--delay", `${(index % (isMobileResult ? 8 : 12)) * (isMobileResult ? 0.055 : 0.065)}s`);
                 sparkleLayer.appendChild(img);
             });
 
