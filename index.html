@@ -61,7 +61,6 @@
             justify-content: center;
         }
 
-        /* Стили для экрана логина */
         .login-form {
             text-align: center;
             margin: 20px 0;
@@ -88,7 +87,6 @@
             font-family: "Nunito";
         }
 
-        /* Сетка двадцаток */
         #batchesSelection {
             width: 100%;
         }
@@ -137,7 +135,6 @@
             margin-bottom: 5px;
         }
 
-        /* Остальные стили из твоего оригинального дизайна */
         .session-counter {
             font-size: 13px;
             color: #777;
@@ -369,7 +366,6 @@
             <!-- Основной интерфейс -->
             <div id="mainInterface" class="hidden">
                 <div id="sessionInfo" class="session-counter"></div>
-                <!-- В основном интерфейсе, после sessionInfo -->
                 <div id="batchesSelection" class="hidden">
                     <h3>Выбери двадцатку для отработки</h3>
                     <div class="batches-grid" id="batchesGrid"></div>
@@ -450,12 +446,10 @@
                 return;
             }
 
-            // Исправляем кодирование для русских символов
             const userId = 'user_' + btoa(encodeURIComponent(username)).replace(/=/g, '');
             currentUser = { id: userId, username: username };
             localStorage.setItem('stress_user', JSON.stringify(currentUser));
             
-            // Сохраняем пользователя в базу
             saveUserToDatabase();
             
             showMainInterface();
@@ -490,7 +484,6 @@
             console.log('=== ЗАПУСК loadPartsOfSpeech ===');
             setLoading(true);
             
-            // Обновленные тестовые данные
             const testParts = [
                 'Существительные', 
                 'Глаголы', 
@@ -541,12 +534,9 @@
             console.log('=== ВЫБРАНА ЧАСТЬ РЕЧИ ===', pos);
             currentPOS = pos;
             
-            // Показываем загрузку
             setLoading(true);
             
-            // Даем небольшую задержку для анимации
             setTimeout(() => {
-                // ТЕСТОВЫЕ ДВАДЦАТКИ
                 let testBatches = [];
                 
                 if (pos === 'Существительные') {
@@ -560,11 +550,7 @@
                 }
                 
                 console.log('Показываем двадцатки:', testBatches);
-                
-                // Показываем сетку двадцаток
                 showBatchesSelection(pos, testBatches);
-                
-                // Скрываем загрузку
                 setLoading(false);
             }, 500);
         }
@@ -574,27 +560,22 @@
             console.log('Часть речи:', pos);
             console.log('Двадцатки:', batchNumbers);
             
-            // Очищаем всё
             clearOptions();
             clearSummary();
             clearFooterButtons();
             setStatus("");
             setSessionInfo("");
             
-            // Устанавливаем заголовок
             setSubtitle(`Часть речи: ${pos}`);
             
-            // Получаем контейнер для сетки
             const batchesGrid = document.getElementById('batchesGrid');
             if (!batchesGrid) {
                 console.error('Элемент batchesGrid не найден!');
                 return;
             }
             
-            // Очищаем сетку
             batchesGrid.innerHTML = '';
             
-            // Создаем карточки двадцаток
             batchNumbers.forEach(batchNum => {
                 const card = document.createElement('div');
                 card.className = 'batch-card';
@@ -609,7 +590,6 @@
                 batchesGrid.appendChild(card);
             });
             
-            // ПОКАЗЫВАЕМ СЕТКУ ДВАДЦАТОК
             const batchesSelection = document.getElementById('batchesSelection');
             if (batchesSelection) {
                 batchesSelection.classList.remove('hidden');
@@ -618,50 +598,113 @@
                 console.error('Элемент batchesSelection не найден!');
             }
             
-            // Скрываем варианты выбора частей речи
             document.getElementById('options').classList.add('hidden');
         }
 
+        // ОСНОВНОЕ ИСПРАВЛЕНИЕ: Загрузка слов из базы данных
         async function startBatchSession(pos, batchNumber) {
             console.log('Запускаем двадцатку:', pos, batchNumber);
             
-            // Временные тестовые слова
-            currentBatch = [
-                {
-                    options: ['дОговор', 'договОр'],
-                    correctIndex: 0,
-                    correct: 'дОговор'
-                },
-                {
-                    options: ['включИт', 'вклЮчит'], 
-                    correctIndex: 0,
-                    correct: 'включИт'
-                },
-                {
-                    options: ['каталОг', 'катАлог'],
-                    correctIndex: 0,
-                    correct: 'каталОг'
-                }
-            ];
+            setLoading(true);
             
-            currentPOS = pos;
-            currentBatchNumber = batchNumber;
-            currentIndex = 0;
-            mistakes = [];
-            isReviewMode = false;
-            answered = false;
+            try {
+                // Загружаем слова из базы данных для конкретной двадцатки
+                currentBatch = await loadWordsFromDatabase(pos, batchNumber);
+                console.log('Загружены слова:', currentBatch);
+                
+                if (currentBatch.length === 0) {
+                    setStatus("Слова для этой двадцатки не найдены", "err");
+                    setLoading(false);
+                    return;
+                }
+                
+                currentPOS = pos;
+                currentBatchNumber = batchNumber;
+                currentIndex = 0;
+                mistakes = [];
+                isReviewMode = false;
+                answered = false;
 
-            setSubtitle('Выбери слово, в котором <strong>верно</strong> поставлено ударение');
-            clearOptions();
-            clearSummary();
-            clearFooterButtons();
-            setStatus("");
-            setSessionInfo("");
-            hideBatchesSelection();
+                setSubtitle('Выбери слово, в котором <strong>верно</strong> поставлено ударение');
+                clearOptions();
+                clearSummary();
+                clearFooterButtons();
+                setStatus("");
+                setSessionInfo("");
+                hideBatchesSelection();
 
-            showQuestion();
+                setLoading(false);
+                showQuestion();
+                
+            } catch (error) {
+                console.error('Ошибка загрузки слов:', error);
+                setStatus("Ошибка загрузки слов", "err");
+                setLoading(false);
+            }
         }
 
+      // Функция загрузки слов из Supabase для вашей структуры данных
+// Более надежная версия с проверками
+async function loadWordsFromDatabase(partOfSpeech, batchNumber) {
+    try {
+        const response = await fetch(
+            `${SUPABASE_URL}/rest/v1/words?part_of_speech=eq.${encodeURIComponent(partOfSpeech)}&batch_number=eq.${batchNumber}&select=*`,
+            {
+                method: 'GET',
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error('Ошибка загрузки данных');
+        }
+
+        const words = await response.json();
+        console.log(`Загружено ${words.length} слов для ${partOfSpeech}, двадцатка ${batchNumber}`);
+
+        // Фильтруем слова с корректными данными
+        const validWords = words.filter(word => 
+            word.correct_word && word.wrong_options && 
+            word.correct_word.trim() !== '' && 
+            word.wrong_options.trim() !== ''
+        );
+
+        return validWords.map(word => {
+            // Создаем массив вариантов
+            const options = [word.correct_word.trim(), word.wrong_options.trim()];
+            
+            // Перемешиваем варианты
+            const shuffledOptions = shuffleArray([...options]);
+            const correctIndex = shuffledOptions.indexOf(word.correct_word.trim());
+            
+            return {
+                options: shuffledOptions,
+                correctIndex: correctIndex,
+                correct: word.correct_word.trim()
+            };
+        });
+
+    } catch (error) {
+        console.error('Ошибка загрузки слов из базы:', error);
+        return [];
+    }
+}
+
+        // Вспомогательная функция для перемешивания массива
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Остальные функции остаются без изменений
         function showQuestion() {
             clearOptions();
             clearSummary();
@@ -730,13 +773,11 @@
             lastErrorsForReview = errors.slice();
             const hasErrors = errors.length > 0;
 
-            // Если нет ошибок и это не режим повторения - отмечаем как пройденное
             if (!hasErrors && !isReviewMode && currentBatchNumber) {
                 await markBatchCompleted(currentPOS, currentBatchNumber);
             }
 
             if (isReviewMode) {
-                // Завершили отработку
                 if (hasErrors) {
                     const uniqWords = [...new Set(errors.map(q => q.correct))];
                     showErrorSummary(uniqWords, summary);
@@ -750,7 +791,6 @@
                     buttonsWrap.appendChild(makeResultBtn("Выбрать другую часть речи", loadPartsOfSpeech));
                 }
             } else {
-                // Обычная сессия
                 if (hasErrors) {
                     const uniqWords = [...new Set(errors.map(q => q.correct))];
                     showErrorSummary(uniqWords, summary);
