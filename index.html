@@ -90,51 +90,53 @@
 
         /* Сетка двадцаток */
         #batchesSelection {
-    width: 100%;
-}
+            width: 100%;
+        }
 
-.batches-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    margin: 20px 0;
-}
-.batch-card {
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
-    cursor: pointer;
-    background: #f8f9fa;
-    border: 2px solid #e9ecef;
-    transition: all 0.3s ease;
-    min-height: 80px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
+        .batches-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
 
-    .batch-card:hover {
-    background: #e9ecef;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
+        .batch-card {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
 
-.batch-card.completed {
-    background: #d4edda;
-    border-color: #28a745;
-}
+        .batch-card:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
 
-.batch-card.current {
-    background: #d1ecf1;
-    border-color: #17a2b8;
-}
+        .batch-card.completed {
+            background: #d4edda;
+            border-color: #28a745;
+        }
 
-.batch-checkmark {
-    color: #28a745;
-    font-size: 20px;
-    margin-bottom: 5px;
-}
+        .batch-card.current {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+        }
+
+        .batch-checkmark {
+            color: #28a745;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
         /* Остальные стили из твоего оригинального дизайна */
         .session-counter {
             font-size: 13px;
@@ -315,29 +317,36 @@
             box-sizing: border-box;
         }
 
-    .pos-choices {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    justify-content: center;
-    width: 100%;
-    max-height: 300px;
-    overflow-y: auto;
-}
+        .pos-choices {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            justify-content: center;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+        }
 
-.pos-btn {
-    padding: 14px 20px;
-    border-radius: 999px;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    background: #b9c2ff;
-    color: #1f2455;
-    box-shadow: 0 4px 10px rgba(60, 72, 150, 0.25);
-    transition: background 0.1s ease, transform 0.05s ease;
-    width: 100%;
-    font-weight: 400;
-}
+        .pos-btn {
+            padding: 14px 20px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            background: #b9c2ff;
+            color: #1f2455;
+            box-shadow: 0 4px 10px rgba(60, 72, 150, 0.25);
+            transition: background 0.1s ease, transform 0.05s ease;
+            width: 100%;
+            font-weight: 400;
+        }
+
+        .summary-subtitle {
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
     </style>
 </head>
 
@@ -361,10 +370,10 @@
             <div id="mainInterface" class="hidden">
                 <div id="sessionInfo" class="session-counter"></div>
                 <!-- В основном интерфейсе, после sessionInfo -->
-<div id="batchesSelection" class="hidden">
-    <h3>Выбери двадцатку для отработки</h3>
-    <div class="batches-grid" id="batchesGrid"></div>
-</div>
+                <div id="batchesSelection" class="hidden">
+                    <h3>Выбери двадцатку для отработки</h3>
+                    <div class="batches-grid" id="batchesGrid"></div>
+                </div>
                 <div id="options" class="options"></div>
                 <div id="status" class="status"></div>
                 <div id="summary"></div>
@@ -398,101 +407,104 @@
         let userProgress = [];
 
         // Инициализация
-       function init() {
-    console.log('=== ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ===');
-    
-    const savedUser = localStorage.getItem('stress_user');
-    console.log('Сохраненный пользователь:', savedUser);
-    
-    if (savedUser) {
-        try {
-            currentUser = JSON.parse(savedUser);
-            console.log('Текущий пользователь:', currentUser);
-            showMainInterface();
-        } catch (error) {
-            console.error('Ошибка парсинга пользователя:', error);
-            showLoginScreen();
+        function init() {
+            console.log('=== ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ===');
+            
+            const savedUser = localStorage.getItem('stress_user');
+            console.log('Сохраненный пользователь:', savedUser);
+            
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    console.log('Текущий пользователь:', currentUser);
+                    showMainInterface();
+                } catch (error) {
+                    console.error('Ошибка парсинга пользователя:', error);
+                    showLoginScreen();
+                }
+            } else {
+                console.log('Пользователь не найден, показываем логин');
+                showLoginScreen();
+            }
         }
-    } else {
-        console.log('Пользователь не найден, показываем логин');
-        showLoginScreen();
-    }
-}
 
         function showLoginScreen() {
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('mainInterface').classList.add('hidden');
         }
 
-      function showMainInterface() {
-    console.log('=== ПОКАЗЫВАЕМ ОСНОВНОЙ ИНТЕРФЕЙС ===');
-    
-    document.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('mainInterface').classList.remove('hidden');
-    
-    console.log('Запускаем loadPartsOfSpeech...');
-    loadPartsOfSpeech();
-}
-        function login() {
-    const username = document.getElementById('usernameInput').value.trim();
-    if (!username) {
-        alert('Пожалуйста, введите ваше имя');
-        return;
-    }
+        function showMainInterface() {
+            console.log('=== ПОКАЗЫВАЕМ ОСНОВНОЙ ИНТЕРФЕЙС ===');
+            
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainInterface').classList.remove('hidden');
+            
+            console.log('Запускаем loadPartsOfSpeech...');
+            loadPartsOfSpeech();
+        }
 
-    // Исправляем кодирование для русских символов
-    const userId = 'user_' + btoa(encodeURIComponent(username)).replace(/=/g, '');
-    currentUser = { id: userId, username: username };
-    localStorage.setItem('stress_user', JSON.stringify(currentUser));
-    
-    // Сохраняем пользователя в базу
-    saveUserToDatabase();
-    
-    showMainInterface();
-}
+        function login() {
+            const username = document.getElementById('usernameInput').value.trim();
+            if (!username) {
+                alert('Пожалуйста, введите ваше имя');
+                return;
+            }
+
+            // Исправляем кодирование для русских символов
+            const userId = 'user_' + btoa(encodeURIComponent(username)).replace(/=/g, '');
+            currentUser = { id: userId, username: username };
+            localStorage.setItem('stress_user', JSON.stringify(currentUser));
+            
+            // Сохраняем пользователя в базу
+            saveUserToDatabase();
+            
+            showMainInterface();
+        }
 
         async function saveUserToDatabase() {
-    try {
-        const response = await fetch(SUPABASE_URL + '/rest/v1/users', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'apikey': SUPABASE_KEY,
-                'Authorization': `Bearer ${SUPABASE_KEY}`,
-                'Prefer': 'return=minimal'
-            },
-            body: JSON.stringify({
-                user_id: currentUser.id,
-                username: currentUser.username
-            })
-        });
-        
-        if (!response.ok) {
-            console.log('Пользователь уже существует или ошибка сохранения');
+            try {
+                const response = await fetch(SUPABASE_URL + '/rest/v1/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({
+                        user_id: currentUser.id,
+                        username: currentUser.username
+                    })
+                });
+                
+                if (!response.ok) {
+                    console.log('Пользователь уже существует или ошибка сохранения');
+                }
+            } catch (error) {
+                console.log('Ошибка сети, но продолжаем работу');
+            }
         }
-    } catch (error) {
-        console.log('Ошибка сети, но продолжаем работу');
-    }
-}
+
         // Загрузка частей речи
-   async function loadPartsOfSpeech() {
-    console.log('=== ЗАПУСК loadPartsOfSpeech ===');
-    setLoading(true);
-    
-    // Обновленные тестовые данные
-    const testParts = [
-        'Существительные', 
-        'Глаголы', 
-        'Прилагательные и причастия',
-        'Деепричастия и наречия'
-    ];
-    
-    setTimeout(() => {
-        console.log('Показываю части речи:', testParts);
-        showPOSSelection(testParts);
-        setLoading(false);
-    }, 1000);
-}
+        async function loadPartsOfSpeech() {
+            console.log('=== ЗАПУСК loadPartsOfSpeech ===');
+            setLoading(true);
+            
+            // Обновленные тестовые данные
+            const testParts = [
+                'Существительные', 
+                'Глаголы', 
+                'Прилагательные и причастия',
+                'Деепричастия и наречия'
+            ];
+            
+            setTimeout(() => {
+                console.log('Показываю части речи:', testParts);
+                showPOSSelection(testParts);
+                setLoading(false);
+            }, 1000);
+        }
+
         function showPOSSelection(parts) {
             currentPOS = null;
             currentBatch = [];
@@ -525,153 +537,130 @@
             box.appendChild(wrap);
         }
 
-       async function startPOSSelection(pos) {
-    console.log('=== ВЫБРАНА ЧАСТЬ РЕЧИ ===', pos);
-    currentPOS = pos;
-    
-    // Показываем загрузку
-    setLoading(true);
-    
-    // Даем небольшую задержку для анимации
-    setTimeout(() => {
-        // ТЕСТОВЫЕ ДВАДЦАТКИ
-        let testBatches = [];
-        
-        if (pos === 'Существительные') {
-            testBatches = [1, 2, 3, 4, 5];
-        } else if (pos === 'Глаголы') {
-            testBatches = [1, 2, 3];
-        } else if (pos === 'Прилагательные и причастия') {
-            testBatches = [1, 2];
-        } else if (pos === 'Деепричастия и наречия') {
-            testBatches = [1];
+        async function startPOSSelection(pos) {
+            console.log('=== ВЫБРАНА ЧАСТЬ РЕЧИ ===', pos);
+            currentPOS = pos;
+            
+            // Показываем загрузку
+            setLoading(true);
+            
+            // Даем небольшую задержку для анимации
+            setTimeout(() => {
+                // ТЕСТОВЫЕ ДВАДЦАТКИ
+                let testBatches = [];
+                
+                if (pos === 'Существительные') {
+                    testBatches = [1, 2, 3, 4, 5];
+                } else if (pos === 'Глаголы') {
+                    testBatches = [1, 2, 3];
+                } else if (pos === 'Прилагательные и причастия') {
+                    testBatches = [1, 2];
+                } else if (pos === 'Деепричастия и наречия') {
+                    testBatches = [1];
+                }
+                
+                console.log('Показываем двадцатки:', testBatches);
+                
+                // Показываем сетку двадцаток
+                showBatchesSelection(pos, testBatches);
+                
+                // Скрываем загрузку
+                setLoading(false);
+            }, 500);
         }
-        
-        console.log('Показываем двадцатки:', testBatches);
-        
-        // Показываем сетку двадцаток
-        showBatchesSelection(pos, testBatches);
-        
-        // Скрываем загрузку
-        setLoading(false);
-    }, 500);
-}
-      function showBatchesSelection(pos, batchNumbers) {
-          console.log('=== ТЕСТ: showBatchesSelection ВЫЗВАНА ===');
-    console.log('pos:', pos);
-    console.log('batchNumbers:', batchNumbers);
-          // Простой тест - создадим одну карточку вручную
-    const batchesGrid = document.getElementById('batchesGrid');
-    if (batchesGrid) {
-        batchesGrid.innerHTML = '<div class="batch-card" style="background: red; color: white;">ТЕСТОВАЯ КАРТОЧКА</div>';
-    }
-    
-    const batchesSelection = document.getElementById('batchesSelection');
-    if (batchesSelection) {
-        batchesSelection.classList.remove('hidden');
-        console.log('batchesSelection показан');
-    }
-    
-    document.getElementById('options').classList.add('hidden');
-}
-    console.log('=== ПОКАЗЫВАЕМ ДВАДЦАТКИ ===');
-    console.log('Часть речи:', pos);
-    console.log('Двадцатки:', batchNumbers);
-    
-    // Очищаем всё
-    clearOptions();
-    clearSummary();
-    clearFooterButtons();
-    setStatus("");
-    setSessionInfo("");
-    
-    // Устанавливаем заголовок
-    setSubtitle(`Часть речи: ${pos}`);
-    
-    // Получаем контейнер для сетки
-    const batchesGrid = document.getElementById('batchesGrid');
-    if (!batchesGrid) {
-        console.error('Элемент batchesGrid не найден!');
-        return;
-    }
-    
-    // Очищаем сетку
-    batchesGrid.innerHTML = '';
-    
-    // Создаем карточки двадцаток
-    batchNumbers.forEach(batchNum => {
-        const card = document.createElement('div');
-        card.className = 'batch-card';
-        card.innerHTML = `
-            <div>Двадцатка ${batchNum}</div>
-            <small>20 слов</small>
-        `;
-        card.onclick = () => {
-            console.log('Выбрана двадцатка:', batchNum);
-            startBatchSession(pos, batchNum);
-        };
-        batchesGrid.appendChild(card);
-    });
-    
-    // ПОКАЗЫВАЕМ СЕТКУ ДВАДЦАТОК
-    const batchesSelection = document.getElementById('batchesSelection');
-    if (batchesSelection) {
-        batchesSelection.classList.remove('hidden');
-        console.log('Сетка двадцаток показана');
-    } else {
-        console.error('Элемент batchesSelection не найден!');
-    }
-    
-    // Скрываем варианты выбора частей речи
-    document.getElementById('options').classList.add('hidden');
-}
-        function showBatchesSelection() {
-            document.getElementById('batchesSelection').classList.remove('hidden');
+
+        function showBatchesSelection(pos, batchNumbers) {
+            console.log('=== ПОКАЗЫВАЕМ ДВАДЦАТКИ ===');
+            console.log('Часть речи:', pos);
+            console.log('Двадцатки:', batchNumbers);
+            
+            // Очищаем всё
+            clearOptions();
+            clearSummary();
+            clearFooterButtons();
+            setStatus("");
+            setSessionInfo("");
+            
+            // Устанавливаем заголовок
+            setSubtitle(`Часть речи: ${pos}`);
+            
+            // Получаем контейнер для сетки
+            const batchesGrid = document.getElementById('batchesGrid');
+            if (!batchesGrid) {
+                console.error('Элемент batchesGrid не найден!');
+                return;
+            }
+            
+            // Очищаем сетку
+            batchesGrid.innerHTML = '';
+            
+            // Создаем карточки двадцаток
+            batchNumbers.forEach(batchNum => {
+                const card = document.createElement('div');
+                card.className = 'batch-card';
+                card.innerHTML = `
+                    <div>Двадцатка ${batchNum}</div>
+                    <small>20 слов</small>
+                `;
+                card.onclick = () => {
+                    console.log('Выбрана двадцатка:', batchNum);
+                    startBatchSession(pos, batchNum);
+                };
+                batchesGrid.appendChild(card);
+            });
+            
+            // ПОКАЗЫВАЕМ СЕТКУ ДВАДЦАТОК
+            const batchesSelection = document.getElementById('batchesSelection');
+            if (batchesSelection) {
+                batchesSelection.classList.remove('hidden');
+                console.log('Сетка двадцаток показана');
+            } else {
+                console.error('Элемент batchesSelection не найден!');
+            }
+            
+            // Скрываем варианты выбора частей речи
             document.getElementById('options').classList.add('hidden');
         }
 
         async function startBatchSession(pos, batchNumber) {
-    console.log('Запускаем двадцатку:', pos, batchNumber);
-    
-    // Временные тестовые слова
-    currentBatch = [
-        {
-            options: ['дОговор', 'договОр'],
-            correctIndex: 0,
-            correct: 'дОговор'
-        },
-        {
-            options: ['включИт', 'вклЮчит'], 
-            correctIndex: 0,
-            correct: 'включИт'
-        },
-        {
-            options: ['каталОг', 'катАлог'],
-            correctIndex: 0,
-            correct: 'каталОг'
+            console.log('Запускаем двадцатку:', pos, batchNumber);
+            
+            // Временные тестовые слова
+            currentBatch = [
+                {
+                    options: ['дОговор', 'договОр'],
+                    correctIndex: 0,
+                    correct: 'дОговор'
+                },
+                {
+                    options: ['включИт', 'вклЮчит'], 
+                    correctIndex: 0,
+                    correct: 'включИт'
+                },
+                {
+                    options: ['каталОг', 'катАлог'],
+                    correctIndex: 0,
+                    correct: 'каталОг'
+                }
+            ];
+            
+            currentPOS = pos;
+            currentBatchNumber = batchNumber;
+            currentIndex = 0;
+            mistakes = [];
+            isReviewMode = false;
+            answered = false;
+
+            setSubtitle('Выбери слово, в котором <strong>верно</strong> поставлено ударение');
+            clearOptions();
+            clearSummary();
+            clearFooterButtons();
+            setStatus("");
+            setSessionInfo("");
+            hideBatchesSelection();
+
+            showQuestion();
         }
-    ];
-    
-    currentPOS = pos;
-    currentBatchNumber = batchNumber;
-    currentIndex = 0;
-    mistakes = [];
-    isReviewMode = false;
-    answered = false;
-
-    setSubtitle('Выбери слово, в котором <strong>верно</strong> поставлено ударение');
-    clearOptions();
-    clearSummary();
-    clearFooterButtons();
-    setStatus("");
-    setSessionInfo("");
-    hideBatchesSelection();
-
-    showQuestion();
-}
-
-        // Остальные функции (showQuestion, checkAnswer, finishSession и т.д.)
-        // остаются практически такими же как в твоём оригинальном коде
 
         function showQuestion() {
             clearOptions();
@@ -911,16 +900,16 @@
             container.appendChild(wrap);
         }
 
+        function hideBatchesSelection() {
+            const batchesSelection = document.getElementById('batchesSelection');
+            if (batchesSelection) {
+                batchesSelection.classList.add('hidden');
+            }
+            document.getElementById('options').classList.remove('hidden');
+        }
+
         // Запуск приложения
         window.addEventListener("load", init);
-
-        function hideBatchesSelection() {
-    const batchesSelection = document.getElementById('batchesSelection');
-    if (batchesSelection) {
-        batchesSelection.classList.add('hidden');
-    }
-    document.getElementById('options').classList.remove('hidden');
-}
     </script>
 </body>
 </html>
