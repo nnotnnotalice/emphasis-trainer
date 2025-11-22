@@ -384,8 +384,7 @@
         </div>
     </div>
 
-    <script>
-        <script>
+    <<script>
     // Конфигурация Supabase
     const SUPABASE_URL = 'https://nzxpkwfusyeufbrflfco.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56eHBrd2Z1c3lldWZicmZsZmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3OTIyODAsImV4cCI6MjA3OTM2ODI4MH0.v2pgG-yIQz0uhj_XRNH5643wE5R3_vkJ2LaNUZ7Nhe8';
@@ -405,27 +404,20 @@
     let isReviewMode = false;
     let userProgress = [];
 
-    // Инициализация Supabase клиента
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
     // Инициализация
     function init() {
         console.log('=== ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ===');
         
         const savedUser = localStorage.getItem('stress_user');
-        console.log('Сохраненный пользователь:', savedUser);
         
         if (savedUser) {
             try {
                 currentUser = JSON.parse(savedUser);
-                console.log('Текущий пользователь:', currentUser);
                 showMainInterface();
             } catch (error) {
-                console.error('Ошибка парсинга пользователя:', error);
                 showLoginScreen();
             }
         } else {
-            console.log('Пользователь не найден, показываем логин');
             showLoginScreen();
         }
     }
@@ -436,121 +428,197 @@
     }
 
     function showMainInterface() {
-        console.log('=== ПОКАЗЫВАЕМ ОСНОВНОЙ ИНТЕРФЕЙС ===');
-        
         document.getElementById('loginScreen').classList.add('hidden');
         document.getElementById('mainInterface').classList.remove('hidden');
-        
-        console.log('Запускаем loadPartsOfSpeech...');
         loadPartsOfSpeech();
     }
 
-    function login() {
-    const username = document.getElementById('usernameInput').value.trim();
-    if (!username) {
-        alert('Пожалуйста, введите ваше имя');
-        return;
+    async function login() {
+        const username = document.getElementById('usernameInput').value.trim();
+        if (!username) {
+            alert('Пожалуйста, введите ваше имя');
+            return;
+        }
+
+        const userId = 'user_' + btoa(encodeURIComponent(username)).replace(/=/g, '');
+        currentUser = { id: userId, username: username };
+        localStorage.setItem('stress_user', JSON.stringify(currentUser));
+        
+        await saveUserToDatabase();
+        showMainInterface();
     }
 
-    const userId = 'user_' + btoa(encodeURIComponent(username)).replace(/=/g, '');
-    currentUser = { id: userId, username: username };
-    localStorage.setItem('stress_user', JSON.stringify(currentUser));
-    
-    // Показываем основной интерфейс сразу, а сохранение в БД делаем в фоне
-    showMainInterface();
-    
-    // Сохраняем пользователя в базу (асинхронно, без ожидания)
-    saveUserToDatabase();
-}
+    // 🔧 ПРАВИЛЬНОЕ ПОДКЛЮЧЕНИЕ К SUPABASE
+    async function supabaseRequest(endpoint, options = {}) {
+        try {
+            const response = await fetch(SUPABASE_URL + endpoint, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`,
+                    ...options.headers
+                },
+                ...options
+            });
 
-// И убедитесь, что эта строка в начале скрипта корректна:
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Supabase request failed:', error);
+            throw error;
+        }
+    }
 
     async function saveUserToDatabase() {
         try {
-            const { data, error } = await supabaseClient
-                .from('users')
-                .upsert({
+            await supabaseRequest('/rest/v1/users', {
+                method: 'POST',
+                body: JSON.stringify({
                     user_id: currentUser.id,
                     username: currentUser.username,
-                    updated_at: new Date().toISOString()
-                }, {
-                    onConflict: 'user_id'
-                });
-
-            if (error) {
-                console.log('Ошибка сохранения пользователя:', error);
-            } else {
-                console.log('✅ Пользователь сохранен в Supabase');
-            }
+                    created_at: new Date().toISOString()
+                })
+            });
+            console.log('✅ Пользователь сохранен в Supabase');
         } catch (error) {
-            console.log('Ошибка сети, но продолжаем работу');
+            console.log('⚠️ Пользователь уже существует или ошибка сети');
         }
     }
 
     async function markBatchCompleted(pos, batchNumber) {
         try {
-            const { data, error } = await supabaseClient
-                .from('user_progress')
-                .upsert({
+            await supabaseRequest('/rest/v1/user_progress', {
+                method: 'POST',
+                body: JSON.stringify({
                     user_id: currentUser.id,
                     part_of_speech: pos,
                     batch_number: batchNumber,
                     completed: true,
                     completed_at: new Date().toISOString()
-                }, {
-                    onConflict: 'user_id,part_of_speech,batch_number'
-                });
-
-            if (error) {
-                console.log('Ошибка сохранения прогресса:', error);
-            } else {
-                console.log('✅ Прогресс сохранен в Supabase');
-            }
+                })
+            });
+            console.log('✅ Прогресс сохранен в Supabase');
         } catch (error) {
-            console.log('Ошибка сети при сохранении прогресса');
+            console.log('⚠️ Ошибка сохранения прогресса');
         }
     }
 
     async function getUserProgress() {
         try {
-            const { data, error } = await supabaseClient
-                .from('user_progress')
-                .select('*')
-                .eq('user_id', currentUser.id);
-
-            if (error) {
-                console.log('Ошибка загрузки прогресса:', error);
-                return [];
-            }
+            const data = await supabaseRequest(`/rest/v1/user_progress?user_id=eq.${currentUser.id}&select=*`);
             return data || [];
         } catch (error) {
-            console.log('Ошибка сети при загрузке прогресса');
+            console.log('⚠️ Ошибка загрузки прогресса');
             return [];
         }
     }
 
-    // Загрузка частей речи
+    // 🔧 ЗАГРУЗКА СЛОВ ИЗ БАЗЫ ДАННЫХ
+    async function loadWordsFromDatabase(partOfSpeech, batchNumber) {
+        console.log('🎯 Загружаем слова из базы:', partOfSpeech, 'двадцатка', batchNumber);
+        
+        try {
+            // Загружаем слова для выбранной части речи и двадцатки
+            const words = await supabaseRequest(
+                `/rest/v1/words?part_of_speech=eq.${encodeURIComponent(partOfSpeech)}&batch_number=eq.${batchNumber}&select=*`
+            );
+
+            if (!words || words.length === 0) {
+                console.log('❌ Слова не найдены в базе');
+                return [];
+            }
+
+            // Обрабатываем слова для тренажера
+            const processedWords = words.map(word => {
+                // Создаем варианты ответов (правильный + неправильные)
+                const options = [word.correct_variant];
+                
+                // Добавляем неправильные варианты из базы
+                if (word.wrong_variant1) options.push(word.wrong_variant1);
+                if (word.wrong_variant2) options.push(word.wrong_variant2);
+                if (word.wrong_variant3) options.push(word.wrong_variant3);
+                
+                // Перемешиваем варианты
+                const shuffledOptions = [...options].sort(() => Math.random() - 0.5);
+                const correctIndex = shuffledOptions.indexOf(word.correct_variant);
+                
+                return {
+                    options: shuffledOptions,
+                    correctIndex: correctIndex,
+                    correct: word.correct_variant,
+                    word_id: word.id
+                };
+            });
+
+            console.log(`✅ Загружено ${processedWords.length} слов из базы`);
+            return processedWords;
+            
+        } catch (error) {
+            console.error('❌ Ошибка загрузки слов:', error);
+            return [];
+        }
+    }
+
+    // Загрузка частей речи (теперь из базы)
     async function loadPartsOfSpeech() {
-        console.log('=== ЗАПУСК loadPartsOfSpeech ===');
         setLoading(true);
         
-        // Загружаем прогресс пользователя
-        userProgress = await getUserProgress();
-        console.log('Прогресс пользователя:', userProgress);
-        
-        const testParts = [
-            'Существительные', 
-            'Глаголы', 
-            'Прилагательные и причастия',
-            'Деепричастия и наречия'
-        ];
-        
-        setTimeout(() => {
-            console.log('Показываю части речи:', testParts);
+        try {
+            // Загружаем доступные части речи из базы
+            const partsData = await supabaseRequest('/rest/v1/words?part_of_speech=not.is.null&select=part_of_speech');
+            
+            // Получаем уникальные части речи
+            const uniqueParts = [...new Set(partsData.map(item => item.part_of_speech))];
+            
+            // Загружаем прогресс пользователя
+            userProgress = await getUserProgress();
+            
+            setTimeout(() => {
+                showPOSSelection(uniqueParts);
+                setLoading(false);
+            }, 500);
+            
+        } catch (error) {
+            console.error('Ошибка загрузки частей речи:', error);
+            // Fallback на тестовые данные если база недоступна
+            const testParts = [
+                'Существительные', 
+                'Глаголы', 
+                'Прилагательные и причастия',
+                'Деепричастия и наречия'
+            ];
             showPOSSelection(testParts);
             setLoading(false);
-        }, 1000);
+        }
+    }
+
+    async function startPOSSelection(pos) {
+        currentPOS = pos;
+        setLoading(true);
+        
+        try {
+            // Загружаем доступные двадцатки для этой части речи из базы
+            const batchesData = await supabaseRequest(
+                `/rest/v1/words?part_of_speech=eq.${encodeURIComponent(pos)}&select=batch_number`
+            );
+            
+            // Получаем уникальные номера двадцаток
+            const batchNumbers = [...new Set(batchesData.map(item => item.batch_number))].sort((a, b) => a - b);
+            
+            console.log('Доступные двадцатки:', batchNumbers);
+            showBatchesSelection(pos, batchNumbers);
+            setLoading(false);
+            
+        } catch (error) {
+            console.error('Ошибка загрузки двадцаток:', error);
+            // Fallback
+            let testBatches = [1, 2, 3];
+            showBatchesSelection(pos, testBatches);
+            setLoading(false);
+        }
     }
 
     function showPOSSelection(parts) {
@@ -585,36 +653,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         box.appendChild(wrap);
     }
 
-    async function startPOSSelection(pos) {
-        console.log('=== ВЫБРАНА ЧАСТЬ РЕЧИ ===', pos);
-        currentPOS = pos;
-        
-        setLoading(true);
-        
-        setTimeout(() => {
-            let testBatches = [];
-            
-            if (pos === 'Существительные') {
-                testBatches = [1, 2, 3, 4, 5];
-            } else if (pos === 'Глаголы') {
-                testBatches = [1, 2, 3];
-            } else if (pos === 'Прилагательные и причастия') {
-                testBatches = [1, 2];
-            } else if (pos === 'Деепричастия и наречия') {
-                testBatches = [1];
-            }
-            
-            console.log('Показываем двадцатки:', testBatches);
-            showBatchesSelection(pos, testBatches);
-            setLoading(false);
-        }, 500);
-    }
-
     function showBatchesSelection(pos, batchNumbers) {
-        console.log('=== ПОКАЗЫВАЕМ ДВАДЦАТКИ ===');
-        console.log('Часть речи:', pos);
-        console.log('Двадцатки:', batchNumbers);
-        
         clearOptions();
         clearSummary();
         clearFooterButtons();
@@ -624,11 +663,6 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         setSubtitle(`Часть речи: ${pos}`);
         
         const batchesGrid = document.getElementById('batchesGrid');
-        if (!batchesGrid) {
-            console.error('Элемент batchesGrid не найден!');
-            return;
-        }
-        
         batchesGrid.innerHTML = '';
         
         batchNumbers.forEach(batchNum => {
@@ -646,108 +680,12 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 <small>20 слов</small>
                 ${isCompleted ? '<div class="batch-checkmark">✓</div>' : ''}
             `;
-            card.onclick = () => {
-                console.log('Выбрана двадцатка:', batchNum);
-                startBatchSession(pos, batchNum);
-            };
+            card.onclick = () => startBatchSession(pos, batchNum);
             batchesGrid.appendChild(card);
         });
         
-        const batchesSelection = document.getElementById('batchesSelection');
-        if (batchesSelection) {
-            batchesSelection.classList.remove('hidden');
-            console.log('Сетка двадцаток показана');
-        } else {
-            console.error('Элемент batchesSelection не найден!');
-        }
-        
+        document.getElementById('batchesSelection').classList.remove('hidden');
         document.getElementById('options').classList.add('hidden');
-    }
-
-    // Функция загрузки слов с тестовыми данными
-    async function loadWordsFromDatabase(partOfSpeech, batchNumber) {
-        console.log('🎯 Загружаем слова для:', partOfSpeech, 'двадцатка', batchNumber);
-        
-        // Тестовые данные для разных частей речи
-        const testData = {
-            'Существительные': [
-                {options: ['аэропОрты', 'аэропорты'], correct: 'аэропОрты'},
-                {options: ['бАнты', 'банты'], correct: 'бАнты'},
-                {options: ['бородУ', 'бороду'], correct: 'бородУ'},
-                {options: ['бухгАлтеров', 'бухгалтерОв'], correct: 'бухгАлтеров'},
-                {options: ['вероисповЕдание', 'вероисповедАние'], correct: 'вероисповЕдание'},
-                {options: ['водопровОд', 'водопрОвод'], correct: 'водопровОд'},
-                {options: ['граждАнство', 'грАжданство'], correct: 'граждАнство'},
-                {options: ['дефИс', 'дЕфис'], correct: 'дефИс'},
-                {options: ['диспансЕр', 'диспАнсер'], correct: 'диспансЕр'},
-                {options: ['договорЕнность', 'договОренность'], correct: 'договорЕнность'}
-            ],
-            'Глаголы': [
-                {options: ['включИт', 'вклЮчит'], correct: 'включИт'},
-                {options: ['звонИт', 'звОнит'], correct: 'звонИт'},
-                {options: ['клАла', 'клалА'], correct: 'клАла'},
-                {options: ['крАла', 'кралА'], correct: 'крАла'},
-                {options: ['облегчИт', 'облЕгчит'], correct: 'облегчИт'},
-                {options: ['повторИт', 'повтОрит'], correct: 'повторИт'},
-                {options: ['позвонИт', 'позвОнит'], correct: 'позвонИт'},
-                {options: ['положИл', 'полОжил'], correct: 'положИл'},
-                {options: ['понЯл', 'пОнял'], correct: 'понЯл'},
-                {options: ['снялА', 'снЯла'], correct: 'снялА'}
-            ],
-            'Прилагательные и причастия': [
-                {options: ['знАчимый', 'значИмый'], correct: 'знАчимый'},
-                {options: ['повторЕнный', 'повтОренный'], correct: 'повторЕнный'},
-                {options: ['прИбывший', 'прибЫвший'], correct: 'прИбывший'},
-                {options: ['развитОй', 'развИтый'], correct: 'развитОй'},
-                {options: ['создАвший', 'сОздавший'], correct: 'создАвший'},
-                {options: ['прИнЯвший', 'принЯвший'], correct: 'прИнЯвший'},
-                {options: ['запертА', 'зАперта'], correct: 'запертА'},
-                {options: ['занятА', 'зАнята'], correct: 'занятА'},
-                {options: ['начатА', 'нАчата'], correct: 'начатА'},
-                {options: ['конченА', 'кОнчена'], correct: 'конченА'}
-            ],
-            'Деепричастия и наречия': [
-                {options: ['зАгнув', 'загнУв'], correct: 'зАгнув'},
-                {options: ['нАчав', 'начАв'], correct: 'нАчав'},
-                {options: ['обнЯв', 'обняВ'], correct: 'обнЯв'},
-                {options: ['создАв', 'сОздав'], correct: 'создАв'},
-                {options: ['красИвее', 'красивЕе'], correct: 'красИвее'},
-                {options: ['зАсветло', 'засвЕтло'], correct: 'зАсветло'},
-                {options: ['дОверху', 'довЕрху'], correct: 'дОверху'},
-                {options: ['донЕльзя', 'донельзЯ'], correct: 'донЕльзя'},
-                {options: ['нАискось', 'наискОсь'], correct: 'нАискось'},
-                {options: ['чЕрпать', 'черпАть'], correct: 'чЕрпать'}
-            ]
-        };
-        
-        // Имитируем загрузку из базы
-        return new Promise(resolve => {
-            setTimeout(() => {
-                const words = testData[partOfSpeech] || testData['Существительные'];
-                const processedWords = words.map(word => {
-                    const shuffledOptions = shuffleArray([...word.options]);
-                    const correctIndex = shuffledOptions.indexOf(word.correct);
-                    return {
-                        options: shuffledOptions,
-                        correctIndex: correctIndex,
-                        correct: word.correct
-                    };
-                });
-                
-                console.log(`✅ Загружено ${processedWords.length} слов для "${partOfSpeech}"`);
-                resolve(processedWords);
-            }, 800);
-        });
-    }
-
-    // Функция перемешивания
-    function shuffleArray(array) {
-        const newArray = [...array];
-        for (let i = newArray.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-        }
-        return newArray;
     }
 
     // Остальные функции без изменений
@@ -965,10 +903,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     }
 
     function hideBatchesSelection() {
-        const batchesSelection = document.getElementById('batchesSelection');
-        if (batchesSelection) {
-            batchesSelection.classList.add('hidden');
-        }
+        document.getElementById('batchesSelection').classList.add('hidden');
         document.getElementById('options').classList.remove('hidden');
     }
 
