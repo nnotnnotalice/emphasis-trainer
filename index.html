@@ -556,7 +556,24 @@
         setLoading(false);
     }, 500);
 }
-        function showBatchesSelection(pos, batchNumbers) {
+      function showBatchesSelection(pos, batchNumbers) {
+          console.log('=== ТЕСТ: showBatchesSelection ВЫЗВАНА ===');
+    console.log('pos:', pos);
+    console.log('batchNumbers:', batchNumbers);
+          // Простой тест - создадим одну карточку вручную
+    const batchesGrid = document.getElementById('batchesGrid');
+    if (batchesGrid) {
+        batchesGrid.innerHTML = '<div class="batch-card" style="background: red; color: white;">ТЕСТОВАЯ КАРТОЧКА</div>';
+    }
+    
+    const batchesSelection = document.getElementById('batchesSelection');
+    if (batchesSelection) {
+        batchesSelection.classList.remove('hidden');
+        console.log('batchesSelection показан');
+    }
+    
+    document.getElementById('options').classList.add('hidden');
+}
     console.log('=== ПОКАЗЫВАЕМ ДВАДЦАТКИ ===');
     console.log('Часть речи:', pos);
     console.log('Двадцатки:', batchNumbers);
