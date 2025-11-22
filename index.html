@@ -301,6 +301,30 @@
             text-align: center;
             box-sizing: border-box;
         }
+
+    .pos-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-content: center;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.pos-btn {
+    padding: 14px 20px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    background: #b9c2ff;
+    color: #1f2455;
+    box-shadow: 0 4px 10px rgba(60, 72, 150, 0.25);
+    transition: background 0.1s ease, transform 0.05s ease;
+    width: 100%;
+    font-weight: 400;
+}
     </style>
 </head>
 
@@ -484,55 +508,26 @@
         }
 
         async function startPOSSelection(pos) {
+    console.log('Выбрана часть речи:', pos);
     currentPOS = pos;
     setLoading(true);
     
     try {
-        // Загружаем прогресс пользователя для этой части речи
-        const progressResponse = await fetch(
-            SUPABASE_URL + `/rest/v1/user_progress?user_id=eq.${currentUser.id}&part_of_speech=eq.${encodeURIComponent(pos)}`,
-            {
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                }
-            }
-        );
+        // ВРЕМЕННО: используем тестовые двадцатки
+        console.log('Использую тестовые двадцатки');
+        const testBatches = [1, 2, 3, 4, 5];
         
-        if (progressResponse.ok) {
-            userProgress = await progressResponse.json();
-        } else {
-            userProgress = [];
-        }
-
-        // Загружаем доступные двадцатки
-        const batchesResponse = await fetch(
-            SUPABASE_URL + `/rest/v1/words?part_of_speech=eq.${encodeURIComponent(pos)}&select=batch_number`,
-            {
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                }
-            }
-        );
+        // Тестовый прогресс
+        userProgress = [];
         
-        if (!batchesResponse.ok) {
-            throw new Error('Ошибка загрузки двадцаток');
-        }
+        setTimeout(() => {
+            showBatchesSelection(pos, testBatches);
+            setLoading(false);
+        }, 500);
         
-        const batchesData = await batchesResponse.json();
-        const batchNumbers = [...new Set(batchesData.map(item => item.batch_number))].sort((a, b) => a - b);
-
-        if (batchNumbers.length === 0) {
-            setStatus(`Для части речи "${pos}" нет двадцаток`, 'err');
-            return;
-        }
-
-        showBatchesSelection(pos, batchNumbers);
     } catch (error) {
         console.error('Ошибка:', error);
         setStatus('Ошибка загрузки: ' + error.message, 'err');
-    } finally {
         setLoading(false);
     }
 }
@@ -575,60 +570,44 @@
         }
 
         async function startBatchSession(pos, batchNumber) {
-            currentPOS = pos;
-            currentBatchNumber = batchNumber;
-            currentIndex = 0;
-            mistakes = [];
-            isReviewMode = false;
-            answered = false;
-
-            setSubtitle('Выбери слово, в котором <strong>верно</strong> поставлено ударение');
-            clearOptions();
-            clearSummary();
-            clearFooterButtons();
-            setStatus("");
-            setSessionInfo("");
-            hideBatchesSelection();
-
-            setLoading(true);
-            try {
-                const response = await fetch(
-                    SUPABASE_URL + `/rest/v1/words?part_of_speech=eq.${encodeURIComponent(pos)}&batch_number=eq.${batchNumber}`,
-                    {
-                        headers: {
-                            'apikey': SUPABASE_KEY
-                        }
-                    }
-                );
-                
-                const words = await response.json();
-                currentBatch = words.map(word => ({
-                    options: [word.correct_word, word.wrong_options],
-                    correctIndex: 0,
-                    correct: word.correct_word
-                }));
-
-                // Перемешиваем варианты
-                currentBatch.forEach(q => {
-                    const correctOption = q.options[0];
-                    const wrongOption = q.options[1];
-                    const shouldSwap = Math.random() > 0.5;
-                    
-                    if (shouldSwap) {
-                        q.options = [wrongOption, correctOption];
-                        q.correctIndex = 1;
-                    } else {
-                        q.correctIndex = 0;
-                    }
-                });
-
-                showQuestion();
-            } catch (error) {
-                setStatus('Ошибка загрузки: ' + error.message, 'err');
-            } finally {
-                setLoading(false);
-            }
+    console.log('Запускаем двадцатку:', pos, batchNumber);
+    
+    // Временные тестовые слова
+    currentBatch = [
+        {
+            options: ['дОговор', 'договОр'],
+            correctIndex: 0,
+            correct: 'дОговор'
+        },
+        {
+            options: ['включИт', 'вклЮчит'], 
+            correctIndex: 0,
+            correct: 'включИт'
+        },
+        {
+            options: ['каталОг', 'катАлог'],
+            correctIndex: 0,
+            correct: 'каталОг'
         }
+    ];
+    
+    currentPOS = pos;
+    currentBatchNumber = batchNumber;
+    currentIndex = 0;
+    mistakes = [];
+    isReviewMode = false;
+    answered = false;
+
+    setSubtitle('Выбери слово, в котором <strong>верно</strong> поставлено ударение');
+    clearOptions();
+    clearSummary();
+    clearFooterButtons();
+    setStatus("");
+    setSessionInfo("");
+    hideBatchesSelection();
+
+    showQuestion();
+}
 
         // Остальные функции (showQuestion, checkAnswer, finishSession и т.д.)
         // остаются практически такими же как в твоём оригинальном коде
