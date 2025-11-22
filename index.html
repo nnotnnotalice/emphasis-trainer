@@ -89,26 +89,35 @@
         }
 
         /* Сетка двадцаток */
-        .batches-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin: 20px 0;
+        #batchesSelection {
+    width: 100%;
 }
 
+.batches-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+}
 .batch-card {
-    padding: 15px;
-    border-radius: 10px;
+    padding: 20px;
+    border-radius: 12px;
     text-align: center;
     cursor: pointer;
-    background: #f0f0f0;
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
     transition: all 0.3s ease;
-    border: 2px solid transparent;
-    min-height: 60px;
+    min-height: 80px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+    .batch-card:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .batch-card.completed {
@@ -351,10 +360,11 @@
             <!-- Основной интерфейс -->
             <div id="mainInterface" class="hidden">
                 <div id="sessionInfo" class="session-counter"></div>
-                <div id="batchesSelection" class="hidden">
-                    <h3>Выбери двадцатку для отработки</h3>
-                    <div class="batches-grid" id="batchesGrid"></div>
-                </div>
+                <!-- В основном интерфейсе, после sessionInfo -->
+<div id="batchesSelection" class="hidden">
+    <h3>Выбери двадцатку для отработки</h3>
+    <div class="batches-grid" id="batchesGrid"></div>
+</div>
                 <div id="options" class="options"></div>
                 <div id="status" class="status"></div>
                 <div id="summary"></div>
@@ -515,13 +525,16 @@
             box.appendChild(wrap);
         }
 
-        async function startPOSSelection(pos) {
-    console.log('Выбрана часть речи:', pos);
+       async function startPOSSelection(pos) {
+    console.log('=== ВЫБРАНА ЧАСТЬ РЕЧИ ===', pos);
     currentPOS = pos;
+    
+    // Показываем загрузку
     setLoading(true);
     
-    try {
-        // ТЕСТОВЫЕ ДВАДЦАТКИ ДЛЯ КАЖДОЙ ЧАСТИ РЕЧИ
+    // Даем небольшую задержку для анимации
+    setTimeout(() => {
+        // ТЕСТОВЫЕ ДВАДЦАТКИ
         let testBatches = [];
         
         if (pos === 'Существительные') {
@@ -534,58 +547,66 @@
             testBatches = [1];
         }
         
-        console.log('Тестовые двадцатки:', testBatches);
+        console.log('Показываем двадцатки:', testBatches);
         
-        // Тестовый прогресс
-        userProgress = [];
+        // Показываем сетку двадцаток
+        showBatchesSelection(pos, testBatches);
         
-        setTimeout(() => {
-            showBatchesSelection(pos, testBatches);
-            setLoading(false);
-        }, 500);
-        
-    } catch (error) {
-        console.error('Ошибка:', error);
-        setStatus('Ошибка загрузки: ' + error.message, 'err');
+        // Скрываем загрузку
         setLoading(false);
-    }
+    }, 500);
 }
-
         function showBatchesSelection(pos, batchNumbers) {
-    console.log('Показываем выбор двадцаток для:', pos, batchNumbers);
+    console.log('=== ПОКАЗЫВАЕМ ДВАДЦАТКИ ===');
+    console.log('Часть речи:', pos);
+    console.log('Двадцатки:', batchNumbers);
     
-    setSubtitle(`Часть речи: ${pos}`);
+    // Очищаем всё
     clearOptions();
     clearSummary();
     clearFooterButtons();
+    setStatus("");
+    setSessionInfo("");
     
+    // Устанавливаем заголовок
+    setSubtitle(`Часть речи: ${pos}`);
+    
+    // Получаем контейнер для сетки
     const batchesGrid = document.getElementById('batchesGrid');
+    if (!batchesGrid) {
+        console.error('Элемент batchesGrid не найден!');
+        return;
+    }
+    
+    // Очищаем сетку
     batchesGrid.innerHTML = '';
     
-    console.log('Создаем карточки двадцаток...');
-    
+    // Создаем карточки двадцаток
     batchNumbers.forEach(batchNum => {
-        const isCompleted = userProgress.some(p => 
-            p.batch_number === batchNum && p.completed
-        );
-        
-        console.log(`Двадцатка ${batchNum}, пройдена: ${isCompleted}`);
-        
         const card = document.createElement('div');
-        card.className = `batch-card ${isCompleted ? 'completed' : ''}`;
+        card.className = 'batch-card';
         card.innerHTML = `
-            ${isCompleted ? '<div class="batch-checkmark">✓</div>' : ''}
             <div>Двадцатка ${batchNum}</div>
+            <small>20 слов</small>
         `;
-        card.onclick = () => startBatchSession(pos, batchNum);
+        card.onclick = () => {
+            console.log('Выбрана двадцатка:', batchNum);
+            startBatchSession(pos, batchNum);
+        };
         batchesGrid.appendChild(card);
     });
     
     // ПОКАЗЫВАЕМ СЕТКУ ДВАДЦАТОК
-    document.getElementById('batchesSelection').classList.remove('hidden');
-    document.getElementById('options').classList.add('hidden');
+    const batchesSelection = document.getElementById('batchesSelection');
+    if (batchesSelection) {
+        batchesSelection.classList.remove('hidden');
+        console.log('Сетка двадцаток показана');
+    } else {
+        console.error('Элемент batchesSelection не найден!');
+    }
     
-    console.log('Сетка двадцаток отображена');
+    // Скрываем варианты выбора частей речи
+    document.getElementById('options').classList.add('hidden');
 }
         function showBatchesSelection() {
             document.getElementById('batchesSelection').classList.remove('hidden');
@@ -880,6 +901,14 @@
 
         // Запуск приложения
         window.addEventListener("load", init);
+
+        function hideBatchesSelection() {
+    const batchesSelection = document.getElementById('batchesSelection');
+    if (batchesSelection) {
+        batchesSelection.classList.add('hidden');
+    }
+    document.getElementById('options').classList.remove('hidden');
+}
     </script>
 </body>
 </html>
