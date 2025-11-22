@@ -517,13 +517,13 @@
             }
         }
 
-        // 🔧 ИСПРАВЛЕННАЯ ФУНКЦИЯ: Загрузка слов из базы данных
+        // 🔧 ИСПРАВЛЕННАЯ ФУНКЦИЯ: Загрузка слов из базы данных - ИСПРАВЛЕНА ТАБЛИЦА
         async function loadWordsFromDatabase(partOfSpeech, batchNumber) {
             console.log('🎯 Загружаем слова из базы:', partOfSpeech, 'двадцатка', batchNumber);
             
             try {
                 const { data: words, error } = await supabaseClient
-                    .from('words')
+                    .from('stress_dictionary')  // ← ИСПРАВЛЕНО: было 'words', стало 'stress_dictionary'
                     .select('*')
                     .eq('part_of_speech', partOfSpeech)
                     .eq('batch_number', batchNumber);
@@ -538,18 +538,18 @@
                     return [];
                 }
 
-                // 🔧 ИСПРАВЛЕНИЕ: Используем только wrong_variant (без wrong_variant1, wrong_variant2, wrong_variant3)
+                // 🔧 ИСПРАВЛЕНИЕ: Используем правильные названия полей из нашей таблицы
                 const processedWords = words.map(word => {
                     // Создаем массив из двух вариантов: правильный и неправильный
-                    const options = [word.correct_variant, word.wrong_variant];
+                    const options = [word.correct_word, word.wrong_options];
                     // Перемешиваем варианты
                     const shuffledOptions = [...options].sort(() => Math.random() - 0.5);
-                    const correctIndex = shuffledOptions.indexOf(word.correct_variant);
+                    const correctIndex = shuffledOptions.indexOf(word.correct_word);
                     
                     return {
                         options: shuffledOptions,
                         correctIndex: correctIndex,
-                        correct: word.correct_variant,
+                        correct: word.correct_word,
                         word_id: word.id
                     };
                 });
@@ -563,14 +563,14 @@
             }
         }
 
-        // Загрузка частей речи из базы
+        // Загрузка частей речи из базы - ИСПРАВЛЕНА ТАБЛИЦА
         async function loadPartsOfSpeech() {
             setLoading(true);
             
             try {
                 // Загружаем доступные части речи из базы
                 const { data: partsData, error } = await supabaseClient
-                    .from('words')
+                    .from('stress_dictionary')  // ← ИСПРАВЛЕНО: было 'words', стало 'stress_dictionary'
                     .select('part_of_speech')
                     .not('part_of_speech', 'is', null);
 
@@ -608,7 +608,7 @@
             try {
                 // Загружаем доступные двадцатки для этой части речи из базы
                 const { data: batchesData, error } = await supabaseClient
-                    .from('words')
+                    .from('stress_dictionary')  // ← ИСПРАВЛЕНО: было 'words', стало 'stress_dictionary'
                     .select('batch_number')
                     .eq('part_of_speech', pos);
 
