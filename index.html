@@ -424,24 +424,38 @@
 }
         // Загрузка частей речи
         async function loadPartsOfSpeech() {
-            setLoading(true);
-            try {
-                const response = await fetch(SUPABASE_URL + '/rest/v1/words?select=part_of_speech&part_of_speech=not.is.null', {
-                    headers: {
-                        'apikey': SUPABASE_KEY
-                    }
-                });
-                
-                const data = await response.json();
-                const parts = [...new Set(data.map(item => item.part_of_speech))];
-                
-                showPOSSelection(parts);
-            } catch (error) {
-                setStatus('Ошибка загрузки: ' + error.message, 'err');
-            } finally {
-                setLoading(false);
+    setLoading(true);
+    try {
+        const response = await fetch(SUPABASE_URL + '/rest/v1/words?select=part_of_speech', {
+            headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`
             }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        const data = await response.json();
+        console.log('Получены данные:', data); // Для отладки
+        
+        const parts = [...new Set(data.map(item => item.part_of_speech))].filter(Boolean);
+        console.log('Уникальные части речи:', parts); // Для отладки
+        
+        if (parts.length === 0) {
+            setStatus('В базе нет данных. Добавьте слова в таблицу words.', 'err');
+            return;
+        }
+        
+        showPOSSelection(parts);
+    } catch (error) {
+        console.error('Ошибка загрузки:', error);
+        setStatus('Ошибка загрузки: ' + error.message, 'err');
+    } finally {
+        setLoading(false);
+    }
+}
 
         function showPOSSelection(parts) {
             currentPOS = null;
@@ -476,40 +490,58 @@
         }
 
         async function startPOSSelection(pos) {
-            currentPOS = pos;
-            setLoading(true);
-            
-            try {
-                // Загружаем прогресс пользователя для этой части речи
-                const progressResponse = await fetch(
-                    SUPABASE_URL + `/rest/v1/user_progress?user_id=eq.${currentUser.id}&part_of_speech=eq.${encodeURIComponent(pos)}`,
-                    {
-                        headers: {
-                            'apikey': SUPABASE_KEY
-                        }
-                    }
-                );
-                userProgress = await progressResponse.json();
-
-                // Загружаем доступные двадцатки
-                const batchesResponse = await fetch(
-                    SUPABASE_URL + `/rest/v1/words?part_of_speech=eq.${encodeURIComponent(pos)}&select=batch_number`,
-                    {
-                        headers: {
-                            'apikey': SUPABASE_KEY
-                        }
-                    }
-                );
-                const batchesData = await batchesResponse.json();
-                const batchNumbers = [...new Set(batchesData.map(item => item.batch_number))].sort((a, b) => a - b);
-
-                showBatchesSelection(pos, batchNumbers);
-            } catch (error) {
-                setStatus('Ошибка загрузки: ' + error.message, 'err');
-            } finally {
-                setLoading(false);
+    currentPOS = pos;
+    setLoading(true);
+    
+    try {
+        // Загружаем прогресс пользователя для этой части речи
+        const progressResponse = await fetch(
+            SUPABASE_URL + `/rest/v1/user_progress?user_id=eq.${currentUser.id}&part_of_speech=eq.${encodeURIComponent(pos)}`,
+            {
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                }
             }
+        );
+        
+        if (progressResponse.ok) {
+            userProgress = await progressResponse.json();
+        } else {
+            userProgress = [];
         }
+
+        // Загружаем доступные двадцатки
+        const batchesResponse = await fetch(
+            SUPABASE_URL + `/rest/v1/words?part_of_speech=eq.${encodeURIComponent(pos)}&select=batch_number`,
+            {
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                }
+            }
+        );
+        
+        if (!batchesResponse.ok) {
+            throw new Error('Ошибка загрузки двадцаток');
+        }
+        
+        const batchesData = await batchesResponse.json();
+        const batchNumbers = [...new Set(batchesData.map(item => item.batch_number))].sort((a, b) => a - b);
+
+        if (batchNumbers.length === 0) {
+            setStatus(`Для части речи "${pos}" нет двадцаток`, 'err');
+            return;
+        }
+
+        showBatchesSelection(pos, batchNumbers);
+    } catch (error) {
+        console.error('Ошибка:', error);
+        setStatus('Ошибка загрузки: ' + error.message, 'err');
+    } finally {
+        setLoading(false);
+    }
+}
 
         function showBatchesSelection(pos, batchNumbers) {
             setSubtitle(`Часть речи: ${pos}`);
