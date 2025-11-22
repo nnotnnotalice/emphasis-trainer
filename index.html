@@ -423,9 +423,11 @@
     }
 }
         // Загрузка частей речи
-        async function loadPartsOfSpeech() {
+      async function loadPartsOfSpeech() {
     setLoading(true);
     try {
+        console.log('Начинаю загрузку частей речи...');
+        
         const response = await fetch(SUPABASE_URL + '/rest/v1/words?select=part_of_speech', {
             headers: {
                 'apikey': SUPABASE_KEY,
@@ -433,15 +435,18 @@
             }
         });
         
+        console.log('Статус ответа:', response.status);
+        console.log('Ответ:', response);
+        
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log('Получены данные:', data); // Для отладки
+        console.log('Получены данные:', data);
         
         const parts = [...new Set(data.map(item => item.part_of_speech))].filter(Boolean);
-        console.log('Уникальные части речи:', parts); // Для отладки
+        console.log('Уникальные части речи:', parts);
         
         if (parts.length === 0) {
             setStatus('В базе нет данных. Добавьте слова в таблицу words.', 'err');
@@ -452,11 +457,15 @@
     } catch (error) {
         console.error('Ошибка загрузки:', error);
         setStatus('Ошибка загрузки: ' + error.message, 'err');
+        
+        // Покажем временные данные для тестирования
+        console.log('Показываю тестовые данные...');
+        const testParts = ['Существительные', 'Глаголы', 'Прилагательные'];
+        showPOSSelection(testParts);
     } finally {
         setLoading(false);
     }
 }
-
         function showPOSSelection(parts) {
             currentPOS = null;
             currentBatch = [];
