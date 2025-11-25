@@ -844,7 +844,7 @@ function init() {
             setStatus("");
             setSessionInfo("");
             setSubtitle("");
-
+ document.getElementById('backButton').classList.add('hidden');
             const summary = document.getElementById("summary");
             const footer = document.getElementById("footerButtons");
             footer.innerHTML = "";
@@ -893,7 +893,7 @@ function init() {
                 setStatus("Нет ошибок для отработки 🎉", "err");
                 return;
             }
-
+  document.getElementById('backButton').classList.remove('hidden');
             isReviewMode = true;
             mistakes = [];
             answered = false;
