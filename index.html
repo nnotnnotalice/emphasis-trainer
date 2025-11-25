@@ -3,14 +3,12 @@
 <head>
     <base target="_top">
     <meta charset="UTF-8">
-    <!-- ПОДКЛЮЧАЕМ SUPABASE JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Тренажёр по ударениям</title>
 
     <style>
-        /* Ваши стили остаются без изменений */
+        /* Все стили остаются без изменений */
         :root {
             --primary: #8A8EE9;
             --primary-hover: #7075e2;
@@ -39,6 +37,7 @@
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
             max-width: 520px;
             width: 100%;
+            position: relative;
         }
 
         h1 {
@@ -62,36 +61,6 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-        }
-
-        .login-form {
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .login-input {
-            padding: 12px 16px;
-            font-size: 16px;
-            border: 2px solid var(--primary);
-            border-radius: 8px;
-            margin-bottom: 12px;
-            width: 200px;
-            font-family: "Nunito";
-        }
-
-        .login-btn {
-            padding: 12px 24px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            font-family: "Nunito";
-        }
-
-        #batchesSelection {
-            width: 100%;
         }
 
         .batches-grid {
@@ -347,27 +316,42 @@
             font-weight: 600;
             color: var(--text);
         }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .back-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
     </style>
 </head>
 
 <body>
     <div class="app">
+        <button id="backButton" class="back-btn hidden">←</button>
         <h1>Тренажёр по ударениям</h1>
         <div id="subtitle" class="subtitle"></div>
 
         <div class="main">
-            <!-- Экран логина -->
-            <div id="loginScreen">
-                <div class="login-form">
-                    <h3>Введите ваше имя</h3>
-                    <p>Чтобы сохранять прогресс между занятиями</p>
-                    <input type="text" id="usernameInput" class="login-input" placeholder="Ваше имя">
-                    <button class="login-btn" onclick="login()">Начать тренировку</button>
-                </div>
-            </div>
-
             <!-- Основной интерфейс -->
-            <div id="mainInterface" class="hidden">
+            <div id="mainInterface">
                 <div id="sessionInfo" class="session-counter"></div>
                 <div id="batchesSelection" class="hidden">
                     <h3>Выбери двадцатку для отработки</h3>
@@ -386,15 +370,11 @@
     </div>
 
     <script>
-        // Конфигурация Supabase
-        const SUPABASE_URL = 'https://nzxpkwfusyeufbrflfco.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56eHBrd2Z1c3lldWZicmZsZmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3OTIyODAsImV4cCI6MjA3OTM2ODI4MH0.v2pgG-yIQz0uhj_XRNH5643wE5R3_vkJ2LaNUZ7Nhe8';
-
-        const BATCH_SIZE = 20;
+        // Константы
         const DELAY_AFTER_CORRECT = 700;
         const DELAY_AFTER_WRONG = 1800;
 
-        let currentUser = null;
+        // Переменные состояния
         let currentPOS = null;
         let currentBatch = [];
         let currentBatchNumber = null;
@@ -403,233 +383,301 @@
         let lastErrorsForReview = [];
         let answered = false;
         let isReviewMode = false;
-        let userProgress = [];
 
-        // 🔧 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Инициализация Supabase клиента
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Данные слов из таблицы
+        const wordsData = {
+            "Существительные": {
+                1: [
+                    { correct_word: "аэропОрты", wrong_options: "аэропортЫ" },
+                    { correct_word: "бАнты", wrong_options: "бантЫ" },
+                    { correct_word: "бОроду", wrong_options: "бородУ" },
+                    { correct_word: "бухгАлтеров", wrong_options: "бухгалтерОв" },
+                    { correct_word: "вероисповЕдание", wrong_options: "вероисповедАние" },
+                    { correct_word: "водопровОд", wrong_options: "водопрОвод" },
+                    { correct_word: "газопровОд", wrong_options: "газопрОвод" },
+                    { correct_word: "граждАнство", wrong_options: "грАжданство" },
+                    { correct_word: "дефИс", wrong_options: "дЕфис" },
+                    { correct_word: "дешевИзна", wrong_options: "дешевизнА" },
+                    { correct_word: "диспансЕр", wrong_options: "диспАнсер" },
+                    { correct_word: "договорЁнность", wrong_options: "договОренность" },
+                    { correct_word: "докумЕнт", wrong_options: "докУмент" },
+                    { correct_word: "досУг", wrong_options: "дОсуг" },
+                    { correct_word: "еретИк", wrong_options: "ерЕтик" },
+                    { correct_word: "жалюзИ", wrong_options: "жАлюзи" },
+                    { correct_word: "знАчимость", wrong_options: "значИмость" },
+                    { correct_word: "Иксы", wrong_options: "иксЫ" },
+                    { correct_word: "каталОг", wrong_options: "катАлог" },
+                    { correct_word: "квартАл", wrong_options: "квАртал" }
+                ],
+                2: [
+                    { correct_word: "киломЕтр", wrong_options: "килОметр" },
+                    { correct_word: "кОнусов", wrong_options: "конусОв" },
+                    { correct_word: "корЫсть", wrong_options: "кОрысть" },
+                    { correct_word: "крАны", wrong_options: "кранЫ" },
+                    { correct_word: "кремЕнь", wrong_options: "крЕмень" },
+                    { correct_word: "кремнЯ", wrong_options: "крЕмня" },
+                    { correct_word: "лЕкторов", wrong_options: "лекторОв" },
+                    { correct_word: "лОктя", wrong_options: "локтЯ" },
+                    { correct_word: "лыжнЯ", wrong_options: "лЫжня" },
+                    { correct_word: "мЕстностей", wrong_options: "местностЕй" },
+                    { correct_word: "намЕрение", wrong_options: "намерЕние" },
+                    { correct_word: "нарОст", wrong_options: "нАрост" },
+                    { correct_word: "нЕдруг", wrong_options: "недрУг" },
+                    { correct_word: "недУг", wrong_options: "нЕдуг" },
+                    { correct_word: "некролОг", wrong_options: "некрОлог" },
+                    { correct_word: "нЕнависть", wrong_options: "ненАвисть" },
+                    { correct_word: "нефтепровОд", wrong_options: "нефтепрОвод" },
+                    { correct_word: "новостЕй", wrong_options: "нОвостей" },
+                    { correct_word: "нОгтя", wrong_options: "ногтЯ" },
+                    { correct_word: "Отзыв (о книге)", wrong_options: "отзЫв (о книге)" }
+                ],
+                3: [
+                    { correct_word: "отзЫв (посла из страны)", wrong_options: "Отзыв (посла из страны)" },
+                    { correct_word: "Отрочество", wrong_options: "отрОчество" },
+                    { correct_word: "партЕр", wrong_options: "пАртер" },
+                    { correct_word: "портфЕль", wrong_options: "пОртфель" },
+                    { correct_word: "пОручни", wrong_options: "порУчни" },
+                    { correct_word: "придАное", wrong_options: "прИданое" },
+                    { correct_word: "призЫв", wrong_options: "прИзыв" },
+                    { correct_word: "свЁкла", wrong_options: "свеклА" },
+                    { correct_word: "сирОты", wrong_options: "сИроты" },
+                    { correct_word: "созЫв", wrong_options: "сОзыв" },
+                    { correct_word: "сосредотОчение", wrong_options: "сосредоточЕние" },
+                    { correct_word: "срЕдства", wrong_options: "средствА" },
+                    { correct_word: "стАтуя", wrong_options: "статУя" },
+                    { correct_word: "столЯр", wrong_options: "стОляр" },
+                    { correct_word: "тамОжня", wrong_options: "тАможня" },
+                    { correct_word: "тОрты", wrong_options: "тортЫ" },
+                    { correct_word: "тУфля", wrong_options: "туфлЯ" },
+                    { correct_word: "цемЕнт", wrong_options: "цЕмент" },
+                    { correct_word: "цЕнтнер", wrong_options: "центнЕр" },
+                    { correct_word: "цепОчка", wrong_options: "цЕпочка" },
+                    { correct_word: "шАрфы", wrong_options: "шарфЫ" },
+                    { correct_word: "шофЁр", wrong_options: "шОфер" },
+                    { correct_word: "экспЕрт", wrong_options: "Эксперт" }
+                ]
+            },
+            "Прилагательные и причастия": {
+                1: [
+                    { correct_word: "болтлИва", wrong_options: "болтливА" },
+                    { correct_word: "вернА", wrong_options: "вЕрна" },
+                    { correct_word: "знАчимый", wrong_options: "значИмый" },
+                    { correct_word: "красИвее", wrong_options: "красивЕе" },
+                    { correct_word: "кУхонный", wrong_options: "кухОнный" },
+                    { correct_word: "ловкА", wrong_options: "лОвка" },
+                    { correct_word: "мозаИчный", wrong_options: "мозАичный" },
+                    { correct_word: "оптОвый", wrong_options: "Оптовый" },
+                    { correct_word: "прозорлИва", wrong_options: "прозОрлива" },
+                    { correct_word: "прозорлИвый", wrong_options: "прозОрливый" },
+                    { correct_word: "прожОрлива", wrong_options: "прожорлИва" },
+                    { correct_word: "слИвовый", wrong_options: "сливОвый" },
+                    { correct_word: "довезЁнный", wrong_options: "довЕзенный" },
+                    { correct_word: "зАгнутый", wrong_options: "загнУтый" },
+                    { correct_word: "зАнятый", wrong_options: "занЯтый" },
+                    { correct_word: "зАпертый", wrong_options: "запЁртый" },
+                    { correct_word: "заселЁнный", wrong_options: "засЕленный" },
+                    { correct_word: "занятА", wrong_options: "зАнята" },
+                    { correct_word: "заселенА", wrong_options: "засЕлена" },
+                    { correct_word: "кормЯщий", wrong_options: "кОрмящий" }
+                ],
+                2: [
+                    { correct_word: "кровоточАщий", wrong_options: "кровотОчащий" },
+                    { correct_word: "нажИвший", wrong_options: "нАживший" },
+                    { correct_word: "налИвший", wrong_options: "нАливший" },
+                    { correct_word: "нанЯвшийся", wrong_options: "нАнявшийся" },
+                    { correct_word: "начАвший", wrong_options: "нАчавший" },
+                    { correct_word: "нАчатый", wrong_options: "начАтый" },
+                    { correct_word: "низведЁнный", wrong_options: "низвЕденный" },
+                    { correct_word: "облегчЁнный", wrong_options: "облЕгченный" },
+                    { correct_word: "ободрЁнный", wrong_options: "обОдренный" },
+                    { correct_word: "обострЁнный", wrong_options: "обОстренный" },
+                    { correct_word: "отключЁнный", wrong_options: "отклЮченный" },
+                    { correct_word: "повторЁнный", wrong_options: "повтОренный" },
+                    { correct_word: "поделЁнный", wrong_options: "подЕленный" },
+                    { correct_word: "понЯвший", wrong_options: "пОнявший" },
+                    { correct_word: "прИнятый", wrong_options: "принЯтый" },
+                    { correct_word: "принятА", wrong_options: "прИнята" },
+                    { correct_word: "приручЁнный", wrong_options: "прирУченный" },
+                    { correct_word: "прожИвший", wrong_options: "прОживший" },
+                    { correct_word: "снятА", wrong_options: "снЯта" },
+                    { correct_word: "сОгнутый", wrong_options: "согнУтый" },
+                    { correct_word: "углублЁнный", wrong_options: "углУбленный" }
+                ]
+            },
+            "Глаголы": {
+                1: [
+                    { correct_word: "бралА", wrong_options: "брАла" },
+                    { correct_word: "бралАсь", wrong_options: "брАлась" },
+                    { correct_word: "взялА", wrong_options: "взЯла" },
+                    { correct_word: "взялАсь", wrong_options: "взЯлась" },
+                    { correct_word: "влилАсь", wrong_options: "влИлась" },
+                    { correct_word: "ворвалАсь", wrong_options: "ворвАлась" },
+                    { correct_word: "воспринялА", wrong_options: "воспрИняла" },
+                    { correct_word: "воспринЯть", wrong_options: "воспрИнять" },
+                    { correct_word: "воссоздалА", wrong_options: "воссоздАла" },
+                    { correct_word: "вручИт", wrong_options: "врУчит" },
+                    { correct_word: "гналА", wrong_options: "гнАла" },
+                    { correct_word: "гналАсь", wrong_options: "гнАлась" },
+                    { correct_word: "добралА", wrong_options: "добрАла" },
+                    { correct_word: "добралАсь", wrong_options: "добрАлась" },
+                    { correct_word: "дождалАсь", wrong_options: "дождАлась" },
+                    { correct_word: "он дозвонИтся", wrong_options: "он дозвОнится" },
+                    { correct_word: "дозИровать", wrong_options: "дозировАть" },
+                    { correct_word: "ждалА", wrong_options: "ждАла" },
+                    { correct_word: "жилОсь", wrong_options: "жИлось" },
+                    { correct_word: "закУпорить", wrong_options: "закупОрить" }
+                ],
+                2: [
+                    { correct_word: "зАнял", wrong_options: "занЯл" },
+                    { correct_word: "занЯть", wrong_options: "зАнять" },
+                    { correct_word: "заперлА", wrong_options: "зАперла" },
+                    { correct_word: "запломбировАть", wrong_options: "запломбИровать" },
+                    { correct_word: "защемИт", wrong_options: "защЕмит" },
+                    { correct_word: "звалА", wrong_options: "звАла" },
+                    { correct_word: "звонИт", wrong_options: "звОнит" },
+                    { correct_word: "кАшлянуть", wrong_options: "кашлянУть" },
+                    { correct_word: "клАла", wrong_options: "клалА" },
+                    { correct_word: "клЕить", wrong_options: "клеИть" },
+                    { correct_word: "крАлась", wrong_options: "кралАсь" },
+                    { correct_word: "кровоточИт", wrong_options: "кровотОчит" },
+                    { correct_word: "лгалА", wrong_options: "лгАла" },
+                    { correct_word: "лилА", wrong_options: "лИла" },
+                    { correct_word: "лилАсь", wrong_options: "лИлась" },
+                    { correct_word: "навралА", wrong_options: "наврАла" },
+                    { correct_word: "наделИт", wrong_options: "надЕлит" },
+                    { correct_word: "надорвалАсь", wrong_options: "надорвАлась" },
+                    { correct_word: "назвалАсь", wrong_options: "назвАлась" },
+                    { correct_word: "накренИтся", wrong_options: "накрЕнится" }
+                ],
+                3: [
+                    { correct_word: "налилА", wrong_options: "налИла" },
+                    { correct_word: "нарвалА", wrong_options: "нарвАла" },
+                    { correct_word: "начАть", wrong_options: "нАчать" },
+                    { correct_word: "нАчал", wrong_options: "начАл" },
+                    { correct_word: "обзвонИт", wrong_options: "обзвОнит" },
+                    { correct_word: "облегчИть", wrong_options: "облЕгчить" },
+                    { correct_word: "облегчИт", wrong_options: "облЕгчит" },
+                    { correct_word: "облилАсь", wrong_options: "облИлась" },
+                    { correct_word: "обнялАсь", wrong_options: "обнЯлась" },
+                    { correct_word: "обогналА", wrong_options: "обогнАла" },
+                    { correct_word: "ободралА", wrong_options: "ободрАла" },
+                    { correct_word: "ободрИть", wrong_options: "обОдрить" },
+                    { correct_word: "ободрИт", wrong_options: "обОдрит" },
+                    { correct_word: "он ободрИтся", wrong_options: "он обОдрится" },
+                    { correct_word: "обострИть", wrong_options: "обОстрить" },
+                    { correct_word: "одолжИть", wrong_options: "одОлжить" },
+                    { correct_word: "одолжИт", wrong_options: "одОлжит" },
+                    { correct_word: "озлОбить", wrong_options: "озлобИть" },
+                    { correct_word: "оклЕить", wrong_options: "оклеИть" },
+                    { correct_word: "окружИт", wrong_options: "окрУжит" }
+                ],
+                4: [
+                    { correct_word: "опОшлит", wrong_options: "опошлИт" },
+                    { correct_word: "он освЕдомится", wrong_options: "он осведОмится" },
+                    { correct_word: "отбылА", wrong_options: "отбЫла" },
+                    { correct_word: "отдалА", wrong_options: "отдАла" },
+                    { correct_word: "откУпорить", wrong_options: "откупОрить" },
+                    { correct_word: "отозвалА", wrong_options: "отозвАла" },
+                    { correct_word: "отозвалАсь", wrong_options: "отозвАлась" },
+                    { correct_word: "перезвонИт", wrong_options: "перезвОнит" },
+                    { correct_word: "перелилА", wrong_options: "перелИла" },
+                    { correct_word: "плодоносИть", wrong_options: "плодонОсить" },
+                    { correct_word: "пломбировАть", wrong_options: "пломбИровать" },
+                    { correct_word: "повторИт", wrong_options: "повтОрит" },
+                    { correct_word: "позвалА", wrong_options: "позвАла" },
+                    { correct_word: "позвонИт", wrong_options: "позвОнит" },
+                    { correct_word: "полилА", wrong_options: "полИла" },
+                    { correct_word: "положИть", wrong_options: "полОжить" },
+                    { correct_word: "положИл", wrong_options: "полОжил" },
+                    { correct_word: "понЯть", wrong_options: "пОнять" },
+                    { correct_word: "понялА", wrong_options: "пОняла" },
+                    { correct_word: "послАла", wrong_options: "послалА" }
+                ],
+                5: [
+                    { correct_word: "прибЫть", wrong_options: "прИбыть" },
+                    { correct_word: "прИбыл", wrong_options: "прибЫл" },
+                    { correct_word: "принЯть", wrong_options: "прИнять" },
+                    { correct_word: "прИнял", wrong_options: "принЯл" },
+                    { correct_word: "рвалА", wrong_options: "рвАла" },
+                    { correct_word: "сверлИт", wrong_options: "свЕрлит" },
+                    { correct_word: "снялА", wrong_options: "снЯла" },
+                    { correct_word: "совралА", wrong_options: "соврАла" },
+                    { correct_word: "создалА", wrong_options: "создАла" },
+                    { correct_word: "сорвалА", wrong_options: "сорвАла" },
+                    { correct_word: "сорИт", wrong_options: "сОрит" },
+                    { correct_word: "убралА", wrong_options: "убрАла" },
+                    { correct_word: "углубИть", wrong_options: "углУбить" },
+                    { correct_word: "укрепИт", wrong_options: "укрЕпит" },
+                    { correct_word: "чЕрпать", wrong_options: "черпАть" },
+                    { correct_word: "щемИт", wrong_options: "щЕмит" },
+                    { correct_word: "щЁлкать", wrong_options: "щелкАть" }
+                ]
+            },
+            "Деепричастия и наречия": {
+                1: [
+                    { correct_word: "закУпорив", wrong_options: "закупОрив" },
+                    { correct_word: "начАв", wrong_options: "нАчав" },
+                    { correct_word: "начАвшись", wrong_options: "нАчавшись" },
+                    { correct_word: "отдАв", wrong_options: "Отдав" },
+                    { correct_word: "поднЯв", wrong_options: "пОдняв" },
+                    { correct_word: "понЯв", wrong_options: "пОняв" },
+                    { correct_word: "прибЫв", wrong_options: "прИбыв" },
+                    { correct_word: "создАв", wrong_options: "сОздав" },
+                    { correct_word: "вОвремя", wrong_options: "воврЕмя" },
+                    { correct_word: "дОверху", wrong_options: "довЕрху" },
+                    { correct_word: "донЕльзя", wrong_options: "дОнельзя" },
+                    { correct_word: "дОнизу", wrong_options: "донИзу" },
+                    { correct_word: "дОсуха", wrong_options: "досУха" },
+                    { correct_word: "зАсветло", wrong_options: "засветлО" },
+                    { correct_word: "зАтемно", wrong_options: "затемнО" },
+                    { correct_word: "красИвее", wrong_options: "красивЕе" },
+                    { correct_word: "надОлго", wrong_options: "нАдолго" },
+                    { correct_word: "ненадОлго", wrong_options: "ненАдолго" }
+                ]
+            }
+        };
 
         // Инициализация
         function init() {
             console.log('=== ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ===');
+            showMainInterface();
             
-            const savedUser = localStorage.getItem('stress_user');
-            
-            if (savedUser) {
-                try {
-                    currentUser = JSON.parse(savedUser);
-                    showMainInterface();
-                } catch (error) {
-                    showLoginScreen();
-                }
-            } else {
-                showLoginScreen();
-            }
-        }
-
-        function showLoginScreen() {
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('mainInterface').classList.add('hidden');
+            // Настройка кнопки "Назад"
+            document.getElementById('backButton').addEventListener('click', goBack);
         }
 
         function showMainInterface() {
-            document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('mainInterface').classList.remove('hidden');
             loadPartsOfSpeech();
         }
 
-        async function login() {
-            const username = document.getElementById('usernameInput').value.trim();
-            if (!username) {
-                alert('Пожалуйста, введите ваше имя');
-                return;
-            }
-
-            const userId = 'user_' + btoa(encodeURIComponent(username)).replace(/=/g, '');
-            currentUser = { id: userId, username: username };
-            localStorage.setItem('stress_user', JSON.stringify(currentUser));
-            
-            await saveUserToDatabase();
-            showMainInterface();
-        }
-
-        // 🔧 ИСПРАВЛЕННАЯ ФУНКЦИЯ: Работа с Supabase через их клиент
-        async function saveUserToDatabase() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('users')
-                    .upsert({
-                        user_id: currentUser.id,
-                        username: currentUser.username,
-                        created_at: new Date().toISOString()
-                    }, {
-                        onConflict: 'user_id'
-                    });
-
-                if (error) {
-                    console.log('⚠️ Ошибка сохранения пользователя:', error);
-                } else {
-                    console.log('✅ Пользователь сохранен в Supabase');
-                }
-            } catch (error) {
-                console.log('⚠️ Ошибка сети при сохранении пользователя');
-            }
-        }
-
-        async function markBatchCompleted(pos, batchNumber) {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('user_progress')
-                    .upsert({
-                        user_id: currentUser.id,
-                        part_of_speech: pos,
-                        batch_number: batchNumber,
-                        completed: true,
-                        completed_at: new Date().toISOString()
-                    }, {
-                        onConflict: 'user_id,part_of_speech,batch_number'
-                    });
-
-                if (error) {
-                    console.log('⚠️ Ошибка сохранения прогресса:', error);
-                } else {
-                    console.log('✅ Прогресс сохранен в Supabase');
-                }
-            } catch (error) {
-                console.log('⚠️ Ошибка сети при сохранении прогресса');
-            }
-        }
-
-        async function getUserProgress() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('user_progress')
-                    .select('*')
-                    .eq('user_id', currentUser.id);
-
-                if (error) {
-                    console.log('⚠️ Ошибка загрузки прогресса:', error);
-                    return [];
-                }
-                return data || [];
-            } catch (error) {
-                console.log('⚠️ Ошибка сети при загрузке прогресса');
-                return [];
-            }
-        }
-
-        // 🔧 ИСПРАВЛЕННАЯ ФУНКЦИЯ: Загрузка слов из базы данных - ИСПРАВЛЕНА ТАБЛИЦА
-        async function loadWordsFromDatabase(partOfSpeech, batchNumber) {
-            console.log('🎯 Загружаем слова из базы:', partOfSpeech, 'двадцатка', batchNumber);
-            
-            try {
-                const { data: words, error } = await supabaseClient
-                    .from('stress_dictionary')  // ← ИСПРАВЛЕНО: было 'words', стало 'stress_dictionary'
-                    .select('*')
-                    .eq('part_of_speech', partOfSpeech)
-                    .eq('batch_number', batchNumber);
-
-                if (error) {
-                    console.error('❌ Ошибка загрузки слов:', error);
-                    return [];
-                }
-
-                if (!words || words.length === 0) {
-                    console.log('❌ Слова не найдены в базе');
-                    return [];
-                }
-
-                // 🔧 ИСПРАВЛЕНИЕ: Используем правильные названия полей из нашей таблицы
-                const processedWords = words.map(word => {
-                    // Создаем массив из двух вариантов: правильный и неправильный
-                    const options = [word.correct_word, word.wrong_options];
-                    // Перемешиваем варианты
-                    const shuffledOptions = [...options].sort(() => Math.random() - 0.5);
-                    const correctIndex = shuffledOptions.indexOf(word.correct_word);
-                    
-                    return {
-                        options: shuffledOptions,
-                        correctIndex: correctIndex,
-                        correct: word.correct_word,
-                        word_id: word.id
-                    };
-                });
-
-                console.log(`✅ Загружено ${processedWords.length} слов из базы`);
-                return processedWords;
-                
-            } catch (error) {
-                console.error('❌ Ошибка загрузки слов:', error);
-                return [];
-            }
-        }
-
-        // Загрузка частей речи из базы - ИСПРАВЛЕНА ТАБЛИЦА
-        async function loadPartsOfSpeech() {
+        // Загрузка частей речи из данных
+        function loadPartsOfSpeech() {
             setLoading(true);
             
-            try {
-                // Загружаем доступные части речи из базы
-                const { data: partsData, error } = await supabaseClient
-                    .from('stress_dictionary')  // ← ИСПРАВЛЕНО: было 'words', стало 'stress_dictionary'
-                    .select('part_of_speech')
-                    .not('part_of_speech', 'is', null);
-
-                if (error) {
-                    throw error;
-                }
-                
-                // Получаем уникальные части речи
-                const uniqueParts = [...new Set(partsData.map(item => item.part_of_speech))];
-                
-                // Загружаем прогресс пользователя
-                userProgress = await getUserProgress();
-                
-                showPOSSelection(uniqueParts);
-                setLoading(false);
-                
-            } catch (error) {
-                console.error('Ошибка загрузки частей речи:', error);
-                // Fallback на тестовые данные если база недоступна
-                const testParts = [
-                    'Существительные', 
-                    'Глаголы', 
-                    'Прилагательные и причастия',
-                    'Деепричастия и наречия'
-                ];
-                showPOSSelection(testParts);
-                setLoading(false);
-            }
+            // Получаем доступные части речи из данных
+            const parts = Object.keys(wordsData);
+            
+            showPOSSelection(parts);
+            setLoading(false);
+            
+            // Скрываем кнопку "Назад" на экране выбора части речи
+            document.getElementById('backButton').classList.add('hidden');
         }
 
-        async function startPOSSelection(pos) {
+        function startPOSSelection(pos) {
             currentPOS = pos;
             setLoading(true);
             
-            try {
-                // Загружаем доступные двадцатки для этой части речи из базы
-                const { data: batchesData, error } = await supabaseClient
-                    .from('stress_dictionary')  // ← ИСПРАВЛЕНО: было 'words', стало 'stress_dictionary'
-                    .select('batch_number')
-                    .eq('part_of_speech', pos);
-
-                if (error) {
-                    throw error;
-                }
-                
-                // Получаем уникальные номера двадцаток
-                const batchNumbers = [...new Set(batchesData.map(item => item.batch_number))].sort((a, b) => a - b);
-                
-                console.log('Доступные двадцатки:', batchNumbers);
-                showBatchesSelection(pos, batchNumbers);
-                setLoading(false);
-                
-            } catch (error) {
-                console.error('Ошибка загрузки двадцаток:', error);
-                // Fallback
-                let testBatches = [1];
-                showBatchesSelection(pos, testBatches);
-                setLoading(false);
-            }
+            // Получаем доступные двадцатки для этой части речи из данных
+            const batchNumbers = Object.keys(wordsData[pos]).map(Number).sort((a, b) => a - b);
+            
+            console.log('Доступные двадцатки:', batchNumbers);
+            showBatchesSelection(pos, batchNumbers);
+            setLoading(false);
+            
+            // Показываем кнопку "Назад"
+            document.getElementById('backButton').classList.remove('hidden');
         }
 
         function showPOSSelection(parts) {
@@ -677,19 +725,11 @@
             batchesGrid.innerHTML = '';
             
             batchNumbers.forEach(batchNum => {
-                // Проверяем завершенность двадцатки
-                const isCompleted = userProgress.some(progress => 
-                    progress.part_of_speech === pos && 
-                    progress.batch_number === batchNum && 
-                    progress.completed
-                );
-                
                 const card = document.createElement('div');
-                card.className = `batch-card ${isCompleted ? 'completed' : ''}`;
+                card.className = 'batch-card';
                 card.innerHTML = `
                     <div>Двадцатка ${batchNum}</div>
-                    <small>${isCompleted ? 'Завершено ✓' : '20 слов'}</small>
-                    ${isCompleted ? '<div class="batch-checkmark">✓</div>' : ''}
+                    <small>${wordsData[pos][batchNum].length} слов</small>
                 `;
                 card.onclick = () => startBatchSession(pos, batchNum);
                 batchesGrid.appendChild(card);
@@ -699,268 +739,10 @@
             document.getElementById('options').classList.add('hidden');
         }
 
-        async function startBatchSession(pos, batchNumber) {
+        function startBatchSession(pos, batchNumber) {
             console.log('Запускаем двадцатку:', pos, batchNumber);
             
             setLoading(true);
             
             try {
-                // 🔧 ЗАГРУЗКА СЛОВ ИЗ БАЗЫ ДАННЫХ
-                currentBatch = await loadWordsFromDatabase(pos, batchNumber);
-                console.log('Загружены слова:', currentBatch.length);
-                
-                if (currentBatch.length === 0) {
-                    setStatus("Слова для этой двадцатки не найдены", "err");
-                    setLoading(false);
-                    return;
-                }
-                
-                currentPOS = pos;
-                currentBatchNumber = batchNumber;
-                currentIndex = 0;
-                mistakes = [];
-                isReviewMode = false;
-                answered = false;
-
-                setSubtitle('Выбери слово, в котором <strong>верно</strong> поставлено ударение');
-                clearOptions();
-                clearSummary();
-                clearFooterButtons();
-                setStatus("");
-                setSessionInfo("");
-                hideBatchesSelection();
-
-                setLoading(false);
-                showQuestion();
-                
-            } catch (error) {
-                console.error('Ошибка загрузки слов:', error);
-                setStatus("Ошибка загрузки слов", "err");
-                setLoading(false);
-            }
-        }
-
-        // Остальные функции без изменений
-        function showQuestion() {
-            clearOptions();
-            clearSummary();
-            clearFooterButtons();
-            setStatus("");
-
-            if (!currentBatch.length || currentIndex >= currentBatch.length) {
-                finishSession();
-                return;
-            }
-
-            const q = currentBatch[currentIndex];
-            setSessionInfo(`${currentIndex + 1}/${currentBatch.length}`);
-
-            const box = document.getElementById("options");
-            q.options.forEach((opt, idx) => {
-                const btn = document.createElement("button");
-                btn.className = "option-btn";
-                btn.textContent = opt;
-                btn.onclick = () => checkAnswer(idx, btn);
-                box.appendChild(btn);
-            });
-        }
-
-        function checkAnswer(index, buttonEl) {
-            if (answered || !currentBatch.length || currentIndex >= currentBatch.length) return;
-            answered = true;
-
-            const q = currentBatch[currentIndex];
-            disableAllOptions();
-
-            if (index === q.correctIndex) {
-                buttonEl.classList.add("correct");
-                setTimeout(() => {
-                    answered = false;
-                    currentIndex++;
-                    showQuestion();
-                }, DELAY_AFTER_CORRECT);
-            } else {
-                buttonEl.classList.add("wrong");
-                highlightCorrect();
-                mistakes.push(q);
-                setTimeout(() => {
-                    answered = false;
-                    currentIndex++;
-                    showQuestion();
-                }, DELAY_AFTER_WRONG);
-            }
-        }
-
-        async function finishSession() {
-            clearOptions();
-            clearSummary();
-            setStatus("");
-            setSessionInfo("");
-            setSubtitle("");
-
-            const summary = document.getElementById("summary");
-            const footer = document.getElementById("footerButtons");
-            footer.innerHTML = "";
-
-            const buttonsWrap = document.createElement("div");
-            buttonsWrap.className = "result-buttons";
-
-            const errors = mistakes.slice();
-            lastErrorsForReview = errors.slice();
-            const hasErrors = errors.length > 0;
-
-            if (!hasErrors && !isReviewMode && currentBatchNumber) {
-                await markBatchCompleted(currentPOS, currentBatchNumber);
-            }
-
-            if (isReviewMode) {
-                if (hasErrors) {
-                    const uniqWords = [...new Set(errors.map(q => q.correct))];
-                    showErrorSummary(uniqWords, summary);
-                    buttonsWrap.appendChild(makeResultBtn("Отработать ошибки", startReviewSession));
-                    buttonsWrap.appendChild(makeResultBtn("Выбрать другую часть речи", loadPartsOfSpeech));
-                } else {
-                    const ok = document.createElement("div");
-                    ok.className = "summary-congrats";
-                    ok.textContent = "Всё отработано 🏆";
-                    summary.appendChild(ok);
-                    buttonsWrap.appendChild(makeResultBtn("Выбрать другую часть речи", loadPartsOfSpeech));
-                }
-            } else {
-                if (hasErrors) {
-                    const uniqWords = [...new Set(errors.map(q => q.correct))];
-                    showErrorSummary(uniqWords, summary);
-                    buttonsWrap.appendChild(makeResultBtn("Отработать ошибки", startReviewSession));
-                    buttonsWrap.appendChild(makeResultBtn("Выбрать другую часть речи", loadPartsOfSpeech));
-                } else {
-                    const ok = document.createElement("div");
-                    ok.className = "summary-congrats";
-                    ok.textContent = "Ни одной ошибки 💪🏼";
-                    summary.appendChild(ok);
-                    buttonsWrap.appendChild(makeResultBtn("Выбрать другую часть речи", loadPartsOfSpeech));
-                }
-            }
-
-            footer.appendChild(buttonsWrap);
-            isReviewMode = false;
-        }
-
-        function startReviewSession() {
-            if (!lastErrorsForReview.length) {
-                setStatus("Нет ошибок для отработки 🎉", "err");
-                return;
-            }
-
-            isReviewMode = true;
-            mistakes = [];
-            answered = false;
-
-            const uniqueQuestions = Array.from(
-                new Map(lastErrorsForReview.map(q => [q.correct, q])).values()
-            );
-
-            currentBatch = uniqueQuestions;
-            currentIndex = 0;
-
-            clearOptions();
-            clearSummary();
-            clearFooterButtons();
-            setStatus("");
-            setSessionInfo("");
-            setSubtitle('Выбери слово, в котором <strong>верно</strong> поставлено ударение');
-
-            showQuestion();
-        }
-
-        // Вспомогательные функции
-        function setSubtitle(html) {
-            const el = document.getElementById("subtitle");
-            if (!html) {
-                el.style.display = "none";
-                el.innerHTML = "";
-            } else {
-                el.style.display = "block";
-                el.innerHTML = html;
-            }
-        }
-
-        function setStatus(msg, type) {
-            const el = document.getElementById("status");
-            el.textContent = msg || "";
-            el.className = "status";
-            if (type === "err") el.classList.add("err");
-        }
-
-        function setLoading(isLoading) {
-            document.getElementById("loaderOverlay").classList.toggle("hidden", !isLoading);
-        }
-
-        function clearOptions() {
-            document.getElementById("options").innerHTML = "";
-        }
-
-        function clearSummary() {
-            document.getElementById("summary").innerHTML = "";
-        }
-
-        function clearFooterButtons() {
-            const footer = document.getElementById("footerButtons");
-            if (footer) footer.innerHTML = "";
-        }
-
-        function setSessionInfo(text) {
-            document.getElementById("sessionInfo").textContent = text || "";
-        }
-
-        function disableAllOptions() {
-            document.querySelectorAll(".option-btn").forEach(b => (b.disabled = true));
-        }
-
-        function highlightCorrect() {
-            const q = currentBatch[currentIndex];
-            document.querySelectorAll(".option-btn").forEach((b, idx) => {
-                if (idx === q.correctIndex) b.classList.add("correct");
-            });
-        }
-
-        function makeResultBtn(label, handler) {
-            const b = document.createElement("button");
-            b.className = "result-btn";
-            b.textContent = label;
-            b.onclick = handler;
-            return b;
-        }
-
-        function showErrorSummary(words, container) {
-            const title = document.createElement("div");
-            title.className = "summary-subtitle";
-            title.textContent = words.length === 1 ? 
-                "Запомни, как произносится это слово" : 
-                "Запомни, как произносятся эти слова";
-            container.appendChild(title);
-
-            const wrap = document.createElement("div");
-            wrap.className = "summary-list-wrapper";
-            const ul = document.createElement("ul");
-            ul.className = "summary-list";
-
-            words.forEach(word => {
-                const li = document.createElement("li");
-                li.textContent = word;
-                ul.appendChild(li);
-            });
-
-            wrap.appendChild(ul);
-            container.appendChild(wrap);
-        }
-
-        function hideBatchesSelection() {
-            document.getElementById('batchesSelection').classList.add('hidden');
-            document.getElementById('options').classList.remove('hidden');
-        }
-
-        // Запуск приложения
-        window.addEventListener("load", init);
-    </script>
-</body>
-</html>
+                // Загружаем слова из данных и преобразуем
