@@ -65,7 +65,7 @@
 
         .batches-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 12px;
             margin: 20px 0;
         }
@@ -78,33 +78,19 @@
             background: #f8f9fa;
             border: 2px solid #e9ecef;
             transition: all 0.3s ease;
-            min-height: 80px;
+            min-height: 60px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            font-size: 18px;
+            font-weight: 600;
         }
 
         .batch-card:hover {
             background: #e9ecef;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .batch-card.completed {
-            background: #d4edda;
-            border-color: #28a745;
-        }
-
-        .batch-card.current {
-            background: #d1ecf1;
-            border-color: #17a2b8;
-        }
-
-        .batch-checkmark {
-            color: #28a745;
-            font-size: 20px;
-            margin-bottom: 5px;
         }
 
         .session-counter {
@@ -354,7 +340,7 @@
             <div id="mainInterface">
                 <div id="sessionInfo" class="session-counter"></div>
                 <div id="batchesSelection" class="hidden">
-                    <h3>Выбери двадцатку для отработки</h3>
+                    <h3>Выбери номер</h3>
                     <div class="batches-grid" id="batchesGrid"></div>
                 </div>
                 <div id="options" class="options"></div>
@@ -719,7 +705,8 @@
             setStatus("");
             setSessionInfo("");
             
-            setSubtitle(`Часть речи: ${pos}`);
+            // Убираем "Часть речи:" из подзаголовка, оставляем только название части речи
+            setSubtitle(pos);
             
             const batchesGrid = document.getElementById('batchesGrid');
             batchesGrid.innerHTML = '';
@@ -727,10 +714,8 @@
             batchNumbers.forEach(batchNum => {
                 const card = document.createElement('div');
                 card.className = 'batch-card';
-                card.innerHTML = `
-                    <div>Двадцатка ${batchNum}</div>
-                    <small>${wordsData[pos][batchNum].length} слов</small>
-                `;
+                // Оставляем только номер двадцатки
+                card.textContent = batchNum;
                 card.onclick = () => startBatchSession(pos, batchNum);
                 batchesGrid.appendChild(card);
             });
@@ -745,4 +730,282 @@
             setLoading(true);
             
             try {
-                // Загружаем слова из данных и преобразуем
+                // Загружаем слова из данных и преобразуем в нужный формат
+                const rawWords = wordsData[pos][batchNumber];
+                currentBatch = rawWords.map(word => {
+                    // Создаем массив из двух вариантов: правильный и неправильный
+                    const options = [word.correct_word, word.wrong_options];
+                    // Перемешиваем варианты
+                    const shuffledOptions = [...options].sort(() => Math.random() - 0.5);
+                    const correctIndex = shuffledOptions.indexOf(word.correct_word);
+                    
+                    return {
+                        options: shuffledOptions,
+                        correctIndex: correctIndex,
+                        correct: word.correct_word
+                    };
+                });
+                
+                console.log('Загружены слова:', currentBatch.length);
+                
+                if (currentBatch.length === 0) {
+                    setStatus("Слова для этой двадцатки не найдены", "err");
+                    setLoading(false);
+                    return;
+                }
+                
+                currentPOS = pos;
+                currentBatchNumber = batchNumber;
+                currentIndex = 0;
+                mistakes = [];
+                isReviewMode = false;
+                answered = false;
+
+                setSubtitle('Выбери слово, в котором <strong>верно</strong> поставлено ударение');
+                clearOptions();
+                clearSummary();
+                clearFooterButtons();
+                setStatus("");
+                setSessionInfo("");
+                hideBatchesSelection();
+
+                setLoading(false);
+                showQuestion();
+                
+            } catch (error) {
+                console.error('Ошибка загрузки слов:', error);
+                setStatus("Ошибка загрузки слов", "err");
+                setLoading(false);
+            }
+        }
+
+        function showQuestion() {
+            clearOptions();
+            clearSummary();
+            clearFooterButtons();
+            setStatus("");
+
+            if (!currentBatch.length || currentIndex >= currentBatch.length) {
+                finishSession();
+                return;
+            }
+
+            const q = currentBatch[currentIndex];
+            setSessionInfo(`${currentIndex + 1}/${currentBatch.length}`);
+
+            const box = document.getElementById("options");
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(idx, btn);
+                box.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(index, buttonEl) {
+            if (answered || !currentBatch.length || currentIndex >= currentBatch.length) return;
+            answered = true;
+
+            const q = currentBatch[currentIndex];
+            disableAllOptions();
+
+            if (index === q.correctIndex) {
+                buttonEl.classList.add("correct");
+                setTimeout(() => {
+                    answered = false;
+                    currentIndex++;
+                    showQuestion();
+                }, DELAY_AFTER_CORRECT);
+            } else {
+                buttonEl.classList.add("wrong");
+                highlightCorrect();
+                mistakes.push(q);
+                setTimeout(() => {
+                    answered = false;
+                    currentIndex++;
+                    showQuestion();
+                }, DELAY_AFTER_WRONG);
+            }
+        }
+
+        function finishSession() {
+            clearOptions();
+            clearSummary();
+            setStatus("");
+            setSessionInfo("");
+            setSubtitle("");
+
+            const summary = document.getElementById("summary");
+            const footer = document.getElementById("footerButtons");
+            footer.innerHTML = "";
+
+            const buttonsWrap = document.createElement("div");
+            buttonsWrap.className = "result-buttons";
+
+            const errors = mistakes.slice();
+            lastErrorsForReview = errors.slice();
+            const hasErrors = errors.length > 0;
+
+            if (isReviewMode) {
+                if (hasErrors) {
+                    const uniqWords = [...new Set(errors.map(q => q.correct))];
+                    showErrorSummary(uniqWords, summary);
+                    buttonsWrap.appendChild(makeResultBtn("Отработать ошибки", startReviewSession));
+                    buttonsWrap.appendChild(makeResultBtn("Выбрать другую часть речи", loadPartsOfSpeech));
+                } else {
+                    const ok = document.createElement("div");
+                    ok.className = "summary-congrats";
+                    ok.textContent = "Всё отработано 🏆";
+                    summary.appendChild(ok);
+                    buttonsWrap.appendChild(makeResultBtn("Выбрать другую часть речи", loadPartsOfSpeech));
+                }
+            } else {
+                if (hasErrors) {
+                    const uniqWords = [...new Set(errors.map(q => q.correct))];
+                    showErrorSummary(uniqWords, summary);
+                    buttonsWrap.appendChild(makeResultBtn("Отработать ошибки", startReviewSession));
+                    buttonsWrap.appendChild(makeResultBtn("Выбрать другую часть речи", loadPartsOfSpeech));
+                } else {
+                    const ok = document.createElement("div");
+                    ok.className = "summary-congrats";
+                    ok.textContent = "Ни одной ошибки 💪🏼";
+                    summary.appendChild(ok);
+                    buttonsWrap.appendChild(makeResultBtn("Выбрать другую часть речи", loadPartsOfSpeech));
+                }
+            }
+
+            footer.appendChild(buttonsWrap);
+            isReviewMode = false;
+        }
+
+        function startReviewSession() {
+            if (!lastErrorsForReview.length) {
+                setStatus("Нет ошибок для отработки 🎉", "err");
+                return;
+            }
+
+            isReviewMode = true;
+            mistakes = [];
+            answered = false;
+
+            const uniqueQuestions = Array.from(
+                new Map(lastErrorsForReview.map(q => [q.correct, q])).values()
+            );
+
+            currentBatch = uniqueQuestions;
+            currentIndex = 0;
+
+            clearOptions();
+            clearSummary();
+            clearFooterButtons();
+            setStatus("");
+            setSessionInfo("");
+            setSubtitle('Выбери слово, в котором <strong>верно</strong> поставлено ударение');
+
+            showQuestion();
+        }
+
+        // Функция "Назад"
+        function goBack() {
+            if (document.getElementById('batchesSelection').classList.contains('hidden')) {
+                // Если мы на экране с упражнением, возвращаемся к выбору двадцаток
+                showBatchesSelection(currentPOS, Object.keys(wordsData[currentPOS]).map(Number).sort((a, b) => a - b));
+            } else {
+                // Если мы на экране с выбором двадцаток, возвращаемся к выбору части речи
+                loadPartsOfSpeech();
+            }
+        }
+
+        // Вспомогательные функции
+        function setSubtitle(html) {
+            const el = document.getElementById("subtitle");
+            if (!html) {
+                el.style.display = "none";
+                el.innerHTML = "";
+            } else {
+                el.style.display = "block";
+                el.innerHTML = html;
+            }
+        }
+
+        function setStatus(msg, type) {
+            const el = document.getElementById("status");
+            el.textContent = msg || "";
+            el.className = "status";
+            if (type === "err") el.classList.add("err");
+        }
+
+        function setLoading(isLoading) {
+            document.getElementById("loaderOverlay").classList.toggle("hidden", !isLoading);
+        }
+
+        function clearOptions() {
+            document.getElementById("options").innerHTML = "";
+        }
+
+        function clearSummary() {
+            document.getElementById("summary").innerHTML = "";
+        }
+
+        function clearFooterButtons() {
+            const footer = document.getElementById("footerButtons");
+            if (footer) footer.innerHTML = "";
+        }
+
+        function setSessionInfo(text) {
+            document.getElementById("sessionInfo").textContent = text || "";
+        }
+
+        function disableAllOptions() {
+            document.querySelectorAll(".option-btn").forEach(b => (b.disabled = true));
+        }
+
+        function highlightCorrect() {
+            const q = currentBatch[currentIndex];
+            document.querySelectorAll(".option-btn").forEach((b, idx) => {
+                if (idx === q.correctIndex) b.classList.add("correct");
+            });
+        }
+
+        function makeResultBtn(label, handler) {
+            const b = document.createElement("button");
+            b.className = "result-btn";
+            b.textContent = label;
+            b.onclick = handler;
+            return b;
+        }
+
+        function showErrorSummary(words, container) {
+            const title = document.createElement("div");
+            title.className = "summary-subtitle";
+            title.textContent = words.length === 1 ? 
+                "Запомни, как произносится это слово" : 
+                "Запомни, как произносятся эти слова";
+            container.appendChild(title);
+
+            const wrap = document.createElement("div");
+            wrap.className = "summary-list-wrapper";
+            const ul = document.createElement("ul");
+            ul.className = "summary-list";
+
+            words.forEach(word => {
+                const li = document.createElement("li");
+                li.textContent = word;
+                ul.appendChild(li);
+            });
+
+            wrap.appendChild(ul);
+            container.appendChild(wrap);
+        }
+
+        function hideBatchesSelection() {
+            document.getElementById('batchesSelection').classList.add('hidden');
+            document.getElementById('options').classList.remove('hidden');
+        }
+
+        // Запуск приложения
+        window.addEventListener("load", init);
+    </script>
+</body>
+</html>
