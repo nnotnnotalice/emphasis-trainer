@@ -629,6 +629,7 @@
             showMainInterface();
             
             // Настройка кнопки "Назад"
+document.getElementById('backButton').addEventListener('click', goBack);
 document.getElementById('backButton').classList.add('hidden');
         }
 
@@ -732,6 +733,7 @@ document.getElementById('backButton').classList.add('hidden');
             console.log('Запускаем двадцатку:', pos, batchNumber);
             
             setLoading(true);
+            document.getElementById('backButton').classList.remove('hidden');
             
             try {
                 // Загружаем слова из данных и преобразуем в нужный формат
@@ -911,15 +913,16 @@ document.getElementById('backButton').classList.add('hidden');
         }
 
         // Функция "Назад"
-        function goBack() {
-            if (document.getElementById('batchesSelection').classList.contains('hidden')) {
-                // Если мы на экране с упражнением, возвращаемся к выбору двадцаток
-                showBatchesSelection(currentPOS, Object.keys(wordsData[currentPOS]).map(Number).sort((a, b) => a - b));
-            } else {
-                // Если мы на экране с выбором двадцаток, возвращаемся к выбору части речи
-                loadPartsOfSpeech();
-            }
-        }
+       // Функция "Назад"
+function goBack() {
+    if (document.getElementById('batchesSelection').classList.contains('hidden')) {
+        // Если мы на экране с упражнением, возвращаемся к выбору двадцаток
+        showBatchesSelection(currentPOS, Object.keys(wordsData[currentPOS]).map(Number).sort((a, b) => a - b));
+    } else {
+        // Если мы на экране с выбором двадцаток, возвращаемся к выбору части речи
+        loadPartsOfSpeech();
+    }
+}
 
         // Вспомогательные функции
         function setSubtitle(html) {
