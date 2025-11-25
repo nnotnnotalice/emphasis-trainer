@@ -629,17 +629,19 @@
             showMainInterface();
             
             // Настройка кнопки "Назад"
-            document.getElementById('backButton').addEventListener('click', goBack);
+document.getElementById('backButton').classList.add('hidden');
         }
 
         function showMainInterface() {
             document.getElementById('mainInterface').classList.remove('hidden');
+            document.getElementById('backButton').classList.add('hidden');
             loadPartsOfSpeech();
         }
 
         // Загрузка частей речи из данных
         function loadPartsOfSpeech() {
             setLoading(true);
+            document.getElementById('backButton').classList.add('hidden');
             
             // Получаем доступные части речи из данных
             const parts = Object.keys(wordsData);
@@ -663,7 +665,7 @@
             setLoading(false);
             
             // Показываем кнопку "Назад"
-            document.getElementById('backButton').classList.remove('hidden');
+          document.getElementById('backButton').classList.remove('hidden');
         }
 
         function showPOSSelection(parts) {
@@ -682,6 +684,8 @@
             clearSummary();
             clearFooterButtons();
             hideBatchesSelection();
+
+            document.getElementById('backButton').classList.add('hidden');
 
             const box = document.getElementById("options");
             const wrap = document.createElement("div");
