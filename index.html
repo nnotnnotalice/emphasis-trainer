@@ -623,15 +623,18 @@
             }
         };
 
-        // Инициализация
-        function init() {
-            console.log('=== ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ===');
-            showMainInterface();
-            
-            // Настройка кнопки "Назад"
-document.getElementById('backButton').addEventListener('click', goBack);
-document.getElementById('backButton').classList.add('hidden');
-        }
+// Инициализация
+function init() {
+    console.log('=== ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ===');
+    
+    // НАЧАЛО ИСПРАВЛЕНИЯ - ИЗМЕНИТЬ ПОРЯДОК:
+    document.getElementById('backButton').classList.add('hidden');
+    // Настройка кнопки "Назад"
+    document.getElementById('backButton').addEventListener('click', goBack);
+    // КОНЕЦ ИСПРАВЛЕНИЯ
+    
+    showMainInterface();
+}
 
         function showMainInterface() {
             document.getElementById('mainInterface').classList.remove('hidden');
@@ -666,7 +669,7 @@ document.getElementById('backButton').classList.add('hidden');
             setLoading(false);
             
             // Показываем кнопку "Назад"
-          document.getElementById('backButton').classList.remove('hidden');
+         document.getElementById('backButton').classList.remove('hidden');
         }
 
         function showPOSSelection(parts) {
@@ -686,7 +689,7 @@ document.getElementById('backButton').classList.add('hidden');
             clearFooterButtons();
             hideBatchesSelection();
 
-            document.getElementById('backButton').classList.add('hidden');
+           document.getElementById('backButton').classList.add('hidden');
 
             const box = document.getElementById("options");
             const wrap = document.createElement("div");
@@ -733,7 +736,7 @@ document.getElementById('backButton').classList.add('hidden');
             console.log('Запускаем двадцатку:', pos, batchNumber);
             
             setLoading(true);
-            document.getElementById('backButton').classList.remove('hidden');
+           document.getElementById('backButton').classList.remove('hidden');
             
             try {
                 // Загружаем слова из данных и преобразуем в нужный формат
@@ -912,18 +915,20 @@ document.getElementById('backButton').classList.add('hidden');
             showQuestion();
         }
 
-        // Функция "Назад"
        // Функция "Назад"
 function goBack() {
+    // НАЧАЛО ИСПРАВЛЕНИЯ - ЗАМЕНИТЬ ВСЮ ФУНКЦИЮ:
     if (document.getElementById('batchesSelection').classList.contains('hidden')) {
-        // Если мы на экране с упражнением, возвращаемся к выбору двадцаток
-        showBatchesSelection(currentPOS, Object.keys(wordsData[currentPOS]).map(Number).sort((a, b) => a - b));
+        // Если мы на экране с упражнением (выбор слов), возвращаемся к выбору двадцаток
+        if (currentBatch.length > 0) {
+            showBatchesSelection(currentPOS, Object.keys(wordsData[currentPOS]).map(Number).sort((a, b) => a - b));
+        }
     } else {
         // Если мы на экране с выбором двадцаток, возвращаемся к выбору части речи
         loadPartsOfSpeech();
     }
+    // КОНЕЦ ИСПРАВЛЕНИЯ
 }
-
         // Вспомогательные функции
         function setSubtitle(html) {
             const el = document.getElementById("subtitle");
