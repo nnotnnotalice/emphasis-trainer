@@ -106,6 +106,21 @@
             overflow-x: hidden;
         }
 
+        body.app-booting {
+            background: #faf8f5;
+        }
+
+        body.app-booting .app > :not(#loaderOverlay) {
+            visibility: hidden;
+        }
+
+        body.app-booting #loaderOverlay.hidden {
+            position: fixed;
+            display: flex !important;
+            background: #faf8f5;
+            backdrop-filter: none;
+        }
+
         .app-header {
             width: 100%;
             margin: 0 calc(50% - 50vw) clamp(44px, 6vh, 78px);
@@ -2854,7 +2869,7 @@ body.final-error-screen .result-screen-content {
     </style>
 </head>
 
-<body>
+<body class="app-booting">
     <div class="app">
         <button id="backButton" class="back-btn hidden" aria-label="Назад">
             <svg width="75" height="75" viewBox="0 0 75 75" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -4541,6 +4556,8 @@ async function init() {
         setLoading(false);
         setSubtitle("Не удалось запустить тренажёр");
         setStatus("Проверь консоль браузера: ошибка может быть не в таблице.", "err");
+    } finally {
+        document.body.classList.remove("app-booting");
     }
 }
 
