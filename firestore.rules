@@ -1,0 +1,103 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isTeacher() {
+      return signedIn()
+        && request.auth.uid == "NDBX67iGclQjJvLcIXLGUyLuSXr1";
+    }
+
+    function studentPath(studentId) {
+      return /databases/$(database)/documents/students/$(studentId);
+    }
+
+    function studentOwnerUid(studentId) {
+      return get(studentPath(studentId)).data.owner_uid;
+    }
+
+    function isEmptyOwner(ownerUid) {
+      return ownerUid == null || ownerUid == "";
+    }
+
+    function isExistingStudentOwner() {
+      return signedIn()
+        && resource.data.owner_uid == request.auth.uid;
+    }
+
+    function isStudentOwner(studentId) {
+      return signedIn()
+        && studentOwnerUid(studentId) == request.auth.uid;
+    }
+
+    function isFreeStudentCode() {
+      return signedIn()
+        && isEmptyOwner(resource.data.owner_uid);
+    }
+
+    function validStudentClaim(studentId) {
+      return signedIn()
+        && isFreeStudentCode()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(["student_id", "owner_uid", "last_seen_at"])
+        && request.resource.data.student_id == studentId
+        && request.resource.data.owner_uid == request.auth.uid;
+    }
+
+    function validStudentHeartbeat(studentId) {
+      return isExistingStudentOwner()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(["student_id", "owner_uid", "last_seen_at"])
+        && request.resource.data.student_id == studentId
+        && request.resource.data.owner_uid == resource.data.owner_uid;
+    }
+
+    function validProgressWrite(wordId) {
+      return request.resource.data.keys().hasOnly([
+          "word_id",
+          "pos",
+          "pos_code",
+          "batch_id",
+          "word_number",
+          "correct_word",
+          "wrong_options",
+          "seen",
+          "seen_count",
+          "correct_count",
+          "wrong_count",
+          "correct_streak",
+          "needs_review",
+          "last_answer_correct",
+          "last_seen_at"
+        ])
+        && request.resource.data.word_id == wordId;
+    }
+
+    match /students/{studentId} {
+      allow list: if isTeacher();
+      allow get: if isTeacher() || isExistingStudentOwner() || isFreeStudentCode();
+      allow create: if isTeacher();
+      allow update: if isTeacher()
+        || validStudentClaim(studentId)
+        || validStudentHeartbeat(studentId);
+      allow delete: if false;
+
+      match /wordProgress/{wordId} {
+        allow read: if isTeacher() || isStudentOwner(studentId);
+        allow create, update: if isTeacher()
+          || (isStudentOwner(studentId) && validProgressWrite(wordId));
+
+        // Required by the existing teacher-only "Сбросить прогресс" action.
+        // Students cannot delete progress documents.
+        allow delete: if isTeacher();
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

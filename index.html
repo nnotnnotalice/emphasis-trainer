@@ -1,0 +1,5327 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренажёр по ударениям</title>
+
+    <style>
+        :root {
+            --primary: #8588F2;
+            --primary-hover: #7376E8;
+            --primary-soft: #EFF1FF;
+            --primary-soft-2: #F8F8FF;
+            --complete-bg: #E3F7EA;
+            --complete-text: #237246;
+            --success: #DFF7EA;
+            --success-text: #176B3A;
+            --error: #FFE0E0;
+            --error-text: #B4232B;
+            --warning: #9A5A1B;
+            --text: #151827;
+            --muted: #757B8E;
+            --muted-2: #A3A8B8;
+            --bg: #FAFAFF;
+            --card: rgba(255, 255, 255, 0.86);
+            --shadow-soft: 0 18px 48px rgba(74, 80, 145, 0.09);
+            --shadow-button: 0 14px 32px rgba(133, 136, 242, 0.24);
+            --radius-xl: 30px;
+            --radius-lg: 24px;
+            --radius-md: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            min-height: 100%;
+        }
+
+        body {
+            font-family: "Onest", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 12% 8%, rgba(202, 209, 255, 0.42), transparent 28%),
+                radial-gradient(circle at 88% 18%, rgba(255, 224, 235, 0.36), transparent 26%),
+                linear-gradient(180deg, #ffffff 0%, #f7f7ff 100%);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        body.teacher-dashboard-screen {
+            --teacher-page-bg: #faf8f5;
+            --teacher-surface: #ffffff;
+            --teacher-header-from: #3f58bb;
+            --teacher-header-to: #233ca1;
+            --teacher-accent: #3f58bb;
+            --teacher-progress-accent: #6366f1;
+            --teacher-progress-fill: #fccc6b;
+            --teacher-text: #111827;
+            --teacher-text-secondary: #6b7280;
+            --teacher-text-muted: #9ca3af;
+            --teacher-border: #f0efee;
+            --teacher-success: #0ab448;
+            --teacher-success-bg: rgba(34, 197, 94, 0.12);
+            --teacher-danger: #ff4852;
+            --teacher-danger-bg: #fee2e2;
+            --teacher-danger-hover-bg: #fff5f5;
+            --teacher-archive: #a5a8ae;
+            --teacher-archive-hover: #94979e;
+            --teacher-on-color: #faf8f5;
+            background: var(--teacher-page-bg);
+            overflow-x: hidden;
+        }
+
+        body.teacher-dashboard-screen .app {
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        body.teacher-dashboard-screen .main {
+            width: auto;
+            padding-top: 0;
+        }
+
+        body.teacher-dashboard-screen #mainInterface {
+            width: 100%;
+        }
+
+        .app {
+            width: 100%;
+            min-height: 100vh;
+            max-width: none;
+            margin: 0;
+            padding: 0 clamp(22px, 5vw, 76px) 44px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: transparent;
+            border-radius: 0;
+            box-shadow: none;
+            overflow-x: hidden;
+        }
+
+        .app-header {
+            width: 100%;
+            margin: 0 calc(50% - 50vw) clamp(44px, 6vh, 78px);
+            padding: clamp(30px, 4.2vh, 50px) clamp(24px, 6vw, 92px) clamp(32px, 4.6vh, 54px);
+            border-radius: 0 0 22px 22px;
+            background: linear-gradient(135deg, rgba(111, 113, 232, 0.82), rgba(78, 83, 208, 0.76));
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-top: none;
+            box-shadow: 0 18px 48px rgba(91, 94, 193, 0.16);
+            backdrop-filter: blur(14px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            overflow: hidden;
+            z-index: 25;
+        }
+
+        .app-header::after {
+            content: none;
+        }
+
+        h1 {
+            font-size: clamp(31px, 3.2vw, 50px);
+            line-height: 1.06;
+            margin: 0;
+            text-align: center;
+            font-weight: 470;
+            letter-spacing: -0.035em;
+            color: #ffffff;
+            position: relative;
+            z-index: 1;
+        }
+
+        .subtitle {
+            font-size: clamp(20px, 2vw, 30px);
+            color: var(--muted);
+            text-align: center;
+            margin-bottom: 18px;
+            font-weight: 500;
+            letter-spacing: -0.015em;
+        }
+
+        .main {
+            width: min(1240px, 100%);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: clamp(170px, 21vh, 210px);
+            animation: fadeUp 0.38s ease both;
+        }
+
+        #mainInterface {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 28px;
+            left: clamp(10px, 1.8vw, 24px);
+            background: transparent;
+            color: #ffffff;
+            border: none;
+            border-radius: 0;
+            width: 75px;
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0;
+            box-shadow: none;
+            transition: transform 0.18s ease;
+            z-index: 30;
+        }
+
+        .back-btn svg {
+            width: 75px;
+            height: 75px;
+            display: block;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: none;
+        }
+
+        .back-btn svg path {
+            fill: currentColor;
+        }
+
+        .back-btn:active,
+        .option-btn:active,
+        .result-btn:active,
+        .student-login-btn:active,
+        .pos-card:active {
+            transform: translateY(1px) scale(0.99);
+        }
+
+        .student-info {
+            display: none;
+        }
+
+        .student-header-pill {
+            display: none;
+        }
+
+        .student-change-btn,
+        .teacher-link-btn {
+            border: none;
+            background: transparent;
+            color: var(--primary);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: 500;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        .options {
+            width: min(760px, 100%);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            align-items: center;
+            margin: 10px auto 0;
+        }
+
+        .option-btn {
+            width: min(680px, 100%);
+            min-height: 96px;
+            padding: 24px 32px;
+            border-radius: var(--radius-lg);
+            border: 2px solid rgba(124, 127, 242, 0.05);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: clamp(28px, 3.2vw, 44px);
+            line-height: 1.1;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.92);
+            color: var(--text);
+            box-shadow: 0 12px 32px rgba(64, 70, 120, 0.08);
+            transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+            font-weight: 500;
+            animation: optionIn 0.28s ease both;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 42px rgba(64, 70, 120, 0.12);
+            border-color: rgba(124, 127, 242, 0.16);
+            background: #ffffff;
+        }
+
+        .option-btn.correct {
+            background: var(--success);
+            color: var(--success-text);
+            border-color: rgba(42, 157, 91, 0.16);
+            animation: correctPulse 0.44s ease both;
+        }
+
+        .option-btn.wrong {
+            background: var(--error);
+            color: var(--error-text);
+            border-color: rgba(180, 35, 43, 0.12);
+            animation: wrongShake 0.34s ease both;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+            opacity: 0.96;
+        }
+
+        .status {
+            min-height: 24px;
+            font-size: clamp(16px, 1.5vw, 20px);
+            margin-top: 18px;
+            text-align: center;
+            color: var(--muted);
+            line-height: 1.35;
+        }
+
+        .status.err {
+            color: #cf2e3a;
+            font-weight: 500;
+        }
+
+        .loader-overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(250, 250, 255, 0.72);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+        }
+
+        .loader {
+            border: 5px solid #EEF0FF;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            animation: spin 0.75s linear infinite;
+        }
+
+        .pos-choices {
+            width: min(1520px, 96vw);
+            display: grid;
+            grid-template-columns: repeat(2, minmax(600px, 1fr));
+            gap: clamp(34px, 3.2vw, 52px);
+            justify-content: center;
+            align-items: start;
+            margin-top: clamp(32px, 4.2vh, 58px);
+        }
+
+        .pos-card {
+            width: 100%;
+            min-height: clamp(300px, 28vh, 360px);
+            padding: clamp(44px, 3.6vw, 58px);
+            border-radius: 42px;
+            border: 1px solid rgba(133, 136, 242, 0.10);
+            background: rgba(255, 255, 255, 0.80);
+            box-shadow: 0 22px 58px rgba(74, 80, 145, 0.075);
+            transition:
+                transform 0.28s cubic-bezier(.2,.8,.2,1),
+                box-shadow 0.28s cubic-bezier(.2,.8,.2,1),
+                border-color 0.28s ease,
+                background 0.28s ease;
+            text-align: left;
+            font-family: inherit;
+            backdrop-filter: blur(12px);
+            animation: cardEnter 0.55s cubic-bezier(.2,.8,.2,1) both;
+            display: grid;
+            grid-template-rows: 110px 18px minmax(58px, auto);
+            align-content: center;
+            row-gap: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pos-card::before,
+        .pos-card::after {
+            content: none;
+        }
+
+        .pos-card:hover {
+            transform: translateY(-16px) scale(1.03);
+            box-shadow: 0 40px 92px rgba(86, 91, 178, 0.20);
+            border-color: rgba(133, 136, 242, 0.40);
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .pos-card.first-pulse {
+            animation: cardEnter 0.55s cubic-bezier(.2,.8,.2,1) both, softPulse 2.8s ease-in-out 0.7s 3;
+        }
+
+        .pos-title {
+            font-size: clamp(27px, 2.05vw, 34px);
+            line-height: 1.12;
+            font-weight: 430;
+            color: var(--text);
+            margin: 0;
+            letter-spacing: -0.03em;
+            overflow-wrap: normal;
+            word-break: normal;
+            hyphens: none;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .pos-progress-text {
+            display: none;
+        }
+
+        .pos-progress-bar {
+            width: 100%;
+            height: 18px;
+            background: var(--primary-soft);
+            border-radius: 999px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(74, 80, 145, 0.06);
+        }
+
+        .pos-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #7C7FF2, #A7A9FF);
+            border-radius: 999px;
+            transition: width 0.72s cubic-bezier(.2,.8,.2,1);
+        }
+
+        .pos-repeat-note {
+            margin: 0;
+            align-self: start;
+            font-size: clamp(17px, 1.28vw, 20px);
+            line-height: 1.25;
+            color: var(--warning);
+            font-weight: 430;
+        }
+
+        .pos-repeat-note:empty {
+            display: none;
+        }
+
+        .pos-repeat-note.completed {
+            display: inline-flex;
+            align-self: flex-start;
+            width: auto;
+            padding: 13px 18px;
+            border-radius: 12px;
+            background: var(--complete-bg);
+            color: var(--complete-text);
+            font-weight: 430;
+        }
+
+        body.student-pos-selection-screen {
+            background: #faf8f5;
+            overflow-x: hidden;
+        }
+
+        body.student-pos-selection-screen .app {
+            padding: 0;
+            background: #faf8f5;
+            overflow-x: hidden;
+        }
+
+        body.student-pos-selection-screen .app-header {
+            height: 80px;
+            margin: 0;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 0;
+            border-radius: 0;
+            background: linear-gradient(90deg, #3f58bb 0%, #233ca1 100%);
+            box-shadow: none;
+            backdrop-filter: none;
+        }
+
+        body.student-pos-selection-screen .app-header h1 {
+            position: absolute;
+            left: 50%;
+            top: 18px;
+            transform: translateX(-50%);
+            margin: 0;
+            color: #faf8f5;
+            font-size: 35px;
+            line-height: normal;
+            font-weight: 600;
+            letter-spacing: 0;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        body.student-pos-selection-screen .student-header-pill {
+            position: absolute;
+            top: 18px;
+            right: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 44px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(250, 248, 245, 0.9);
+            color: #1e293b;
+            font-size: 14px;
+            line-height: normal;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .student-header-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #3f58bb;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        .student-header-avatar img {
+            width: 28px;
+            height: 28px;
+            display: block;
+        }
+
+        body.student-pos-selection-screen .main {
+            width: 100%;
+            padding: 120px 40px 40px;
+            animation: none;
+        }
+
+        body.student-pos-selection-screen #mainInterface {
+            width: 100%;
+        }
+
+        body.student-pos-selection-screen .options {
+            width: 100%;
+            margin: 0;
+            align-items: stretch;
+        }
+
+        body.student-pos-selection-screen .subtitle,
+        body.student-pos-selection-screen .status {
+            display: none;
+        }
+
+        body.student-pos-selection-screen .back-btn {
+            top: 16px;
+            left: 24px;
+            width: 48px;
+            height: 48px;
+            color: #ffffff;
+            z-index: 30;
+        }
+
+        body.student-pos-selection-screen .back-btn svg {
+            width: 34px;
+            height: 34px;
+            display: none;
+        }
+
+        body.student-pos-selection-screen .back-btn::before {
+            content: "";
+            width: 24px;
+            height: 24px;
+            display: block;
+            background: url("https://www.figma.com/api/mcp/asset/94243482-f4f9-420c-b9c3-25f2eb962014") center / contain no-repeat;
+        }
+
+        body.student-pos-selection-screen .back-btn:hover {
+            transform: translateX(-2px);
+        }
+
+        body.student-pos-selection-screen .pos-choices {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 24px;
+            align-items: start;
+            margin: 0;
+        }
+
+        body.student-pos-selection-screen .pos-card {
+            height: 261px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            border: 0;
+            border-radius: 20px;
+            background: #ffffff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            backdrop-filter: none;
+            cursor: default;
+            overflow: hidden;
+            transform: none;
+            transition: box-shadow 0.2s ease, min-height 0.28s ease;
+        }
+
+        body.student-pos-selection-screen .pos-card:hover {
+            transform: none;
+            border-color: transparent;
+            background: #ffffff;
+            box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
+        }
+
+        body.student-pos-selection-screen .pos-card:active {
+            transform: none;
+        }
+
+        body.student-pos-selection-screen .pos-card.expanded {
+            height: auto;
+            min-height: 382px;
+        }
+
+        body.student-pos-selection-screen .pos-card.first-pulse {
+            animation: cardEnter 0.32s ease both;
+        }
+
+        .pos-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        body.student-pos-selection-screen .pos-title {
+            margin: 0;
+            color: #1f2937;
+            font-size: 20px;
+            line-height: normal;
+            font-weight: 600;
+            letter-spacing: 0;
+        }
+
+        .pos-status-badge {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 96px;
+            min-height: 24px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: #d9e1fe;
+            color: #3f58bb;
+            font-size: 12px;
+            line-height: normal;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .pos-status-badge.completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .pos-status-badge.not-started {
+            background: #f4f6f8;
+            color: #94a3b8;
+        }
+
+        .pos-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        body.student-pos-selection-screen .pos-progress-text {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            color: #6b7280;
+            font-size: 12px;
+            line-height: normal;
+            font-weight: 400;
+            white-space: nowrap;
+        }
+
+        body.student-pos-selection-screen .pos-progress-bar {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #faf8f5;
+            box-shadow: none;
+        }
+
+        body.student-pos-selection-screen .pos-progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: #fccc6b;
+            transition: width 0.72s cubic-bezier(.2,.8,.2,1);
+        }
+
+        .pos-problems-shell {
+            display: flex;
+            flex-direction: column;
+            min-height: 56px;
+        }
+
+        .pos-problems-toggle,
+        .pos-no-errors {
+            width: 100%;
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 16px;
+            border: 0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            line-height: normal;
+            text-align: left;
+        }
+
+        .pos-problems-toggle {
+            cursor: pointer;
+            background: #fff8e7;
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .pos-card.expanded .pos-problems-toggle {
+            border-radius: 12px 12px 0 0;
+        }
+
+        .pos-no-errors {
+            background: #dcfce7;
+            color: #15803d;
+            font-weight: 600;
+        }
+
+        .pos-problems-label {
+            min-width: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pos-alert-icon {
+            width: 16px;
+            height: 16px;
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pos-alert-icon img {
+            width: 16px;
+            height: 16px;
+            display: block;
+        }
+
+        .pos-chevron {
+            width: 16px;
+            height: 16px;
+            flex: 0 0 auto;
+            color: #6b7280;
+        }
+
+        .pos-problems-panel {
+            display: grid;
+            grid-template-rows: 0fr;
+            overflow: hidden;
+            opacity: 0;
+            background: #fff8e7;
+            border-radius: 0 0 12px 12px;
+            transition: grid-template-rows 0.32s ease, opacity 0.22s ease;
+        }
+
+        .pos-card.expanded .pos-problems-panel {
+            grid-template-rows: 1fr;
+            opacity: 1;
+        }
+
+        .pos-problem-chips {
+            min-height: 0;
+            overflow: hidden;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 16px 16px 24px;
+        }
+
+        .pos-problem-chip {
+            display: inline-flex;
+            align-items: center;
+            min-height: 28px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: #fef3c7;
+            color: #d97706;
+            font-size: 14px;
+            line-height: normal;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .pos-practice-btn {
+            position: absolute;
+            left: 24px;
+            right: 24px;
+            bottom: 24px;
+            width: auto;
+            height: 42px;
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 12px;
+            background: #ff4852;
+            color: #ffffff;
+            cursor: pointer;
+            transition: transform 0.16s ease, background 0.16s ease;
+        }
+
+        .pos-practice-btn:hover {
+            transform: translateY(-1px);
+            background: #f43d48;
+        }
+
+        .pos-practice-btn img {
+            width: 26px;
+            height: 26px;
+            display: block;
+        }
+
+        .pos-chevron img {
+            width: 16px;
+            height: 16px;
+            display: block;
+        }
+
+        .question-progress {
+            width: min(720px, 100%);
+            margin: 0 auto 34px;
+            padding: clamp(24px, 3vw, 34px);
+            text-align: center;
+            animation: fadeUp 0.28s ease both;
+            background: rgba(255, 255, 255, 0.74);
+            border: 1px solid rgba(133, 136, 242, 0.09);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 18px 48px rgba(74, 80, 145, 0.07);
+            backdrop-filter: blur(12px);
+        }
+
+        .question-progress-title {
+            font-size: clamp(24px, 2.4vw, 34px);
+            color: var(--text);
+            margin-bottom: 20px;
+            font-weight: 470;
+            letter-spacing: -0.02em;
+        }
+
+        .question-progress-track {
+            width: 100%;
+            height: 16px;
+            background: var(--primary-soft);
+            border-radius: 999px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(66, 72, 130, 0.08);
+        }
+
+        .question-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #7C7FF2, #B4B6FF);
+            border-radius: 999px;
+            transition: width 0.42s cubic-bezier(.2,.8,.2,1);
+        }
+
+        .student-login {
+            width: min(560px, 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            margin-top: 26px;
+            animation: fadeUp 0.34s ease both;
+        }
+
+        .student-input {
+            width: 100%;
+            border: 3px solid rgba(124, 127, 242, 0.32);
+            border-radius: 26px;
+            padding: 24px 28px;
+            font-family: inherit;
+            font-size: clamp(26px, 3vw, 38px);
+            text-align: center;
+            color: var(--text);
+            outline: none;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: 0 10px 28px rgba(61, 66, 125, 0.08);
+            transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+        }
+
+        .student-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 8px rgba(124, 127, 242, 0.12), 0 14px 34px rgba(61, 66, 125, 0.10);
+            transform: translateY(-1px);
+        }
+
+        .student-input::placeholder {
+            color: rgba(21, 24, 39, 0.42);
+        }
+
+        .student-login-btn,
+        .result-btn {
+            border: none;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: clamp(18px, 1.8vw, 24px);
+            font-weight: 500;
+            color: #ffffff;
+            background: linear-gradient(135deg, #8688F4, #7477EA);
+            box-shadow: var(--shadow-button);
+            transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+        }
+
+        .student-login-btn {
+            min-width: 210px;
+            padding: 20px 34px;
+        }
+
+        .student-login-btn:hover,
+        .result-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 36px rgba(124, 127, 242, 0.33);
+            filter: saturate(1.05);
+        }
+
+        .student-login-hint {
+            max-width: 520px;
+            color: var(--muted);
+            font-size: clamp(15px, 1.5vw, 18px);
+            line-height: 1.45;
+            text-align: center;
+        }
+
+        body.auth-screen .main {
+            width: 100%;
+            justify-content: center;
+            padding-top: 0;
+        }
+
+        body.auth-screen .student-login {
+            width: 480px;
+            max-width: calc(100vw - 32px);
+            gap: 32px;
+            margin-top: 0;
+            padding: 48px;
+            border-radius: 24px;
+            background: #ffffff;
+            border: none;
+            box-shadow: 0 4px 8px rgba(46, 56, 89, 0.10);
+            backdrop-filter: none;
+        }
+
+        body.auth-screen .student-input {
+            width: 100%;
+            height: 56px;
+            min-height: 0;
+            border: 1px solid #fff9e9;
+            border-radius: 12px;
+            padding: 0 16px;
+            font-size: 16px;
+            text-align: left;
+            background: #faf8f5;
+            color: #111827;
+            box-shadow: none;
+        }
+
+        body.auth-screen .subtitle {
+            display: none !important;
+        }
+
+        body.auth-screen .teacher-link-btn {
+            color: #3f58bb;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: normal;
+            text-decoration: none;
+        }
+
+        body.auth-screen .student-input::placeholder {
+            color: #9ca3af;
+        }
+
+        body.auth-screen {
+            background: #faf8f5;
+        }
+
+        body.auth-screen .app {
+            padding: 0 24px 40px;
+        }
+
+        body.auth-screen .app-header {
+            display: none;
+        }
+
+        body.auth-screen .options {
+            width: 100%;
+            gap: 48px;
+            margin-top: 0;
+        }
+
+        .student-login-page {
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 48px;
+            background: #faf8f5;
+        }
+
+        .student-login-logo-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .student-login-icon {
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: #3f58bb;
+            color: #ffffff;
+            box-shadow: 0 8px 8px rgba(99, 102, 241, 0.25);
+        }
+
+        .student-login-icon svg {
+            width: 42px;
+            height: 36px;
+            display: block;
+        }
+
+        .student-login-title {
+            margin: 0;
+            color: #0f172a;
+            font-size: 32px;
+            line-height: normal;
+            font-weight: 700;
+        }
+
+        .student-login-heading {
+            margin: 0;
+            color: #111827;
+            font-size: 24px;
+            line-height: normal;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        body.auth-screen .student-login-btn {
+            width: 100%;
+            min-width: 0;
+            min-height: 48px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            background: #3f58bb;
+            color: #faf8f5;
+            font-size: 14px;
+            line-height: normal;
+            font-weight: 700;
+            box-shadow: 0 10px 10px rgba(99, 102, 241, 0.19);
+        }
+
+        body.auth-screen .student-login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 12px rgba(99, 102, 241, 0.20);
+            filter: none;
+        }
+
+        .student-login-divider {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: normal;
+            font-weight: 400;
+            text-transform: lowercase;
+        }
+
+        .student-login-divider::before,
+        .student-login-divider::after {
+            content: "";
+            flex: 1 1 0;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .student-login-footer-hint {
+            margin: 0;
+            color: #9ca3af;
+            font-size: 14px;
+            line-height: normal;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        .teacher-login-fields {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .teacher-login-field {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .teacher-login-label {
+            margin: 0;
+            color: #111827;
+            font-size: 14px;
+            line-height: normal;
+            font-weight: 700;
+        }
+
+        .teacher-login-input-shell {
+            width: 100%;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 16px;
+            border: 1px solid #fff9e9;
+            border-radius: 12px;
+            background: #faf8f5;
+        }
+
+        .teacher-login-input-shell svg {
+            width: 20px;
+            height: 20px;
+            flex: 0 0 20px;
+            color: #94a3b8;
+        }
+
+        .teacher-login-input {
+            flex: 1 1 auto;
+            min-width: 0;
+            height: 100%;
+            border: none;
+            padding: 0;
+            background: transparent;
+            color: #111827;
+            font-family: inherit;
+            font-size: 16px;
+            line-height: normal;
+            outline: none;
+        }
+
+        .teacher-login-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .teacher-login-eye-btn {
+            width: 24px;
+            height: 24px;
+            flex: 0 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+
+        #footerButtons {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding-top: 28px;
+        }
+
+        .result-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .result-btn {
+            padding: 18px 30px;
+            min-height: 60px;
+        }
+
+        .summary-congrats {
+            text-align: center;
+            width: 100%;
+            font-size: clamp(32px, 4vw, 56px);
+            font-weight: 650;
+            margin: 32px 0 16px;
+            letter-spacing: -0.03em;
+            animation: popIn 0.42s ease both;
+        }
+
+        .summary-subtitle {
+            text-align: center;
+            margin: 28px 0 18px;
+            font-size: clamp(24px, 2.5vw, 34px);
+            font-weight: 520;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+
+        .summary-list-wrapper {
+            text-align: center;
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        .summary-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            max-width: min(860px, 92vw);
+        }
+
+        .summary-list li {
+            background: var(--success);
+            color: var(--success-text);
+            border-radius: 16px;
+            padding: 10px 18px;
+            font-size: clamp(19px, 1.7vw, 25px);
+            font-weight: 500;
+            text-align: center;
+            box-sizing: border-box;
+            animation: optionIn 0.24s ease both;
+        }
+
+        .batches-grid,
+        .batch-card {
+            display: none;
+        }
+
+        .teacher-dashboard {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            margin: 0;
+            padding-bottom: 80px;
+            font-family: "Onest", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--teacher-page-bg);
+            overflow-x: hidden;
+        }
+
+        .teacher-dashboard-header {
+            width: 100%;
+            height: 260px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            gap: 8px;
+            padding: 48px max(24px, calc((100vw - 1400px) / 2));
+            background: linear-gradient(90deg, var(--teacher-header-from) 0%, var(--teacher-header-to) 100%);
+            color: var(--teacher-on-color);
+        }
+
+        .teacher-dashboard-title {
+            margin: 0;
+            font-size: 40px;
+            line-height: normal;
+            font-weight: 700;
+            letter-spacing: 0;
+            color: var(--teacher-on-color);
+        }
+
+        .teacher-dashboard-subtitle {
+            margin: 0;
+            color: var(--teacher-on-color);
+            font-size: 18px;
+            line-height: normal;
+            font-weight: 400;
+        }
+
+        .teacher-content-container {
+            width: min(1400px, calc(100% - 48px));
+            display: flex;
+            flex-direction: column;
+            gap: 36px;
+            margin-top: -60px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        .teacher-actions {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            width: 100%;
+            min-height: 92px;
+            padding: 24px 36px;
+            border-radius: 18px;
+            background: var(--teacher-surface);
+            box-shadow: 0 2px 4px rgba(46, 56, 89, 0.06);
+        }
+
+        .teacher-search {
+            flex: 1 1 auto;
+            min-width: 220px;
+            height: 56px;
+            border: 1px solid var(--teacher-border);
+            border-radius: 14px;
+            padding: 0 18px;
+            font-family: inherit;
+            font-size: 17px;
+            color: var(--teacher-text);
+            background: var(--teacher-page-bg);
+            box-shadow: none;
+            outline: none;
+        }
+
+        .teacher-search::placeholder {
+            color: var(--teacher-text-muted);
+        }
+
+        .teacher-search:focus {
+            border-color: var(--teacher-accent);
+            box-shadow: 0 0 0 3px rgba(63, 88, 187, 0.12);
+        }
+
+        .teacher-toolbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 0 0 auto;
+        }
+
+        .teacher-primary-btn,
+        .teacher-toolbar-btn,
+        .teacher-login-btn {
+            min-height: 48px;
+            border-radius: 8px;
+            padding: 14px 24px;
+            font-family: inherit;
+            font-size: 16px;
+            line-height: normal;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
+        }
+
+        .teacher-primary-btn {
+            border: 1px solid var(--teacher-accent);
+            background: var(--teacher-accent);
+            color: var(--teacher-on-color);
+        }
+
+        .teacher-toolbar-btn {
+            border: 1px solid var(--teacher-border);
+            background: var(--teacher-surface);
+            color: var(--teacher-text);
+        }
+
+        .teacher-login-btn {
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--teacher-accent);
+        }
+
+        .teacher-primary-btn:hover,
+        .teacher-toolbar-btn:hover,
+        .teacher-login-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .teacher-notice {
+            padding: 14px 18px;
+            border-radius: 12px;
+            background: rgba(63, 88, 187, 0.10);
+            border: 1px solid rgba(63, 88, 187, 0.14);
+            color: var(--teacher-accent);
+            font-size: 14px;
+            line-height: 1.4;
+            font-weight: 700;
+        }
+
+        .teacher-students-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 36px;
+            align-items: start;
+            justify-content: center;
+        }
+
+        .teacher-card {
+            width: 100%;
+            max-width: none;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            background: var(--teacher-surface);
+            border: none;
+            border-radius: 26px;
+            box-shadow: 0 4px 8px rgba(46, 56, 89, 0.10);
+            padding: 30px;
+            animation: fadeUp 0.32s ease both;
+        }
+
+        .teacher-card.collapsed {
+            gap: 18px;
+        }
+
+        .teacher-card.expanded {
+            gap: 24px;
+        }
+
+        .teacher-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .teacher-card-heading {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .teacher-student-title {
+            font-size: 21px;
+            line-height: normal;
+            font-weight: 700;
+            color: var(--teacher-text);
+            margin: 0;
+            letter-spacing: 0;
+            word-break: break-word;
+        }
+
+        .teacher-expand-btn {
+            width: 36px;
+            height: 36px;
+            flex: 0 0 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border: none;
+            background: transparent;
+            color: var(--teacher-text-muted);
+            cursor: pointer;
+            font-family: inherit;
+            transition: color 0.16s ease;
+        }
+
+        .teacher-expand-btn svg {
+            width: 26px;
+            height: 26px;
+            display: block;
+            pointer-events: none;
+        }
+
+        .teacher-expand-btn:hover {
+            color: var(--teacher-accent);
+        }
+
+        .teacher-card-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .teacher-code-label {
+            display: inline-flex;
+            align-items: center;
+            margin: 0;
+            padding: 3px 10px;
+            border-radius: 5px;
+            background: var(--teacher-page-bg);
+            color: var(--teacher-accent);
+            font-size: 12px;
+            line-height: normal;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .teacher-status-badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 5px;
+            padding: 3px 10px;
+            margin: 0;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: normal;
+            text-transform: uppercase;
+            background: var(--teacher-success-bg);
+            color: var(--teacher-success);
+        }
+
+        .teacher-status-badge.bound {
+            background: var(--teacher-page-bg);
+            color: var(--teacher-accent);
+        }
+
+        .teacher-meta {
+            color: var(--teacher-text-muted);
+            font-size: 14px;
+            line-height: normal;
+            margin: 0;
+            font-weight: 400;
+        }
+
+        .teacher-progress-section {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+        }
+
+        .teacher-progress-label {
+            margin: 0;
+            color: var(--teacher-text-secondary);
+            font-size: 16px;
+            line-height: normal;
+            font-weight: 400;
+        }
+
+        .teacher-progress-percent {
+            color: var(--teacher-progress-accent);
+            font-weight: 700;
+        }
+
+        .teacher-pos-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            width: 100%;
+        }
+
+        .teacher-pos-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--teacher-border);
+            font-size: 16px;
+            color: var(--teacher-text);
+            font-weight: 400;
+        }
+
+        .teacher-pos-count {
+            color: var(--teacher-text-secondary);
+            font-weight: 700;
+        }
+
+        .teacher-small-bar {
+            width: 100%;
+            height: 10px;
+            background: var(--teacher-page-bg);
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: none;
+        }
+
+        .teacher-small-fill {
+            height: 100%;
+            background: var(--teacher-progress-fill);
+            border-radius: 5px;
+        }
+
+        .teacher-errors {
+            display: inline-flex;
+            align-items: center;
+            align-self: flex-start;
+            gap: 8px;
+            margin: 0;
+            padding: 5px 12px;
+            border-radius: 7px;
+            font-size: 14px;
+            line-height: normal;
+            font-weight: 700;
+            background: var(--teacher-danger-bg);
+            color: var(--teacher-danger);
+        }
+
+        .teacher-errors.no-errors {
+            background: var(--teacher-success-bg);
+            color: var(--teacher-success);
+        }
+
+        .teacher-errors-list {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: -4px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .teacher-errors-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--teacher-border);
+            color: var(--teacher-text);
+            font-size: 16px;
+            line-height: normal;
+            font-weight: 400;
+        }
+
+        .teacher-error-count {
+            color: var(--teacher-danger);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .teacher-card-actions {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 0;
+        }
+
+        .teacher-secondary-btn {
+            border: 1px solid var(--teacher-border);
+            border-radius: 9px;
+            padding: 10px 15px;
+            min-height: 40px;
+            background: var(--teacher-surface);
+            color: var(--teacher-text);
+            font-family: inherit;
+            font-size: 15px;
+            line-height: normal;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+            box-shadow: none;
+        }
+
+        .teacher-secondary-btn:hover {
+            transform: translateY(-1px);
+            background: var(--teacher-page-bg);
+            box-shadow: none;
+        }
+
+        .teacher-secondary-btn.subtle {
+            border-color: var(--teacher-danger);
+            background: var(--teacher-surface);
+            color: var(--teacher-danger);
+        }
+
+        .teacher-secondary-btn.subtle:hover {
+            background: var(--teacher-danger-hover-bg);
+        }
+
+        .teacher-secondary-btn.danger {
+            border-color: var(--teacher-archive);
+            background: var(--teacher-archive);
+            color: var(--teacher-on-color);
+        }
+
+        .teacher-secondary-btn.danger:hover {
+            background: var(--teacher-archive-hover);
+        }
+
+        .teacher-empty {
+            text-align: center;
+            color: var(--teacher-text-secondary);
+            font-size: 16px;
+            line-height: 1.5;
+            padding: 40px 24px;
+        }
+
+        .options.teacher-dashboard-options {
+            width: 100%;
+            max-width: none;
+            margin-top: 0;
+            gap: 0;
+        }
+
+        @media (max-width: 1440px) {
+            .teacher-dashboard-header {
+                padding-right: 24px;
+                padding-left: 24px;
+            }
+
+            .teacher-content-container {
+                width: min(1400px, calc(100% - 32px));
+            }
+
+            .teacher-students-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 900px) {
+            .teacher-dashboard-header {
+                height: 220px;
+                padding: 36px 24px;
+            }
+
+            .teacher-dashboard-title {
+                font-size: 32px;
+            }
+
+            .teacher-dashboard-subtitle {
+                font-size: 16px;
+            }
+
+            .teacher-content-container {
+                margin-top: -48px;
+            }
+
+            .teacher-actions,
+            .teacher-toolbar-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .teacher-actions {
+                gap: 18px;
+                min-height: 0;
+                padding: 20px 22px;
+                border-radius: 16px;
+            }
+
+            .teacher-search {
+                height: 50px;
+                font-size: 16px;
+            }
+
+            .teacher-toolbar-actions {
+                width: 100%;
+            }
+
+            .teacher-primary-btn,
+            .teacher-toolbar-btn,
+            .teacher-login-btn {
+                width: 100%;
+                min-height: 44px;
+                padding: 12px 18px;
+                font-size: 15px;
+            }
+
+            .teacher-students-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .teacher-card {
+                max-width: none;
+                gap: 20px;
+                padding: 24px;
+                border-radius: 24px;
+            }
+
+            .teacher-student-title {
+                font-size: 19px;
+            }
+
+            .teacher-meta,
+            .teacher-progress-label,
+            .teacher-pos-row,
+            .teacher-errors-list li {
+                font-size: 14px;
+            }
+
+            .teacher-secondary-btn {
+                min-height: 36px;
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+        }
+
+        .confetti-piece {
+            position: fixed;
+            top: -20px;
+            width: 10px;
+            height: 16px;
+            border-radius: 4px;
+            pointer-events: none;
+            z-index: 200;
+            animation: confettiFall 1.35s ease-out forwards;
+        }
+
+        @keyframes spin {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes cardEnter {
+            from { opacity: 0; transform: translateY(28px) scale(0.985); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes optionIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.985); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes quizOptionIn {
+            from { opacity: 0; transform: translateY(3px) scale(0.999); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.92); }
+            70% { transform: scale(1.03); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            45% { transform: scale(1.025); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            55% { transform: translateX(5px); }
+            78% { transform: translateX(-2px); }
+        }
+
+        @keyframes confettiFall {
+            0% { opacity: 1; transform: translateY(-20px) rotate(0deg); }
+            100% { opacity: 0; transform: translateY(100vh) rotate(420deg); }
+        }
+
+        @keyframes softPulse {
+            0%, 100% { transform: translateY(0) scale(1); box-shadow: 0 22px 58px rgba(74, 80, 145, 0.075); }
+            50% { transform: translateY(-8px) scale(1.018); box-shadow: 0 34px 82px rgba(133, 136, 242, 0.22); }
+        }
+
+        @media (max-width: 640px) {
+            .app {
+                padding: 90px 18px 32px;
+            }
+
+            .main {
+                padding-top: 150px;
+            }
+
+            .back-btn {
+                top: 30px;
+                left: 8px;
+                width: 58px;
+                height: 58px;
+                border-radius: 0;
+                font-size: 0;
+            }
+
+            .back-btn svg {
+                width: 58px;
+                height: 58px;
+            }
+
+            .option-btn {
+                min-height: 86px;
+                padding: 22px 22px;
+            }
+
+            .pos-choices {
+                grid-template-columns: 1fr;
+            }
+
+            .pos-card {
+                min-height: 240px;
+                padding: 32px 28px;
+                grid-template-rows: auto 16px minmax(48px, auto);
+                row-gap: 22px;
+            }
+
+            body.student-pos-selection-screen .app-header {
+                height: 72px;
+                padding: 0 18px;
+            }
+
+            body.student-pos-selection-screen .app-header h1 {
+                top: 18px;
+                margin: 0;
+                font-size: 28px;
+            }
+
+            body.student-pos-selection-screen .student-header-pill {
+                top: 17px;
+                right: 18px;
+                max-width: 138px;
+                min-height: 38px;
+                padding: 6px 10px;
+                font-size: 12px;
+                gap: 8px;
+            }
+
+            .student-header-avatar {
+                width: 24px;
+                height: 24px;
+            }
+
+            body.student-pos-selection-screen .back-btn {
+                top: 12px;
+                left: 10px;
+                width: 48px;
+                height: 48px;
+            }
+
+            body.student-pos-selection-screen .back-btn svg {
+                width: 30px;
+                height: 30px;
+            }
+
+            body.student-pos-selection-screen .main {
+                padding: 96px 18px 28px;
+            }
+
+            body.student-pos-selection-screen .pos-choices {
+                grid-template-columns: 1fr;
+                gap: 24px;
+                width: 100%;
+            }
+
+            body.student-pos-selection-screen .pos-card {
+                height: 261px;
+                padding: 20px;
+                border-radius: 18px;
+                gap: 18px;
+            }
+
+            body.student-pos-selection-screen .pos-practice-btn {
+                left: 20px;
+                right: 20px;
+                bottom: 20px;
+            }
+
+            body.student-pos-selection-screen .pos-card.expanded {
+                height: auto;
+                min-height: 0;
+            }
+
+            .pos-card-header {
+                align-items: flex-start;
+            }
+
+            .pos-status-badge {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
+
+            .pos-problem-chip {
+                font-size: 13px;
+            }
+
+            .teacher-dashboard {
+                margin-top: 0;
+            }
+
+            .teacher-dashboard-header {
+                height: 220px;
+                padding: 34px 18px;
+            }
+
+            .teacher-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .teacher-actions .result-btn {
+                width: 100%;
+            }
+
+            .teacher-search {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .teacher-card {
+                min-height: 0;
+                padding: 24px;
+            }
+
+            .teacher-code-label,
+            .teacher-status-badge {
+                padding: 2px 8px;
+                font-size: 11px;
+            }
+
+            .teacher-errors {
+                padding: 4px 10px;
+                font-size: 12px;
+            }
+
+            .teacher-small-bar {
+                height: 8px;
+                border-radius: 4px;
+            }
+
+            .teacher-small-fill {
+                border-radius: 4px;
+            }
+
+            .teacher-card-actions {
+                justify-content: stretch;
+            }
+
+            .teacher-secondary-btn {
+                width: 100%;
+            }
+
+            .result-buttons {
+                width: 100%;
+            }
+
+            .result-btn {
+                width: 100%;
+            }
+
+            body.auth-screen .student-login {
+                border-radius: 24px;
+                padding: 32px 24px;
+            }
+
+            body.auth-screen .main {
+                padding-top: 0;
+            }
+
+            .student-login-page {
+                gap: 32px;
+                padding: 32px 0;
+            }
+
+            .student-login-title {
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 1260px) {
+            .pos-choices {
+                grid-template-columns: 1fr;
+                width: min(760px, 100%);
+            }
+        }
+
+        /* ===== QUESTION SCREEN POLISH ===== */
+        body.question-screen {
+            overflow-x: hidden;
+        }
+
+        body.question-screen .app {
+            min-height: 100vh;
+            padding: 0 clamp(22px, 5vw, 76px) 44px;
+        }
+
+        body.question-screen .main {
+            width: 100%;
+            min-height: 100vh;
+            justify-content: center;
+            padding-top: 120px;
+            animation: none;
+            transform: none;
+        }
+
+        body.question-screen #mainInterface {
+            min-height: calc(100vh - 140px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.question-screen .question-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: auto !important;
+            max-width: none !important;
+            margin: 0;
+            padding: 36px clamp(120px, 12vw, 190px) 38px;
+            border-radius: 0 0 24px 24px;
+            background: linear-gradient(135deg, rgba(247, 248, 255, 0.94), rgba(239, 241, 255, 0.86));
+            border: none;
+            box-shadow: 0 14px 38px rgba(80, 84, 150, 0.09);
+            backdrop-filter: blur(16px);
+            z-index: 20;
+            overflow: hidden;
+            transform: none;
+            box-sizing: border-box;
+        }
+
+        body.question-screen #sessionInfo {
+            width: 100%;
+            max-width: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        body.question-screen .question-progress-title {
+            margin: 0;
+            font-size: clamp(28px, 2.7vw, 42px);
+            color: var(--text);
+            font-weight: 440;
+            letter-spacing: -0.025em;
+        }
+
+        body.question-screen .question-progress-track {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: auto;
+            height: 14px;
+            margin: 0;
+            background: rgba(226, 228, 255, 0.92);
+            border-radius: 0;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(62, 67, 130, 0.08);
+        }
+
+        body.question-screen .question-progress-fill {
+            position: relative;
+            height: 100%;
+            width: 0%;
+            border-radius: 0 999px 999px 0;
+            background: linear-gradient(90deg, #7477EA 0%, #8E91F7 58%, #A8AAFF 100%);
+            box-shadow: 0 0 10px rgba(124, 127, 242, 0.24);
+            transition: width 0.72s cubic-bezier(.22, .9, .26, 1);
+            will-change: width;
+        }
+
+        body.question-screen .question-progress-fill::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: -10px;
+            width: 22px;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.55), rgba(255,255,255,0));
+            opacity: 0.72;
+            pointer-events: none;
+        }
+
+        body.question-screen .back-btn {
+            top: 28px;
+            left: clamp(28px, 4vw, 70px);
+            width: 75px;
+            height: 75px;
+            border-radius: 0;
+            background: transparent;
+            color: #9C9FFC;
+            box-shadow: none;
+            border: none;
+            backdrop-filter: none;
+            padding: 0;
+        }
+
+        body.question-screen .back-btn svg {
+            width: 75px;
+            height: 75px;
+        }
+
+        body.question-screen .back-btn:hover {
+            background: transparent;
+            color: #9C9FFC;
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: none;
+        }
+
+        body.question-screen .options {
+            width: min(780px, 88vw);
+            margin: clamp(64px, 11vh, 120px) auto 0;
+            gap: clamp(22px, 3vh, 34px);
+        }
+
+        body.question-screen .option-btn {
+            width: 100%;
+            min-height: clamp(92px, 11vh, 118px);
+            font-size: clamp(30px, 3.35vw, 48px);
+            border-radius: 26px;
+            box-shadow: 0 16px 42px rgba(64, 70, 120, 0.09);
+        }
+
+        @media (max-width: 760px) {
+            body.question-screen .question-progress {
+                padding: 30px 22px 28px;
+            }
+
+    
+        body.question-screen #sessionInfo {
+            width: 100vw;
+            max-width: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        body.question-screen .question-progress-title {
+                padding-left: 82px;
+                text-align: left;
+                font-size: 24px;
+            }
+
+            body.question-screen .back-btn {
+                left: 18px;
+                top: 24px;
+                width: 58px;
+                height: 58px;
+            }
+
+            body.question-screen .back-btn svg {
+                width: 58px;
+                height: 58px;
+            }
+
+            body.question-screen .main {
+                padding-top: 126px;
+            }
+        }
+
+        /* FINAL: quiz screen from Figma */
+        body.question-screen {
+            background: #faf8f5;
+            overflow-x: hidden;
+        }
+
+        body.question-screen .app {
+            min-height: 100vh;
+            padding: 0 0 80px;
+            background: #faf8f5;
+        }
+
+        body.question-screen .main {
+            width: 100%;
+            min-height: auto;
+            padding-top: 200px;
+            justify-content: flex-start;
+            animation: none;
+        }
+
+        body.question-screen #mainInterface {
+            width: 100%;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        body.question-screen #sessionInfo {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        body.question-screen .question-progress {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100vw !important;
+            max-width: none !important;
+            height: 86px !important;
+            margin: 0 !important;
+            padding: 0 40px 6px !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: linear-gradient(90deg, #3f58bb 0%, #233ca1 100%) !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            transform: none !important;
+            overflow: hidden !important;
+            box-sizing: border-box !important;
+            z-index: 20 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        body.question-screen .question-progress-title {
+            width: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            color: #fff9e9 !important;
+            font-size: 35px !important;
+            line-height: normal !important;
+            font-weight: 600 !important;
+            letter-spacing: 0 !important;
+            text-align: center !important;
+            white-space: nowrap;
+        }
+
+        body.question-screen .question-progress-track {
+            position: absolute !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 6px !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            background: #fef9e9 !important;
+            box-shadow: none !important;
+        }
+
+        body.question-screen .question-progress-fill {
+            height: 100% !important;
+            border-radius: 0 !important;
+            background: #fccc6b !important;
+            box-shadow: none !important;
+            transition: width 0.72s cubic-bezier(.22, .9, .26, 1) !important;
+        }
+
+        body.question-screen .question-progress-fill::after {
+            content: none !important;
+        }
+
+        body.question-screen .back-btn {
+            position: fixed !important;
+            top: 28px !important;
+            left: 40px !important;
+            width: 24px !important;
+            height: 24px !important;
+            padding: 0 !important;
+            color: #fff9e9 !important;
+            background: transparent !important;
+            border: 0 !important;
+            box-shadow: none !important;
+            z-index: 35 !important;
+        }
+
+        body.question-screen .back-btn svg {
+            display: none !important;
+        }
+
+        body.question-screen .back-btn::before {
+            content: "";
+            width: 24px;
+            height: 24px;
+            display: block;
+            background: url("https://www.figma.com/api/mcp/asset/540c5afc-a104-40e6-ad92-b7b679b9bcb6") center / contain no-repeat;
+        }
+
+        body.question-screen .back-btn:hover {
+            transform: translateX(-2px);
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        .question-card {
+            width: min(680px, calc(100vw - 48px));
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+            margin: 0;
+            padding: 24px;
+            border-radius: 24px;
+            background: #fff3c4;
+            color: #111827;
+        }
+
+        .question-card-accent {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #fccc6b;
+        }
+
+        .question-card-icon {
+            width: 16px;
+            height: 16px;
+            flex: 0 0 auto;
+            display: block;
+        }
+
+        .question-card-text {
+            min-width: 0;
+            flex: 1 1 auto;
+            font-size: 24px;
+            line-height: normal;
+            font-weight: 500;
+        }
+
+        .question-card-text strong {
+            font-weight: 700;
+        }
+
+        body.question-screen .options {
+            width: min(640px, calc(100vw - 48px));
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: center;
+            margin: 45px auto 0;
+        }
+
+        body.question-screen .option-btn {
+            width: 100%;
+            min-height: 80px;
+            padding: 0 24px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e8e2d8;
+            border-radius: 16px;
+            background: #fffdf7;
+            color: #111827;
+            box-shadow: 0 4px 0 rgba(102, 82, 41, 0.2), 0 8px 20px rgba(115, 92, 46, 0.18), inset 0 2px 4px rgba(255, 255, 255, 0.6);
+            font-size: 28px;
+            line-height: normal;
+            font-weight: 500;
+            animation: quizOptionIn 0.46s cubic-bezier(.22, 1, .36, 1) both;
+            transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+        }
+
+        body.question-screen .option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            background: #fffdf7;
+            border-color: #e8e2d8;
+            box-shadow: 0 6px 0 rgba(102, 82, 41, 0.18), 0 12px 24px rgba(115, 92, 46, 0.20), inset 0 2px 4px rgba(255, 255, 255, 0.6);
+        }
+
+        body.question-screen .option-btn:active:not(:disabled) {
+            transform: translateY(3px) scale(0.995);
+            box-shadow: 0 1px 0 rgba(102, 82, 41, 0.24), 0 4px 12px rgba(115, 92, 46, 0.14), inset 0 2px 4px rgba(255, 255, 255, 0.6);
+        }
+
+        body.question-screen .option-btn.correct {
+            background: #dcfce7;
+            color: #111827;
+            border-color: transparent;
+            animation: correctPulse 0.44s ease both;
+        }
+
+        body.question-screen .option-btn.wrong {
+            background: #fee2e2;
+            color: #111827;
+            border-color: transparent;
+            animation: wrongShake 0.34s ease both;
+        }
+
+        body.question-screen .option-btn:disabled {
+            opacity: 1;
+        }
+
+        @media (max-width: 760px) {
+            body.question-screen .main {
+                padding-top: 164px;
+            }
+
+            body.question-screen .question-progress {
+                height: 78px !important;
+                padding: 0 64px 6px !important;
+            }
+
+            body.question-screen .question-progress-title {
+                font-size: 25px !important;
+            }
+
+            body.question-screen .back-btn {
+                top: 27px !important;
+                left: 24px !important;
+            }
+
+            .question-card {
+                min-height: 72px;
+                padding: 18px 20px;
+                border-radius: 18px;
+            }
+
+            .question-card-text {
+                font-size: 19px;
+            }
+
+            body.question-screen .options {
+                margin-top: 32px;
+            }
+
+            body.question-screen .option-btn {
+                min-height: 72px;
+                font-size: 24px;
+            }
+        }
+
+/* ===== RESULT SCREENS ===== */
+
+body.final-success-screen,
+body.final-error-screen,
+body.final-finished-screen {
+    background: #faf8f5;
+}
+
+body.final-success-screen .app,
+body.final-error-screen .app,
+body.final-finished-screen .app {
+    min-height: 100vh;
+    padding: 0 24px 80px;
+    justify-content: flex-start;
+    background: #faf8f5;
+}
+
+body.final-success-screen .main,
+body.final-error-screen .main,
+body.final-finished-screen .main {
+    width: 100%;
+    min-height: auto;
+    padding-top: 0;
+    animation: none;
+}
+
+body.final-success-screen #mainInterface,
+body.final-error-screen #mainInterface,
+body.final-finished-screen #mainInterface {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.result-screen-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.summary-congrats.success-center {
+    width: 100%;
+    margin: 0;
+    color: #1f2937;
+    font-size: 48px;
+    line-height: normal;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    animation: popIn 0.42s ease both;
+}
+
+.result-headline {
+    width: 100%;
+    position: relative;
+    text-align: center;
+    z-index: 2;
+}
+
+body.final-success-screen .result-screen-content,
+body.final-finished-screen .result-screen-content {
+    gap: 90px;
+    padding-top: 150px;
+}
+
+body.final-error-screen .result-screen-content {
+    gap: 60px;
+    padding: 80px 56px 0;
+}
+
+.summary-subtitle {
+    width: 100%;
+    margin: 0;
+    color: #1f2937;
+    font-size: 32px;
+    line-height: normal;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-align: center;
+}
+
+.summary-list-wrapper {
+    width: 100%;
+    margin: 0;
+    text-align: center;
+}
+
+.summary-list {
+    width: 100%;
+    max-width: 860px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+}
+
+.summary-list li {
+    display: inline-flex;
+    align-items: center;
+    min-height: 49px;
+    padding: 12px 24px;
+    border-radius: 6px;
+    background: #e4f8ec;
+    color: #0ab448;
+    font-size: 20px;
+    line-height: normal;
+    font-weight: 600;
+    white-space: nowrap;
+    animation: optionIn 0.24s ease both;
+}
+
+#footerButtons.final-success-footer,
+#footerButtons.final-error-footer,
+#footerButtons.final-finished-footer {
+    width: 100%;
+    padding-top: 0;
+    transform: none;
+}
+
+#footerButtons.final-success-footer,
+#footerButtons.final-finished-footer {
+    margin-top: 0;
+}
+
+#footerButtons.final-error-footer {
+    margin-top: 0;
+}
+
+.result-buttons.final-success-buttons,
+.result-buttons.final-error-buttons,
+.result-buttons.final-finished-buttons {
+    width: 480px;
+    max-width: calc(100vw - 48px);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 16px;
+    position: relative;
+    z-index: 2;
+}
+
+.result-buttons.final-error-buttons {
+    padding-top: 0;
+}
+
+.result-buttons .result-btn {
+    width: 100%;
+    min-height: 62px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 40px;
+    border: 0;
+    border-radius: 999px;
+    background: #233ca1;
+    color: #faf8f5;
+    box-shadow: none;
+    font-family: inherit;
+    font-size: 18px;
+    line-height: normal;
+    font-weight: 600;
+    white-space: normal;
+}
+
+.result-buttons .result-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: none;
+    filter: brightness(1.04);
+}
+
+.result-buttons .result-btn.review-primary {
+    background: #ff4852;
+}
+
+.result-confetti-dot {
+    position: absolute;
+    width: var(--size);
+    height: var(--size);
+    left: var(--left);
+    top: var(--top);
+    border-radius: 999px;
+    background: var(--color);
+    pointer-events: none;
+}
+
+.result-sparkle-layer {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 100vw;
+    height: 320px;
+    transform: translateX(-50%);
+    pointer-events: none;
+    overflow: visible;
+    z-index: 1;
+}
+
+.result-sparkle {
+    position: absolute;
+    width: var(--size);
+    height: var(--size);
+    left: var(--left);
+    top: var(--top);
+    display: block;
+    pointer-events: none;
+    opacity: 0;
+    transform-origin: center;
+    animation:
+        sparkleAppear 760ms cubic-bezier(0.16, 1, 0.3, 1) var(--delay) both,
+        sparkleTwinkle 2.45s ease-in-out calc(var(--delay) + 780ms) infinite;
+}
+
+@keyframes sparkleAppear {
+    0% {
+        opacity: 0;
+        transform: scale(0.22);
+        filter: drop-shadow(0 0 0 rgba(36, 68, 166, 0));
+    }
+
+    70% {
+        opacity: 1;
+        transform: scale(1.18);
+        filter: drop-shadow(0 0 10px rgba(36, 68, 166, 0.24));
+    }
+
+    100% {
+        opacity: 0.78;
+        transform: scale(1);
+        filter: drop-shadow(0 0 4px rgba(36, 68, 166, 0.12));
+    }
+}
+
+@keyframes sparkleTwinkle {
+    0%, 100% {
+        opacity: 0.55;
+        transform: scale(0.82);
+        filter: drop-shadow(0 0 0 rgba(36, 68, 166, 0));
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.22);
+        filter: drop-shadow(0 0 12px rgba(36, 68, 166, 0.28));
+    }
+}
+
+.firework-piece {
+
+    position: fixed;
+
+    width: 10px;
+
+    height: 10px;
+
+    border-radius: 999px;
+
+    pointer-events: none;
+
+    z-index: 200;
+
+    opacity: 1;
+
+    box-shadow: 0 0 10px rgba(124, 127, 242, 0.28);
+
+    animation: fireworkBurst 1500ms ease-out forwards;
+
+}
+
+@keyframes fireworkBurst {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(0.7);
+    }
+
+    70% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(var(--x), var(--y)) scale(0.15);
+    }
+}
+
+@media (max-width: 760px) {
+    body.final-success-screen .app,
+    body.final-error-screen .app,
+    body.final-finished-screen .app {
+        padding-inline: 18px;
+    }
+
+    body.final-success-screen .result-screen-content,
+    body.final-finished-screen .result-screen-content {
+        gap: 56px;
+        padding-top: 120px;
+    }
+
+    body.final-error-screen .result-screen-content {
+        gap: 42px;
+        padding: 64px 0 0;
+    }
+
+    .summary-congrats.success-center {
+        font-size: 38px;
+    }
+
+    .summary-subtitle {
+        font-size: 28px;
+    }
+
+    .summary-list {
+        max-width: 100%;
+        gap: 10px;
+    }
+
+    .summary-list li {
+        min-height: 44px;
+        padding: 10px 16px;
+        font-size: 18px;
+    }
+
+    .result-buttons.final-success-buttons,
+    .result-buttons.final-error-buttons,
+    .result-buttons.final-finished-buttons {
+        width: min(420px, 100%);
+    }
+
+    .result-buttons .result-btn {
+        min-height: 58px;
+        padding: 18px 24px;
+        font-size: 16px;
+    }
+}
+
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <button id="backButton" class="back-btn hidden" aria-label="Назад">
+            <svg width="75" height="75" viewBox="0 0 75 75" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M63.9375 38C63.9375 42.3234 60.4501 45.4931 57.6887 45.4931L40.047 45.4931C38.6663 45.4931 37.5681 46.615 37.7818 47.9791C38.399 51.9198 39.8583 56.7287 37.4209 59.0785C35.4337 60.9942 32.2684 60.9378 30.3509 58.9525L13.4645 41.4687C11.5952 39.5333 11.5952 36.4667 13.4645 34.5313L30.3509 17.0475C32.2684 15.0622 35.4337 15.0058 37.4209 16.9215C39.8582 19.2713 38.399 24.0802 37.7818 28.0209C37.5681 29.385 38.6663 30.5069 40.047 30.5069L57.6887 30.507C60.4501 30.507 63.9375 33.5815 63.9375 38Z" fill="currentColor"/>
+            </svg>
+        </button>
+        <header id="appHeader" class="app-header">
+            <h1>Тренажёр по ударениям</h1>
+            <div id="studentHeaderPill" class="student-header-pill hidden" aria-label="Код ученика"></div>
+        </header>
+        <div id="subtitle" class="subtitle"></div>
+        <div id="studentInfo" class="student-info hidden"></div>
+
+        <div class="main">
+            <!-- Основной интерфейс -->
+            <div id="mainInterface">
+                <div id="sessionInfo" class="session-counter"></div>
+                <div id="batchesSelection" class="hidden">
+                    <h3>Выбери номер</h3>
+                    <div class="batches-grid" id="batchesGrid"></div>
+                </div>
+                <div id="options" class="options"></div>
+                <div id="status" class="status"></div>
+                <div id="summary"></div>
+            </div>
+        </div>
+
+        <div id="footerButtons"></div>
+        <div id="loaderOverlay" class="loader-overlay hidden">
+            <div class="loader"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+
+    <script>
+        // Константы
+        const DELAY_AFTER_CORRECT = 700;
+        const DELAY_AFTER_WRONG = 1800;
+        const SESSION_WORD_LIMIT = 12;
+        const ERROR_MIX_LIMIT = 4;
+        const REVIEW_CORRECT_STREAK = 3;
+        const PERFECT_RESULT_TITLES = [
+            "Ни одной ошибки!",
+            "Верно!",
+            "Так держать!"
+        ];
+
+        // Переменные состояния
+        let currentPOS = null;
+        let currentBatch = [];
+        let currentBatchNumber = null;
+        let currentIndex = 0;
+        let mistakes = [];
+        let lastErrorsForReview = [];
+        let answered = false;
+        let isReviewMode = false;
+        let currentScreen = "student";
+        let currentStudentId = null;
+        let pendingQuestionAdvanceTimeout = null;
+        let teacherDashboardNotice = "";
+        let teacherDashboardSearch = "";
+        let expandedTeacherStudentId = "";
+        let expandedPOSProblem = "";
+
+        // Ссылка на опубликованную Google Таблицу с контентом
+        const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQiiyi8kWapw_kNy19fZ-X4M35Redd3AJdxqAwmMREkwgupYij_HGpUMz42TvV1kz1V_uC0doLbvIxE/pub?gid=0&single=true&output=csv";
+        const FIGMA_ASSETS = {
+            avatar: "https://www.figma.com/api/mcp/asset/408fc647-be61-47f3-991c-08edd884b12a",
+            alertCircle: "https://www.figma.com/api/mcp/asset/092a276f-3a8b-48ff-84aa-006ddb77c049",
+            chevronDown: "https://www.figma.com/api/mcp/asset/af0970d3-05d2-4e98-8f3f-dc181c72bc9f",
+            chevronUp: "https://www.figma.com/api/mcp/asset/34ca1974-d809-456a-8213-2338fdffdc83",
+            quizBack: "https://www.figma.com/api/mcp/asset/540c5afc-a104-40e6-ad92-b7b679b9bcb6",
+            pencil: "https://www.figma.com/api/mcp/asset/14bc25c7-2c09-47fc-aa1f-1703ee12e795",
+            play: "https://www.figma.com/api/mcp/asset/7b48470a-6b51-43c6-af59-a57fa5e2c435"
+        };
+
+        // UID методиста из Firebase Authentication.
+        const TEACHER_UID = "NDBX67iGclQjJvLcIXLGUyLuSXr1";
+        const CODE_WORDS = [
+            "КОТ", "СОВА", "ЛИСА", "МЯЧ", "РАК", "ДОМ", "КИТ", "ЁЖ",
+            "САД", "ЛЕС", "МАК", "СОК", "ЧАЙ", "ЖУК", "СЫР", "НОС",
+            "ЗУБ", "МЁД", "ЛУК", "СУП", "ПАРК", "ЗОНТ", "ШАР", "КЛЮЧ",
+            "КУБ", "БАНТ", "ГРИБ", "МОСТ", "ПЛЕД", "ТИГР", "ЛЕВ", "ГНОМ",
+            "СЛОН", "ПИР", "КРАБ", "ФЛАГ", "СНЕГ", "ГУСЬ", "СТОЛ", "ЛАМПА",
+            "ТОРТ", "КРОТ", "ПАКЕТ", "ЛОЖКА", "МАЯК", "ПЕРО", "КАМЕНЬ", "ХЛЕБ"
+        ];
+
+        // Сюда приложение загрузит слова из таблицы
+        let wordsData = {};
+
+        // Firebase: общая база для прогресса учеников
+        const firebaseConfig = {
+            apiKey: "AIzaSyCYFXcST8-Ak0zuj-ZlShcVunuaYDB8Xgo",
+            authDomain: "emphasis-trainer.firebaseapp.com",
+            projectId: "emphasis-trainer",
+            storageBucket: "emphasis-trainer.firebasestorage.app",
+            messagingSenderId: "377679695147",
+            appId: "1:377679695147:web:5c46b71011ff221c76096e"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // ===== FIREBASE AUTH =====
+
+        async function ensureAnonymousAuth() {
+            const user = auth.currentUser;
+
+            if (user && user.isAnonymous) {
+                return user;
+            }
+
+            if (user && !user.isAnonymous) {
+                await auth.signOut();
+            }
+
+            const credential = await auth.signInAnonymously();
+            return credential.user;
+        }
+
+        async function ensureStudentProfile(studentId) {
+            if (!studentId) return null;
+
+            const user = await ensureAnonymousAuth();
+            const now = new Date().toISOString();
+            const studentRef = db.collection("students").doc(studentId);
+
+            let studentDoc;
+            try {
+                studentDoc = await studentRef.get();
+            } catch (error) {
+                // Если правила Firestore не дают прочитать документ, не пускаем в ID.
+                // Для ученика безопаснее получить отказ, чем случайно создать локальный прогресс под чужим ID.
+                const blocked = new Error("student_id_taken");
+                blocked.code = "student_id_taken";
+                throw blocked;
+            }
+
+            if (!studentDoc.exists) {
+                const error = new Error("student_id_not_found");
+                error.code = "student_id_not_found";
+                throw error;
+            }
+
+            const data = studentDoc.data() || {};
+
+            if (!data.owner_uid) {
+                await studentRef.set({
+                    student_id: studentId,
+                    owner_uid: user.uid,
+                    last_seen_at: now
+                }, { merge: true });
+
+                return user;
+            }
+
+            if (data.owner_uid === user.uid) {
+                await studentRef.set({
+                    student_id: studentId,
+                    last_seen_at: now
+                }, { merge: true });
+
+                return user;
+            }
+
+            const error = new Error("student_id_taken");
+            error.code = "student_id_taken";
+            throw error;
+        }
+
+        async function signInTeacher(email, password) {
+            if (auth.currentUser) {
+                await auth.signOut();
+            }
+
+            const credential = await auth.signInWithEmailAndPassword(email, password);
+
+            if (credential.user.uid !== TEACHER_UID) {
+                await auth.signOut();
+                throw new Error("not_teacher");
+            }
+
+            return credential.user;
+        }
+
+        function ensureTeacherAuth() {
+            const user = auth.currentUser;
+
+            if (!user || user.isAnonymous || user.uid !== TEACHER_UID) {
+                throw new Error("not_teacher");
+            }
+
+            return user;
+        }
+
+        async function sendTeacherPasswordReset() {
+            const user = ensureTeacherAuth();
+            const email = user.email;
+
+            if (!email) {
+                throw new Error("teacher_email_missing");
+            }
+
+            await auth.sendPasswordResetEmail(email);
+            teacherDashboardNotice = `Письмо для смены пароля отправлено на ${email}`;
+            await showTeacherDashboard();
+        }
+
+        async function signOutTeacher() {
+            if (auth.currentUser && !auth.currentUser.isAnonymous) {
+                await auth.signOut();
+            }
+            showStudentLogin();
+        }
+
+        // Загрузка слов из Google Таблицы
+        async function loadWordsFromSheet() {
+            const response = await fetch(SHEET_CSV_URL);
+
+            if (!response.ok) {
+                throw new Error("Не удалось загрузить таблицу со словами");
+            }
+
+            const csvText = await response.text();
+            const rows = parseCSV(csvText);
+
+            if (!rows.length) {
+                throw new Error("Таблица пустая");
+            }
+
+            const headers = rows[0].map(h => h.trim());
+            const dataRows = rows.slice(1);
+            const result = {};
+
+            dataRows.forEach(row => {
+                const item = {};
+
+                headers.forEach((header, index) => {
+                    item[header] = (row[index] || "").trim();
+                });
+
+                // Пропускаем полностью пустые строки
+                if (!item.word_id && !item.correct_word && !item.wrong_options) return;
+
+                // Берём только активные слова
+                if (String(item.is_active).toUpperCase() !== "TRUE") return;
+
+                const pos = item.pos;
+                const batchId = Number(item.batch_id);
+
+                if (!pos || !batchId || !item.word_id || !item.correct_word || !item.wrong_options) {
+                    console.warn("Строка пропущена: не хватает обязательных данных", item);
+                    return;
+                }
+
+                if (!result[pos]) result[pos] = {};
+                if (!result[pos][batchId]) result[pos][batchId] = [];
+
+                result[pos][batchId].push({
+                    pos: item.pos,
+                    pos_code: item.pos_code,
+                    batch_id: batchId,
+                    word_number: Number(item.word_number),
+                    word_id: item.word_id,
+                    correct_word: item.correct_word,
+                    wrong_options: item.wrong_options
+                });
+            });
+
+            // Сортируем batch и слова внутри batch
+            Object.keys(result).forEach(pos => {
+                Object.keys(result[pos]).forEach(batchId => {
+                    result[pos][batchId].sort((a, b) => a.word_number - b.word_number);
+                });
+            });
+
+            wordsData = result;
+
+            console.log("Слова загружены из таблицы:", wordsData);
+        }
+
+        // Простой CSV-парсер для нашей таблицы
+        // В таблице нет запятых внутри ячеек, поэтому сложный парсер не нужен
+        function parseCSV(text) {
+            return text
+                .trim()
+                .split(/\r?\n/)
+                .map(line => line.split(","));
+        }
+
+        // ===== УЧЕНИК И ЛОКАЛЬНЫЙ ПРОГРЕСС ПО СЛОВАМ =====
+
+        function normalizeStudentId(value) {
+            return String(value || "")
+                .trim()
+                .toUpperCase()
+                .replace(/\s+/g, "")
+                .replace(/[—–]/g, "-");
+        }
+
+        function generateStudentId() {
+            const word = CODE_WORDS[Math.floor(Math.random() * CODE_WORDS.length)];
+            const number = String(Math.floor(Math.random() * 1000)).padStart(3, "0");
+            return `${word}-${number}`;
+        }
+
+        function getSavedStudentId() {
+            return normalizeStudentId(localStorage.getItem("currentStudentId") || "");
+        }
+
+        function saveStudentId(studentId) {
+            currentStudentId = normalizeStudentId(studentId);
+            localStorage.setItem("currentStudentId", currentStudentId);
+        }
+
+        function clearStudentId() {
+            currentStudentId = null;
+            localStorage.removeItem("currentStudentId");
+        }
+
+        function getPulseStorageKey() {
+            const id = currentStudentId || getSavedStudentId() || "guest";
+            return `posPulseSeen_${id}`;
+        }
+
+        function hasSeenPOSPulse() {
+            return localStorage.getItem(getPulseStorageKey()) === "1";
+        }
+
+        function markPOSPulseSeen() {
+            localStorage.setItem(getPulseStorageKey(), "1");
+        }
+
+        function getProgressStorageKey() {
+            const id = currentStudentId || getSavedStudentId() || "guest";
+            return `seenWords_${id}`;
+        }
+
+        function getSeenWords() {
+            try {
+                return JSON.parse(localStorage.getItem(getProgressStorageKey()) || "{}");
+            } catch (error) {
+                return {};
+            }
+        }
+
+        function saveSeenWords(seenWords) {
+            localStorage.setItem(getProgressStorageKey(), JSON.stringify(seenWords));
+        }
+
+        function markWordAsSeen(word, isCorrect) {
+            if (!word || !word.word_id) return;
+
+            const seenWords = getSeenWords();
+            const previous = seenWords[word.word_id] || {};
+            const previousCorrectStreak = Number(previous.correct_streak || 0);
+            const correctStreak = isCorrect ? previousCorrectStreak + 1 : 0;
+            const needsReview = isCorrect
+                ? correctStreak < REVIEW_CORRECT_STREAK && Boolean(previous.needs_review)
+                : true;
+
+            const updatedProgress = {
+                ...previous,
+                word_id: word.word_id,
+                pos: word.pos,
+                pos_code: word.pos_code,
+                batch_id: word.batch_id,
+                word_number: word.word_number,
+                correct_word: word.correct,
+                wrong_options: word.wrong,
+                seen: true,
+                seen_count: Number(previous.seen_count || 0) + 1,
+                correct_count: Number(previous.correct_count || 0) + (isCorrect ? 1 : 0),
+                wrong_count: Number(previous.wrong_count || 0) + (isCorrect ? 0 : 1),
+                correct_streak: correctStreak,
+                needs_review: needsReview,
+                last_answer_correct: isCorrect,
+                last_seen_at: new Date().toISOString()
+            };
+
+            seenWords[word.word_id] = updatedProgress;
+            saveSeenWords(seenWords);
+            saveWordProgressToFirebase(updatedProgress);
+        }
+
+        async function loadSeenWordsFromFirebase(studentId) {
+            if (!studentId) return;
+
+            try {
+                await ensureStudentProfile(studentId);
+
+                const snapshot = await db
+                    .collection("students")
+                    .doc(studentId)
+                    .collection("wordProgress")
+                    .get();
+
+                const firebaseWords = {};
+                snapshot.forEach(doc => {
+                    firebaseWords[doc.id] = doc.data();
+                });
+
+                const localWords = getSeenWords();
+                saveSeenWords({ ...localWords, ...firebaseWords });
+
+                await ensureStudentProfile(studentId);
+
+                console.log("Прогресс загружен из Firebase:", firebaseWords);
+            } catch (error) {
+                if (error.code === "student_id_taken" || error.message === "student_id_taken") {
+                    throw error;
+                }
+
+                console.warn("Не удалось загрузить прогресс из Firebase.", error);
+                throw error;
+            }
+        }
+
+        async function saveWordProgressToFirebase(progressEntry) {
+            if (!currentStudentId || !progressEntry || !progressEntry.word_id) return;
+
+            try {
+                const now = progressEntry.last_seen_at || new Date().toISOString();
+
+                await ensureStudentProfile(currentStudentId);
+
+                await db
+                    .collection("students")
+                    .doc(currentStudentId)
+                    .collection("wordProgress")
+                    .doc(progressEntry.word_id)
+                    .set({
+                        word_id: progressEntry.word_id,
+                        pos: progressEntry.pos,
+                        pos_code: progressEntry.pos_code,
+                        batch_id: progressEntry.batch_id,
+                        word_number: progressEntry.word_number,
+                        correct_word: progressEntry.correct_word,
+                        wrong_options: progressEntry.wrong_options,
+                        seen: true,
+                        seen_count: progressEntry.seen_count || 0,
+                        correct_count: progressEntry.correct_count || 0,
+                        wrong_count: progressEntry.wrong_count || 0,
+                        correct_streak: progressEntry.correct_streak || 0,
+                        needs_review: Boolean(progressEntry.needs_review),
+                        last_answer_correct: Boolean(progressEntry.last_answer_correct),
+                        last_seen_at: now
+                    }, { merge: true });
+
+                await db.collection("students").doc(currentStudentId).set({
+                    student_id: currentStudentId,
+                    owner_uid: auth.currentUser ? auth.currentUser.uid : null,
+                    last_seen_at: now
+                }, { merge: true });
+            } catch (error) {
+                console.warn("Не удалось сохранить прогресс в Firebase. Локальный прогресс сохранён.", error);
+            }
+        }
+
+        function getAllWordsByPOS(pos) {
+            if (!wordsData[pos]) return [];
+
+            return Object.values(wordsData[pos])
+                .flat()
+                .filter(word => word && word.word_id);
+        }
+
+        function getProgressByPOS(pos) {
+            const allWords = getAllWordsByPOS(pos);
+            const seenWords = getSeenWords();
+
+            const seenCount = allWords.filter(word => seenWords[word.word_id]).length;
+            const totalCount = allWords.length;
+
+            return {
+                seenCount,
+                totalCount,
+                percent: totalCount ? Math.round((seenCount / totalCount) * 100) : 0
+            };
+        }
+
+        function getNextBatchNumber(pos) {
+            const batches = Object.keys(wordsData[pos] || {})
+                .map(Number)
+                .sort((a, b) => a - b);
+
+            const seenWords = getSeenWords();
+
+            for (const batchNumber of batches) {
+                const batchWords = wordsData[pos][batchNumber] || [];
+                const hasUnseenWords = batchWords.some(word => !seenWords[word.word_id]);
+
+                if (hasUnseenWords) {
+                    return batchNumber;
+                }
+            }
+
+            // Если все слова уже встречались, снова даём первый batch для повторения.
+            return batches[0];
+        }
+
+        function prepareQuestion(word) {
+            const options = [word.correct_word, word.wrong_options];
+            const shuffledOptions = [...options].sort(() => Math.random() - 0.5);
+            const correctIndex = shuffledOptions.indexOf(word.correct_word);
+
+            return {
+                word_id: word.word_id,
+                pos: word.pos,
+                pos_code: word.pos_code,
+                batch_id: word.batch_id,
+                word_number: word.word_number,
+                options: shuffledOptions,
+                correctIndex: correctIndex,
+                correct: word.correct_word,
+                wrong: word.wrong_options
+            };
+        }
+
+        function isUnresolvedProgressItem(item) {
+            if (!item) return false;
+
+            if (item.needs_review === true) return true;
+            if (item.needs_review === false) return false;
+
+            // Поддержка старых записей, которые были созданы до появления needs_review.
+            return Number(item.wrong_count || 0) > Number(item.correct_count || 0);
+        }
+
+        function getUnresolvedErrorWordsByPOS(pos) {
+            const seenWords = getSeenWords();
+            const wordsById = new Map(getAllWordsByPOS(pos).map(word => [word.word_id, word]));
+
+            return Object.values(seenWords)
+                .filter(item => wordsById.has(item.word_id))
+                .filter(isUnresolvedProgressItem)
+                .sort((a, b) => {
+                    const wrongDiff = Number(b.wrong_count || 0) - Number(a.wrong_count || 0);
+                    if (wrongDiff !== 0) return wrongDiff;
+                    return String(b.last_seen_at || "").localeCompare(String(a.last_seen_at || ""));
+                })
+                .map(item => wordsById.get(item.word_id));
+        }
+
+        function shuffleArray(items) {
+            const result = [...items];
+
+            for (let i = result.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [result[i], result[j]] = [result[j], result[i]];
+            }
+
+            return result;
+        }
+
+        function buildTrainingWords(pos) {
+            const allWords = getAllWordsByPOS(pos);
+            if (!allWords.length) return [];
+
+            const seenWords = getSeenWords();
+            const allWordsHaveBeenSeen = allWords.every(word => seenWords[word.word_id]);
+            const repeatWords = getUnresolvedErrorWordsByPOS(pos).slice(0, ERROR_MIX_LIMIT);
+            const usedIds = new Set(repeatWords.map(word => word.word_id));
+
+            // Пока ребёнок ещё не видел все слова части речи,
+            // идём по таблице: ошибки + следующие новые слова по порядку.
+            if (!allWordsHaveBeenSeen) {
+                const nextBatchNumber = getNextBatchNumber(pos);
+                if (!nextBatchNumber) return [];
+
+                const nextBatchWords = wordsData[pos][nextBatchNumber] || [];
+
+                const newWords = nextBatchWords
+                    .filter(word => !usedIds.has(word.word_id))
+                    .filter(word => !seenWords[word.word_id]);
+
+                const fallbackWords = nextBatchWords
+                    .filter(word => !usedIds.has(word.word_id))
+                    .filter(word => seenWords[word.word_id]);
+
+                return [
+                    ...repeatWords,
+                    ...newWords,
+                    ...fallbackWords
+                ].slice(0, SESSION_WORD_LIMIT);
+            }
+
+            // Когда все слова этой части речи уже хотя бы раз встречались,
+            // порядок таблицы больше не важен: повторяем слова случайно.
+            const randomReviewWords = shuffleArray(
+                allWords.filter(word => !usedIds.has(word.word_id))
+            );
+
+            return [
+                ...repeatWords,
+                ...randomReviewWords
+            ].slice(0, SESSION_WORD_LIMIT);
+        }
+
+        function startNextTraining(pos) {
+            currentPOS = pos;
+            setLoading(true);
+
+            const trainingWords = buildTrainingWords(pos);
+
+            if (!trainingWords.length) {
+                setLoading(false);
+                setStatus("Для этой части речи пока нет слов", "err");
+                return;
+            }
+
+            startTrainingSession(pos, trainingWords);
+        }
+
+        function showStudentInfo() {
+            const el = document.getElementById("studentInfo");
+            if (!el) return;
+
+            // В ученическом режиме ID и смена ID не показываются: ребёнку это не нужно.
+            el.classList.add("hidden");
+            el.innerHTML = "";
+        }
+
+        function setStudentPosSelectionScreen(isActive) {
+            document.body.classList.toggle("student-pos-selection-screen", Boolean(isActive));
+
+            const headerTitle = document.querySelector("#appHeader h1");
+            if (headerTitle) {
+                headerTitle.textContent = isActive ? "Части речи" : "Тренажёр по ударениям";
+            }
+
+            const pill = document.getElementById("studentHeaderPill");
+            if (!pill) return;
+
+            if (!isActive) {
+                pill.classList.add("hidden");
+                pill.innerHTML = "";
+                return;
+            }
+
+            const studentId = currentStudentId || getSavedStudentId();
+            pill.classList.toggle("hidden", !studentId);
+            pill.innerHTML = "";
+
+            if (!studentId) return;
+
+            const avatar = document.createElement("span");
+            avatar.className = "student-header-avatar";
+            avatar.setAttribute("aria-hidden", "true");
+            const avatarImg = document.createElement("img");
+            avatarImg.alt = "";
+            avatarImg.src = FIGMA_ASSETS.avatar;
+            avatar.appendChild(avatarImg);
+
+            const code = document.createElement("span");
+            code.textContent = studentId;
+
+            pill.appendChild(avatar);
+            pill.appendChild(code);
+        }
+
+        function cancelPendingQuestionAdvance() {
+            if (pendingQuestionAdvanceTimeout) {
+                clearTimeout(pendingQuestionAdvanceTimeout);
+                pendingQuestionAdvanceTimeout = null;
+            }
+
+            answered = false;
+        }
+
+        function showStudentLogin() {
+            cancelPendingQuestionAdvance();
+            setResultScreenState();
+            setAuthScreen(true);
+            showAppHeader();
+            currentScreen = "studentLogin";
+            currentPOS = null;
+            currentBatch = [];
+            currentIndex = 0;
+            mistakes = [];
+            lastErrorsForReview = [];
+            isReviewMode = false;
+            answered = false;
+
+            document.getElementById('mainInterface').classList.remove('hidden');
+            document.getElementById('backButton').classList.add('hidden');
+            document.getElementById('studentInfo').classList.add('hidden');
+            document.getElementById('studentInfo').innerHTML = "";
+
+            setSubtitle("");
+            setSessionInfo("");
+            setStatus("");
+            clearOptions();
+            clearSummary();
+            clearFooterButtons();
+            hideBatchesSelection();
+
+            const box = document.getElementById("options");
+            const page = document.createElement("div");
+            page.className = "student-login-page";
+
+            const logoHeader = document.createElement("div");
+            logoHeader.className = "student-login-logo-header";
+
+            const icon = document.createElement("div");
+            icon.className = "student-login-icon";
+            icon.innerHTML = '<svg viewBox="0 0 42 36" aria-hidden="true" focusable="false"><path d="M8 6.5h9.5c2.2 0 4 1.8 4 4v19c0-2.2-1.8-4-4-4H8V6.5Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M34 6.5h-9.5c-2.2 0-4 1.8-4 4v19c0-2.2 1.8-4 4-4H34V6.5Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>';
+
+            const title = document.createElement("h1");
+            title.className = "student-login-title";
+            title.textContent = "Тренажёр ударений";
+
+            logoHeader.appendChild(icon);
+            logoHeader.appendChild(title);
+
+            const wrap = document.createElement("div");
+            wrap.className = "student-login";
+
+            const heading = document.createElement("h2");
+            heading.className = "student-login-heading";
+            heading.textContent = "Войти как ученик";
+
+            const input = document.createElement("input");
+            input.className = "student-input";
+            input.type = "text";
+            input.placeholder = "Введи код...";
+            input.autocomplete = "off";
+            const savedStudentId = getSavedStudentId();
+            input.value = savedStudentId;
+
+            const btn = document.createElement("button");
+            btn.className = "student-login-btn";
+            btn.textContent = "Войти";
+
+            const divider = document.createElement("div");
+            divider.className = "student-login-divider";
+            divider.textContent = "или";
+
+            const teacherBtn = document.createElement("button");
+            teacherBtn.className = "teacher-link-btn";
+            teacherBtn.textContent = "Войти как репетитор →";
+            teacherBtn.onclick = showTeacherLogin;
+
+            const footerHint = document.createElement("p");
+            footerHint.className = "student-login-footer-hint";
+            footerHint.textContent = "Нет кода? Узнай его у репетитора";
+
+            const submit = async () => {
+                const id = normalizeStudentId(input.value);
+
+                if (!id) {
+                    setStatus("Введи код. Узнай его у репетитора", "err");
+                    input.focus();
+                    return;
+                }
+
+                setLoading(true);
+                setStatus("Загружаем прогресс...");
+
+                try {
+                    await loadSeenWordsFromFirebase(id);
+                    saveStudentId(id);
+                    setLoading(false);
+                    setStatus("");
+                    showMainInterface();
+                } catch (error) {
+                    console.error("Ошибка входа ученика:", error);
+                    setLoading(false);
+
+                    if (error.code === "student_id_not_found" || error.message === "student_id_not_found") {
+                        setStatus("Такого кода нет. Проверь код или попроси репетитора выдать новый.", "err");
+                    } else if (error.code === "student_id_taken" || error.message === "student_id_taken") {
+                        clearStudentId();
+                        setStatus("Этот код уже привязан к другому устройству. Проверь код или попроси репетитора сбросить доступ.", "err");
+                    } else {
+                        setStatus("Проверь интернет и попробуй ещё раз.", "err");
+                    }
+
+                    input.focus();
+                }
+            };
+
+            btn.onclick = submit;
+            input.addEventListener("keydown", event => {
+                if (event.key === "Enter") submit();
+            });
+
+            wrap.appendChild(heading);
+            wrap.appendChild(input);
+            wrap.appendChild(btn);
+            wrap.appendChild(divider);
+            wrap.appendChild(teacherBtn);
+            page.appendChild(logoHeader);
+            page.appendChild(wrap);
+            page.appendChild(footerHint);
+            box.appendChild(page);
+
+            setTimeout(() => {
+                if (savedStudentId) {
+                    btn.focus();
+                } else {
+                    input.focus();
+                }
+            }, 50);
+        }
+
+        function changeStudent() {
+            clearStudentId();
+            showStudentLogin();
+        }
+
+        // ===== КАБИНЕТ МЕТОДИСТА =====
+
+        function showTeacherLogin() {
+            cancelPendingQuestionAdvance();
+            setResultScreenState();
+            setAuthScreen(true);
+            leaveQuestionScreen();
+            showAppHeader();
+            currentScreen = "teacherLogin";
+            currentPOS = null;
+            currentBatch = [];
+            currentIndex = 0;
+            mistakes = [];
+            lastErrorsForReview = [];
+            isReviewMode = false;
+            answered = false;
+
+            document.getElementById('mainInterface').classList.remove('hidden');
+            document.getElementById('backButton').classList.add('hidden');
+            document.getElementById('studentInfo').classList.add('hidden');
+            document.getElementById('studentInfo').innerHTML = "";
+
+            setSubtitle("");
+            setSessionInfo("");
+            setStatus("");
+            clearOptions();
+            clearSummary();
+            clearFooterButtons();
+            hideBatchesSelection();
+
+            const box = document.getElementById("options");
+            const page = document.createElement("div");
+            page.className = "student-login-page";
+
+            const logoHeader = document.createElement("div");
+            logoHeader.className = "student-login-logo-header";
+
+            const icon = document.createElement("div");
+            icon.className = "student-login-icon";
+            icon.innerHTML = '<svg viewBox="0 0 42 36" aria-hidden="true" focusable="false"><path d="M8 6.5h9.5c2.2 0 4 1.8 4 4v19c0-2.2-1.8-4-4-4H8V6.5Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M34 6.5h-9.5c-2.2 0-4 1.8-4 4v19c0-2.2 1.8-4 4-4H34V6.5Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>';
+
+            const title = document.createElement("h1");
+            title.className = "student-login-title";
+            title.textContent = "Тренажёр ударений";
+
+            logoHeader.appendChild(icon);
+            logoHeader.appendChild(title);
+
+            const wrap = document.createElement("div");
+            wrap.className = "student-login";
+
+            const heading = document.createElement("h2");
+            heading.className = "student-login-heading";
+            heading.textContent = "Войти как репетитор";
+
+            const fields = document.createElement("div");
+            fields.className = "teacher-login-fields";
+
+            const emailField = document.createElement("label");
+            emailField.className = "teacher-login-field";
+
+            const emailLabel = document.createElement("span");
+            emailLabel.className = "teacher-login-label";
+            emailLabel.textContent = "Email";
+
+            const emailShell = document.createElement("div");
+            emailShell.className = "teacher-login-input-shell";
+            emailShell.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6.5h16v11H4v-11Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m4.8 7.3 7.2 5.4 7.2-5.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+            const emailInput = document.createElement("input");
+            emailInput.className = "teacher-login-input";
+            emailInput.type = "email";
+            emailInput.placeholder = "your@email.com";
+            emailInput.autocomplete = "username";
+            emailShell.appendChild(emailInput);
+            emailField.appendChild(emailLabel);
+            emailField.appendChild(emailShell);
+
+            const passwordField = document.createElement("label");
+            passwordField.className = "teacher-login-field";
+
+            const passwordLabel = document.createElement("span");
+            passwordLabel.className = "teacher-login-label";
+            passwordLabel.textContent = "Пароль";
+
+            const passwordShell = document.createElement("div");
+            passwordShell.className = "teacher-login-input-shell";
+            passwordShell.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="10" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+
+            const passwordInput = document.createElement("input");
+            passwordInput.className = "teacher-login-input";
+            passwordInput.type = "password";
+            passwordInput.placeholder = "••••••••";
+            passwordInput.autocomplete = "current-password";
+            passwordShell.appendChild(passwordInput);
+
+            const passwordEyeBtn = document.createElement("button");
+            passwordEyeBtn.className = "teacher-login-eye-btn";
+            passwordEyeBtn.type = "button";
+            passwordEyeBtn.setAttribute("aria-label", "Показать пароль");
+            passwordEyeBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.8 12s3.2-5 9.2-5 9.2 5 9.2 5-3.2 5-9.2 5-9.2-5-9.2-5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
+            passwordEyeBtn.onclick = () => {
+                const shouldShow = passwordInput.type === "password";
+                passwordInput.type = shouldShow ? "text" : "password";
+                passwordEyeBtn.setAttribute("aria-label", shouldShow ? "Скрыть пароль" : "Показать пароль");
+            };
+            passwordShell.appendChild(passwordEyeBtn);
+
+            passwordField.appendChild(passwordLabel);
+            passwordField.appendChild(passwordShell);
+            fields.appendChild(emailField);
+            fields.appendChild(passwordField);
+
+            const btn = document.createElement("button");
+            btn.className = "student-login-btn";
+            btn.textContent = "Открыть кабинет";
+
+            const divider = document.createElement("div");
+            divider.className = "student-login-divider";
+            divider.textContent = "или";
+
+            const backBtn = document.createElement("button");
+            backBtn.className = "teacher-link-btn";
+            backBtn.textContent = "Войти как ученик →";
+            backBtn.onclick = showStudentLogin;
+
+            const submit = async () => {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+
+                if (!email || !password) {
+                    setStatus("Введи email и пароль репетитора", "err");
+                    return;
+                }
+
+                setLoading(true);
+                setStatus("Входим в кабинет...");
+
+                try {
+                    await signInTeacher(email, password);
+                    setLoading(false);
+                    setStatus("");
+                    await showTeacherDashboard();
+                } catch (error) {
+                    console.error("Ошибка входа методиста:", error);
+                    setLoading(false);
+                    setStatus("Проверь email и пароль репетитора.", "err");
+                    passwordInput.focus();
+                }
+            };
+
+            btn.onclick = submit;
+            [emailInput, passwordInput].forEach(input => {
+                input.addEventListener("keydown", event => {
+                    if (event.key === "Enter") submit();
+                });
+            });
+
+            wrap.appendChild(heading);
+            wrap.appendChild(fields);
+            wrap.appendChild(btn);
+            wrap.appendChild(divider);
+            wrap.appendChild(backBtn);
+            page.appendChild(logoHeader);
+            page.appendChild(wrap);
+            box.appendChild(page);
+
+            setTimeout(() => emailInput.focus(), 50);
+        }
+
+        function getTotalWordsCount() {
+            return Object.keys(wordsData).reduce((sum, pos) => sum + getAllWordsByPOS(pos).length, 0);
+        }
+
+        function buildTeacherSummary(progressMap) {
+            const summaryByPOS = Object.keys(wordsData).map(pos => {
+                const words = getAllWordsByPOS(pos);
+                const seen = words.filter(word => progressMap[word.word_id]).length;
+                const total = words.length;
+                return {
+                    pos,
+                    seen,
+                    total,
+                    percent: total ? Math.round((seen / total) * 100) : 0
+                };
+            });
+
+            const errorWords = Object.values(progressMap)
+                .filter(isUnresolvedProgressItem)
+                .sort((a, b) => Number(b.wrong_count || 0) - Number(a.wrong_count || 0));
+
+            return { summaryByPOS, errorWords };
+        }
+
+        function getTeacherSearchValue(student) {
+            return `${student.id} ${student.display_name || ""}`.toLowerCase();
+        }
+
+        function toggleTeacherStudentCard(studentId) {
+            expandedTeacherStudentId = expandedTeacherStudentId === studentId ? "" : studentId;
+        }
+
+        async function loadTeacherData() {
+            ensureTeacherAuth();
+            const studentsSnapshot = await db.collection("students").get();
+            const students = [];
+
+            for (const studentDoc of studentsSnapshot.docs) {
+                const studentData = studentDoc.data() || {};
+                const progressSnapshot = await db
+                    .collection("students")
+                    .doc(studentDoc.id)
+                    .collection("wordProgress")
+                    .get();
+
+                const progressMap = {};
+                progressSnapshot.forEach(doc => {
+                    progressMap[doc.id] = doc.data();
+                });
+
+                students.push({
+                    id: studentDoc.id,
+                    display_name: String(studentData.display_name || "").trim(),
+                    is_archived: Boolean(studentData.is_archived),
+                    owner_uid: studentData.owner_uid || "",
+                    last_seen_at: studentData.last_seen_at || "",
+                    progressMap,
+                    progressCount: Object.keys(progressMap).length
+                });
+            }
+
+            students.sort((a, b) => String(b.last_seen_at).localeCompare(String(a.last_seen_at)));
+            return students;
+        }
+
+        async function createStudentFromTeacher() {
+            ensureTeacherAuth();
+            const now = new Date().toISOString();
+
+            for (let attempt = 0; attempt < 20; attempt += 1) {
+                const candidateId = generateStudentId();
+                const studentRef = db.collection("students").doc(candidateId);
+                const studentDoc = await studentRef.get();
+
+                if (studentDoc.exists) {
+                    continue;
+                }
+
+                await studentRef.set({
+                    student_id: candidateId,
+                    owner_uid: "",
+                    display_name: "",
+                    is_archived: false,
+                    created_at: now,
+                    last_seen_at: ""
+                });
+
+                teacherDashboardNotice = `Создан ученик: ${candidateId}`;
+                await showTeacherDashboard();
+                return;
+            }
+
+            throw new Error("student_id_generation_failed");
+        }
+
+        async function resetStudentAccess(studentId) {
+            ensureTeacherAuth();
+            await db.collection("students").doc(studentId).set({
+                owner_uid: ""
+            }, { merge: true });
+
+            teacherDashboardNotice = `Устройство отвязано для ${studentId}`;
+            await showTeacherDashboard();
+        }
+
+        async function renameStudent(student) {
+            ensureTeacherAuth();
+            const nextName = window.prompt("Введите имя ученика", student.display_name || "");
+            if (nextName === null) return;
+
+            await db.collection("students").doc(student.id).set({
+                display_name: nextName.trim()
+            }, { merge: true });
+
+            teacherDashboardNotice = nextName.trim()
+                ? `Имя сохранено для ${student.id}`
+                : `Имя очищено для ${student.id}`;
+            await showTeacherDashboard();
+        }
+
+        async function copyStudentCode(studentId) {
+            ensureTeacherAuth();
+            try {
+                if (!navigator.clipboard || !navigator.clipboard.writeText) {
+                    throw new Error("clipboard_unavailable");
+                }
+
+                await navigator.clipboard.writeText(studentId);
+                teacherDashboardNotice = `Код скопирован: ${studentId}`;
+            } catch (error) {
+                teacherDashboardNotice = `Код для копирования: ${studentId}`;
+                window.prompt("Скопируйте код ученика вручную", studentId);
+            }
+
+            await showTeacherDashboard();
+        }
+
+        async function archiveStudent(studentId) {
+            ensureTeacherAuth();
+            await db.collection("students").doc(studentId).set({
+                is_archived: true
+            }, { merge: true });
+
+            teacherDashboardNotice = `Ученик архивирован: ${studentId}`;
+            await showTeacherDashboard();
+        }
+
+        async function resetStudentProgress(studentId) {
+            ensureTeacherAuth();
+            const progressSnapshot = await db
+                .collection("students")
+                .doc(studentId)
+                .collection("wordProgress")
+                .get();
+
+            const docs = progressSnapshot.docs;
+            while (docs.length) {
+                const batch = db.batch();
+                docs.splice(0, 400).forEach(doc => {
+                    batch.delete(doc.ref);
+                });
+                await batch.commit();
+            }
+
+            teacherDashboardNotice = `Прогресс сброшен для ${studentId}`;
+            await showTeacherDashboard();
+        }
+
+        async function showTeacherDashboard() {
+            cancelPendingQuestionAdvance();
+            setResultScreenState();
+            setAuthScreen(false);
+            leaveQuestionScreen();
+            hideAppHeader();
+            document.getElementById('mainInterface').classList.remove('hidden');
+            document.getElementById('backButton').classList.add('hidden');
+            document.getElementById('studentInfo').classList.add('hidden');
+            document.getElementById('studentInfo').innerHTML = "";
+
+            try {
+                ensureTeacherAuth();
+            } catch (error) {
+                console.warn("Попытка открыть кабинет без входа репетитора:", error);
+                setLoading(false);
+                showTeacherLogin();
+                setStatus("Войдите как репетитор через email и пароль.", "err");
+                return;
+            }
+
+            currentScreen = "teacherDashboard";
+
+            setSubtitle("");
+            setSessionInfo("");
+            setStatus("Загружаем прогресс учеников...");
+            clearOptions();
+            document.body.classList.add("teacher-dashboard-screen");
+            clearSummary();
+            clearFooterButtons();
+            hideBatchesSelection();
+            setLoading(true);
+
+            try {
+                const students = await loadTeacherData();
+                setLoading(false);
+                setStatus("");
+                renderTeacherDashboard(students);
+            } catch (error) {
+                console.error("Ошибка загрузки кабинета методиста:", error);
+                setLoading(false);
+                setStatus("Не удалось загрузить данные учеников из Firebase", "err");
+            }
+        }
+
+        function renderTeacherStudentsList(container, students) {
+            container.innerHTML = "";
+            container.className = "teacher-students-grid";
+
+            const activeStudents = students.filter(student => !student.is_archived);
+            const searchValue = teacherDashboardSearch.trim().toLowerCase();
+            const filteredStudents = searchValue
+                ? activeStudents.filter(student => getTeacherSearchValue(student).includes(searchValue))
+                : activeStudents;
+
+            if (!activeStudents.length) {
+                const emptyCard = document.createElement("div");
+                emptyCard.className = "teacher-card";
+
+                const empty = document.createElement("div");
+                empty.className = "teacher-empty";
+                empty.textContent = "Пока нет данных учеников. Пусть ученик войдёт по коду и решит несколько слов.";
+                emptyCard.appendChild(empty);
+                container.appendChild(emptyCard);
+                return;
+            }
+
+            if (!filteredStudents.length) {
+                const emptyCard = document.createElement("div");
+                emptyCard.className = "teacher-card";
+
+                const empty = document.createElement("div");
+                empty.className = "teacher-empty";
+                empty.textContent = "Ученики не найдены";
+                emptyCard.appendChild(empty);
+                container.appendChild(emptyCard);
+                return;
+            }
+
+            filteredStudents.forEach(student => {
+                const { summaryByPOS, errorWords } = buildTeacherSummary(student.progressMap);
+                const totalWords = getTotalWordsCount();
+                const totalSeen = Object.keys(student.progressMap).length;
+                const totalPercent = totalWords ? Math.round((totalSeen / totalWords) * 100) : 0;
+                const lastSeen = student.last_seen_at ? new Date(student.last_seen_at).toLocaleString("ru-RU") : "нет данных";
+                const hasOwner = Boolean(student.owner_uid);
+                const isExpanded = expandedTeacherStudentId === student.id;
+
+                const card = document.createElement("div");
+                card.className = `teacher-card ${isExpanded ? "expanded" : "collapsed"}`;
+
+                const cardHeader = document.createElement("div");
+                cardHeader.className = "teacher-card-header";
+
+                const cardHeading = document.createElement("div");
+                cardHeading.className = "teacher-card-heading";
+
+                const title = document.createElement("div");
+                title.className = "teacher-student-title";
+                title.textContent = student.display_name || student.id;
+                cardHeading.appendChild(title);
+
+                const metaRow = document.createElement("div");
+                metaRow.className = "teacher-card-meta-row";
+
+                const codeLabel = document.createElement("div");
+                codeLabel.className = "teacher-code-label";
+                codeLabel.textContent = `Код: ${student.id}`;
+                metaRow.appendChild(codeLabel);
+
+                const badge = document.createElement("div");
+                badge.className = `teacher-status-badge${hasOwner ? " bound" : ""}`;
+                badge.textContent = hasOwner ? "Привязан" : "Свободный";
+                metaRow.appendChild(badge);
+
+                const meta = document.createElement("div");
+                meta.className = "teacher-meta";
+                meta.textContent = `Последняя активность: ${lastSeen}`;
+                if (isExpanded) {
+                    metaRow.appendChild(meta);
+                }
+
+                cardHeading.appendChild(metaRow);
+                cardHeader.appendChild(cardHeading);
+                cardHeader.onclick = () => {
+                    toggleTeacherStudentCard(student.id);
+                    renderTeacherStudentsList(container, students);
+                };
+
+                const expandBtn = document.createElement("button");
+                expandBtn.className = "teacher-expand-btn";
+                expandBtn.type = "button";
+                expandBtn.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+                expandBtn.setAttribute("aria-label", isExpanded ? "Свернуть карточку ученика" : "Раскрыть карточку ученика");
+                expandBtn.innerHTML = isExpanded
+                    ? '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+                    : '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                expandBtn.onclick = event => {
+                    event.stopPropagation();
+                    toggleTeacherStudentCard(student.id);
+                    renderTeacherStudentsList(container, students);
+                };
+                cardHeader.appendChild(expandBtn);
+
+                card.appendChild(cardHeader);
+
+                const progressSection = document.createElement("div");
+                progressSection.className = "teacher-progress-section";
+
+                const progressLabel = document.createElement("p");
+                progressLabel.className = "teacher-progress-label";
+                progressLabel.appendChild(document.createTextNode(`${totalSeen} из ${totalWords} слов · `));
+
+                const progressPercent = document.createElement("span");
+                progressPercent.className = "teacher-progress-percent";
+                progressPercent.textContent = `${totalPercent}%`;
+                progressLabel.appendChild(progressPercent);
+
+                const totalBar = document.createElement("div");
+                totalBar.className = "teacher-small-bar";
+
+                const totalFill = document.createElement("div");
+                totalFill.className = "teacher-small-fill";
+                totalFill.style.width = `${totalPercent}%`;
+
+                totalBar.appendChild(totalFill);
+                progressSection.appendChild(progressLabel);
+                progressSection.appendChild(totalBar);
+                card.appendChild(progressSection);
+
+                const errors = document.createElement("div");
+                errors.className = "teacher-errors";
+
+                if (errorWords.length) {
+                    errors.textContent = `${errorWords.length} ошибки`;
+                } else {
+                    errors.classList.add("no-errors");
+                    errors.textContent = "Ошибок пока нет ✓";
+                }
+
+                if (!isExpanded) {
+                    card.appendChild(errors);
+                    container.appendChild(card);
+                    return;
+                }
+
+                const posList = document.createElement("div");
+                posList.className = "teacher-pos-list";
+
+                summaryByPOS.forEach(item => {
+                    const row = document.createElement("div");
+                    row.className = "teacher-pos-row";
+
+                    const name = document.createElement("div");
+                    name.textContent = item.pos;
+
+                    const count = document.createElement("div");
+                    count.className = "teacher-pos-count";
+                    count.textContent = `${item.seen}/${item.total}`;
+                    row.appendChild(name);
+                    row.appendChild(count);
+                    posList.appendChild(row);
+                });
+
+                card.appendChild(posList);
+                card.appendChild(errors);
+
+                if (errorWords.length) {
+                    const errorsList = document.createElement("ul");
+                    errorsList.className = "teacher-errors-list";
+
+                    errorWords.slice(0, 8).forEach(item => {
+                        const errorItem = document.createElement("li");
+
+                        const word = document.createElement("span");
+                        word.textContent = item.correct_word || item.word_id || "Слово";
+
+                        const count = document.createElement("span");
+                        count.className = "teacher-error-count";
+                        count.textContent = `${Number(item.wrong_count || 0)} ошибок`;
+
+                        errorItem.appendChild(word);
+                        errorItem.appendChild(count);
+                        errorsList.appendChild(errorItem);
+                    });
+
+                    if (errorWords.length > 8) {
+                        const restItem = document.createElement("li");
+                        restItem.textContent = `Ещё ${errorWords.length - 8} ошибок`;
+                        errorsList.appendChild(restItem);
+                    }
+
+                    card.appendChild(errorsList);
+                }
+
+                const actions = document.createElement("div");
+                actions.className = "teacher-card-actions";
+
+                const copyBtn = document.createElement("button");
+                copyBtn.className = "teacher-secondary-btn";
+                copyBtn.textContent = "Скопировать код";
+                copyBtn.onclick = async () => {
+                    try {
+                        await copyStudentCode(student.id);
+                    } catch (error) {
+                        console.error("Ошибка копирования кода:", error);
+                        setStatus("Не удалось показать код для копирования", "err");
+                    }
+                };
+
+                const renameBtn = document.createElement("button");
+                renameBtn.className = "teacher-secondary-btn";
+                renameBtn.textContent = "Переименовать";
+                renameBtn.onclick = async () => {
+                    try {
+                        setStatus(`Сохраняем имя для ${student.id}...`);
+                        await renameStudent(student);
+                        setStatus("");
+                    } catch (error) {
+                        console.error("Ошибка переименования ученика:", error);
+                        setStatus("Не удалось сохранить имя ученика", "err");
+                    }
+                };
+
+                const detachBtn = document.createElement("button");
+                detachBtn.className = "teacher-secondary-btn";
+                detachBtn.textContent = "Отвязать устройство";
+                detachBtn.onclick = async () => {
+                    if (!window.confirm(`Отвязать устройство для ${student.id}? Прогресс сохранится.`)) {
+                        return;
+                    }
+
+                    try {
+                        setStatus(`Отвязываем устройство для ${student.id}...`);
+                        await resetStudentAccess(student.id);
+                        setStatus("");
+                    } catch (error) {
+                        console.error("Ошибка отвязки устройства:", error);
+                        setStatus("Не удалось отвязать устройство", "err");
+                    }
+                };
+
+                const resetProgressBtn = document.createElement("button");
+                resetProgressBtn.className = "teacher-secondary-btn subtle";
+                resetProgressBtn.textContent = "Сбросить прогресс";
+                resetProgressBtn.onclick = async () => {
+                    if (!window.confirm(`Точно сбросить весь прогресс ученика ${student.id}? Это действие нельзя отменить.`)) {
+                        return;
+                    }
+
+                    try {
+                        setStatus(`Сбрасываем прогресс для ${student.id}...`);
+                        await resetStudentProgress(student.id);
+                        setStatus("");
+                    } catch (error) {
+                        console.error("Ошибка сброса прогресса:", error);
+                        setStatus("Не удалось сбросить прогресс", "err");
+                    }
+                };
+
+                const archiveBtn = document.createElement("button");
+                archiveBtn.className = "teacher-secondary-btn danger";
+                archiveBtn.textContent = "В архив";
+                archiveBtn.onclick = async () => {
+                    if (!window.confirm(`Архивировать ученика ${student.id}? Он исчезнет из основного списка, но данные сохранятся.`)) {
+                        return;
+                    }
+
+                    try {
+                        setStatus(`Архивируем ученика ${student.id}...`);
+                        await archiveStudent(student.id);
+                        setStatus("");
+                    } catch (error) {
+                        console.error("Ошибка архивации ученика:", error);
+                        setStatus("Не удалось архивировать ученика", "err");
+                    }
+                };
+
+                actions.appendChild(copyBtn);
+                actions.appendChild(renameBtn);
+                actions.appendChild(detachBtn);
+                actions.appendChild(resetProgressBtn);
+                actions.appendChild(archiveBtn);
+                card.appendChild(actions);
+                container.appendChild(card);
+            });
+        }
+
+        function renderTeacherDashboard(students) {
+            const box = document.getElementById("options");
+            clearOptions();
+            document.body.classList.add("teacher-dashboard-screen");
+            box.classList.add("teacher-dashboard-options");
+
+            const panel = document.createElement("div");
+            panel.className = "teacher-dashboard";
+
+            const header = document.createElement("div");
+            header.className = "teacher-dashboard-header";
+
+            const heading = document.createElement("h2");
+            heading.className = "teacher-dashboard-title";
+            heading.textContent = "Кабинет репетитора";
+
+            const subheading = document.createElement("p");
+            subheading.className = "teacher-dashboard-subtitle";
+            subheading.textContent = "Управление учениками и мониторинг прогресса";
+
+            header.appendChild(heading);
+            header.appendChild(subheading);
+
+            const contentContainer = document.createElement("div");
+            contentContainer.className = "teacher-content-container";
+
+            const toolbar = document.createElement("div");
+            toolbar.className = "teacher-actions";
+
+            const searchInput = document.createElement("input");
+            searchInput.className = "teacher-search";
+            searchInput.type = "text";
+            searchInput.placeholder = "Найти ученика...";
+            searchInput.autocomplete = "off";
+            searchInput.value = teacherDashboardSearch;
+            searchInput.addEventListener("input", event => {
+                teacherDashboardSearch = event.target.value || "";
+                renderTeacherStudentsList(listContainer, students);
+            });
+
+            const refreshBtn = document.createElement("button");
+            refreshBtn.className = "teacher-toolbar-btn";
+            refreshBtn.textContent = "Обновить";
+            refreshBtn.onclick = showTeacherDashboard;
+
+            const createStudentBtn = document.createElement("button");
+            createStudentBtn.className = "teacher-primary-btn";
+            createStudentBtn.textContent = "Создать ученика";
+            createStudentBtn.onclick = async () => {
+                try {
+                    ensureTeacherAuth();
+                    setStatus("Создаём ученика...");
+                    await createStudentFromTeacher();
+                    setStatus("");
+                } catch (error) {
+                    console.error("Ошибка создания ученика:", error);
+                    setStatus("Не удалось создать ученика", "err");
+                }
+            };
+
+            const passwordResetBtn = document.createElement("button");
+            passwordResetBtn.className = "teacher-toolbar-btn";
+            passwordResetBtn.textContent = "Сменить пароль";
+            passwordResetBtn.onclick = async () => {
+                try {
+                    setStatus("Отправляем письмо для смены пароля...");
+                    await sendTeacherPasswordReset();
+                    setStatus("");
+                } catch (error) {
+                    console.error("Ошибка отправки письма для смены пароля:", error);
+                    setStatus("Не удалось отправить письмо для смены пароля", "err");
+                }
+            };
+
+            const studentLoginBtn = document.createElement("button");
+            studentLoginBtn.className = "teacher-login-btn";
+            studentLoginBtn.textContent = "Войти как ученик →";
+            studentLoginBtn.onclick = signOutTeacher;
+
+            const toolbarActions = document.createElement("div");
+            toolbarActions.className = "teacher-toolbar-actions";
+            toolbarActions.appendChild(createStudentBtn);
+            toolbarActions.appendChild(refreshBtn);
+            toolbarActions.appendChild(passwordResetBtn);
+            toolbarActions.appendChild(studentLoginBtn);
+
+            toolbar.appendChild(searchInput);
+            toolbar.appendChild(toolbarActions);
+            panel.appendChild(header);
+            contentContainer.appendChild(toolbar);
+
+            if (teacherDashboardNotice) {
+                const notice = document.createElement("div");
+                notice.className = "teacher-notice";
+                notice.textContent = teacherDashboardNotice;
+                contentContainer.appendChild(notice);
+                teacherDashboardNotice = "";
+            }
+            const listContainer = document.createElement("div");
+            contentContainer.appendChild(listContainer);
+            renderTeacherStudentsList(listContainer, students);
+
+            panel.appendChild(contentContainer);
+            box.appendChild(panel);
+        }
+
+        function showAppHeader() {
+            const header = document.getElementById("appHeader");
+            if (header) header.classList.remove("hidden");
+            document.body.classList.remove("question-screen");
+        }
+
+        function hideAppHeader() {
+            const header = document.getElementById("appHeader");
+            if (header) header.classList.add("hidden");
+        }
+
+        function enterQuestionScreen() {
+            document.body.classList.remove("final-success-screen", "final-error-screen", "final-finished-screen");
+            setStudentPosSelectionScreen(false);
+            setAuthScreen(false);
+            hideAppHeader();
+            document.body.classList.add("question-screen");
+        }
+
+        function leaveQuestionScreen() {
+            document.body.classList.remove("question-screen");
+        }
+
+        function setResultScreenState(mode) {
+            document.body.classList.remove("final-success-screen", "final-error-screen", "final-finished-screen");
+            setStudentPosSelectionScreen(false);
+
+            if (mode === "success") {
+                document.body.classList.add("final-success-screen");
+            }
+
+            if (mode === "error") {
+                document.body.classList.add("final-error-screen");
+            }
+
+            if (mode === "finished") {
+                document.body.classList.add("final-finished-screen");
+            }
+        }
+
+        function setAuthScreen(isActive) {
+            if (isActive) {
+                setStudentPosSelectionScreen(false);
+            }
+            document.body.classList.toggle("auth-screen", Boolean(isActive));
+        }
+
+// Инициализация
+async function init() {
+    console.log('=== ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ===');
+    
+    document.getElementById('backButton').classList.add('hidden');
+    document.getElementById('backButton').addEventListener('click', goBack);
+
+    setLoading(true);
+    setSubtitle("Загружаем слова...");
+    setStatus("");
+
+    try {
+        await loadWordsFromSheet();
+        setLoading(false);
+
+        const savedStudentId = getSavedStudentId();
+        if (savedStudentId) {
+            try {
+                currentStudentId = savedStudentId;
+                setSubtitle("Загружаем прогресс...");
+                setLoading(true);
+                await loadSeenWordsFromFirebase(savedStudentId);
+                setLoading(false);
+                showMainInterface();
+            } catch (error) {
+                setLoading(false);
+
+                if (error.code === "student_id_not_found" || error.message === "student_id_not_found") {
+                    clearStudentId();
+                    showStudentLogin();
+                    setStatus("Такого кода нет. Проверь код или попроси репетитора выдать новый.", "err");
+                    return;
+                }
+
+                if (error.code === "student_id_taken" || error.message === "student_id_taken") {
+                    console.warn("Сохранённый код больше недоступен на этом устройстве:", savedStudentId);
+                    clearStudentId();
+                    showStudentLogin();
+                    setStatus("Этот код уже привязан к другому устройству. Проверь код или попроси репетитора сбросить доступ.", "err");
+                    return;
+                }
+
+                throw error;
+            }
+        } else {
+            showStudentLogin();
+        }
+    } catch (error) {
+        console.error("Ошибка запуска приложения:", error);
+        setLoading(false);
+        setSubtitle("Не удалось запустить тренажёр");
+        setStatus("Проверь консоль браузера: ошибка может быть не в таблице.", "err");
+    }
+}
+
+        function showMainInterface() {
+            setResultScreenState();
+            setAuthScreen(false);
+            currentScreen = "studentMain";
+            document.getElementById('mainInterface').classList.remove('hidden');
+            document.getElementById('backButton').classList.add('hidden');
+            showStudentInfo();
+            loadPartsOfSpeech();
+        }
+
+        // Загрузка частей речи из данных
+        function loadPartsOfSpeech() {
+            setLoading(true);
+            document.getElementById('backButton').classList.add('hidden');
+            
+            // Получаем доступные части речи из данных
+            const parts = Object.keys(wordsData);
+            
+            showPOSSelection(parts);
+            setLoading(false);
+        }
+
+        function startPOSSelection(pos) {
+            console.log("Запускаем тренировку по части речи:", pos);
+            markPOSPulseSeen();
+            startNextTraining(pos);
+        }
+
+        function showPOSSelection(parts) {
+            setResultScreenState();
+            setAuthScreen(false);
+            showAppHeader();
+            setStudentPosSelectionScreen(true);
+            currentScreen = "studentPosSelection";
+            currentPOS = null;
+            currentBatch = [];
+            currentIndex = 0;
+            mistakes = [];
+            lastErrorsForReview = [];
+            isReviewMode = false;
+            answered = false;
+
+            showStudentInfo();
+            setSubtitle("");
+            setSessionInfo("");
+            setStatus("");
+            clearOptions();
+            clearSummary();
+            clearFooterButtons();
+            hideBatchesSelection();
+
+            document.getElementById('backButton').classList.remove('hidden');
+
+            const box = document.getElementById("options");
+            const wrap = document.createElement("div");
+            wrap.className = "pos-choices";
+
+            const allProgressEmpty = parts.every(pos => getProgressByPOS(pos).seenCount === 0);
+            const shouldPulseFirstCard = !hasSeenPOSPulse();
+
+            parts.forEach((pos, index) => {
+                const progress = getProgressByPOS(pos);
+
+                const unresolvedWords = getUnresolvedErrorWordsByPOS(pos);
+                const unresolvedCount = unresolvedWords.length;
+                const isNotStarted = progress.seenCount === 0;
+                const isCompleted = progress.totalCount > 0 && progress.seenCount >= progress.totalCount && unresolvedCount === 0;
+                const isExpanded = expandedPOSProblem === pos && unresolvedCount > 0;
+
+                const card = document.createElement("article");
+                card.className = `pos-card${isExpanded ? " expanded" : ""}`;
+                card.style.animationDelay = `${index * 0.08}s`;
+                if (index === 0 && shouldPulseFirstCard && (allProgressEmpty || progress.seenCount < progress.totalCount)) {
+                    card.classList.add("first-pulse");
+                }
+
+                const header = document.createElement("div");
+                header.className = "pos-card-header";
+
+                const title = document.createElement("div");
+                title.className = "pos-title";
+                title.textContent = pos;
+
+                const statusBadge = document.createElement("div");
+                statusBadge.className = `pos-status-badge${isCompleted ? " completed" : ""}${isNotStarted ? " not-started" : ""}`;
+                statusBadge.textContent = isCompleted ? "Решено ✓" : (isNotStarted ? "Не начато" : "В процессе");
+
+                header.appendChild(title);
+                header.appendChild(statusBadge);
+
+                const progressWrap = document.createElement("div");
+                progressWrap.className = "pos-progress";
+
+                const progressText = document.createElement("div");
+                progressText.className = "pos-progress-text";
+
+                const progressCount = document.createElement("span");
+                progressCount.textContent = `${progress.seenCount} / ${progress.totalCount} слов`;
+
+                const progressPercent = document.createElement("span");
+                progressPercent.textContent = `${progress.percent}%`;
+
+                progressText.appendChild(progressCount);
+                progressText.appendChild(progressPercent);
+
+                const bar = document.createElement("div");
+                bar.className = "pos-progress-bar";
+
+                const fill = document.createElement("div");
+                fill.className = "pos-progress-fill";
+
+                bar.appendChild(fill);
+                progressWrap.appendChild(progressText);
+                progressWrap.appendChild(bar);
+
+                const problemsShell = document.createElement("div");
+                problemsShell.className = "pos-problems-shell";
+
+                if (unresolvedCount > 0) {
+                    const toggle = document.createElement("button");
+                    toggle.type = "button";
+                    toggle.className = "pos-problems-toggle";
+                    toggle.setAttribute("aria-expanded", String(isExpanded));
+                    toggle.setAttribute("aria-label", `${isExpanded ? "Скрыть" : "Показать"} проблемные слова: ${pos}`);
+                    toggle.onclick = () => {
+                        const shouldExpand = expandedPOSProblem !== pos;
+                        expandedPOSProblem = shouldExpand ? pos : "";
+
+                        wrap.querySelectorAll(".pos-card.expanded").forEach(openCard => {
+                            if (openCard === card) return;
+                            openCard.classList.remove("expanded");
+                            const openToggle = openCard.querySelector(".pos-problems-toggle");
+                            if (openToggle) {
+                                openToggle.setAttribute("aria-expanded", "false");
+                                openToggle.setAttribute("aria-label", "Показать проблемные слова");
+                                const openChevronImg = openToggle.querySelector(".pos-chevron img");
+                                if (openChevronImg) openChevronImg.src = FIGMA_ASSETS.chevronDown;
+                            }
+                        });
+
+                        card.classList.toggle("expanded", shouldExpand);
+                        toggle.setAttribute("aria-expanded", String(shouldExpand));
+                        toggle.setAttribute("aria-label", `${shouldExpand ? "Скрыть" : "Показать"} проблемные слова: ${pos}`);
+                        chevronImg.src = shouldExpand ? FIGMA_ASSETS.chevronUp : FIGMA_ASSETS.chevronDown;
+                    };
+
+                    const label = document.createElement("span");
+                    label.className = "pos-problems-label";
+
+                    const alertIcon = document.createElement("span");
+                    alertIcon.className = "pos-alert-icon";
+                    alertIcon.setAttribute("aria-hidden", "true");
+                    const alertImg = document.createElement("img");
+                    alertImg.alt = "";
+                    alertImg.src = FIGMA_ASSETS.alertCircle;
+                    alertIcon.appendChild(alertImg);
+
+                    const labelText = document.createElement("span");
+                    labelText.textContent = "Проблемные слова";
+
+                    label.appendChild(alertIcon);
+                    label.appendChild(labelText);
+
+                    const chevron = document.createElement("span");
+                    chevron.className = "pos-chevron";
+                    chevron.setAttribute("aria-hidden", "true");
+                    const chevronImg = document.createElement("img");
+                    chevronImg.alt = "";
+                    chevronImg.src = isExpanded ? FIGMA_ASSETS.chevronUp : FIGMA_ASSETS.chevronDown;
+                    chevron.appendChild(chevronImg);
+
+                    toggle.appendChild(label);
+                    toggle.appendChild(chevron);
+
+                    const panel = document.createElement("div");
+                    panel.className = "pos-problems-panel";
+
+                    const chips = document.createElement("div");
+                    chips.className = "pos-problem-chips";
+
+                    unresolvedWords.forEach(word => {
+                        const chip = document.createElement("span");
+                        chip.className = "pos-problem-chip";
+                        chip.textContent = word.correct_word || "";
+                        chips.appendChild(chip);
+                    });
+
+                    panel.appendChild(chips);
+                    problemsShell.appendChild(toggle);
+                    problemsShell.appendChild(panel);
+                } else if (!isNotStarted) {
+                    const noErrors = document.createElement("div");
+                    noErrors.className = "pos-no-errors";
+                    noErrors.textContent = "Ошибок нет";
+                    problemsShell.appendChild(noErrors);
+                }
+
+                const practiceButton = document.createElement("button");
+                practiceButton.type = "button";
+                practiceButton.className = "pos-practice-btn";
+                practiceButton.setAttribute("aria-label", `Начать тренировку: ${pos}`);
+                practiceButton.onclick = () => startPOSSelection(pos);
+                const playImg = document.createElement("img");
+                playImg.alt = "";
+                playImg.src = FIGMA_ASSETS.play;
+                playImg.setAttribute("aria-hidden", "true");
+                practiceButton.appendChild(playImg);
+
+                card.appendChild(header);
+                card.appendChild(progressWrap);
+                card.appendChild(problemsShell);
+                card.appendChild(practiceButton);
+                wrap.appendChild(card);
+
+                setTimeout(() => {
+                    fill.style.width = `${progress.percent}%`;
+                }, 50);
+            });
+
+            box.appendChild(wrap);
+        }
+
+        function showBatchesSelection(pos, batchNumbers) {
+            clearOptions();
+            clearSummary();
+            clearFooterButtons();
+            setStatus("");
+            setSessionInfo("");
+            
+            // Убираем "Часть речи:" из подзаголовка, оставляем только название части речи
+            setSubtitle(pos);
+            
+            const batchesGrid = document.getElementById('batchesGrid');
+            batchesGrid.innerHTML = '';
+            
+            batchNumbers.forEach(batchNum => {
+                const card = document.createElement('div');
+                card.className = 'batch-card';
+                // Оставляем только номер двадцатки
+                card.textContent = batchNum;
+                card.onclick = () => startBatchSession(pos, batchNum);
+                batchesGrid.appendChild(card);
+            });
+            
+            document.getElementById('batchesSelection').classList.remove('hidden');
+            document.getElementById('options').classList.add('hidden');
+        }
+
+        function startBatchSession(pos, batchNumber) {
+            const rawWords = wordsData[pos][batchNumber] || [];
+            startTrainingSession(pos, rawWords);
+        }
+
+        function startTrainingSession(pos, rawWords) {
+            cancelPendingQuestionAdvance();
+            enterQuestionScreen();
+            console.log('Запускаем тренировку:', pos, rawWords.length);
+            
+            setLoading(true);
+            document.getElementById('backButton').classList.remove('hidden');
+            
+            try {
+                currentBatch = rawWords.slice(0, SESSION_WORD_LIMIT).map(prepareQuestion);
+                
+                console.log('Загружены слова:', currentBatch.length);
+                
+                if (currentBatch.length === 0) {
+                    setStatus("Слова для тренировки не найдены", "err");
+                    setLoading(false);
+                    return;
+                }
+                
+                currentPOS = pos;
+                currentScreen = "question";
+                currentBatchNumber = null;
+                currentIndex = 0;
+                mistakes = [];
+                lastErrorsForReview = [];
+                isReviewMode = false;
+                answered = false;
+
+                setSubtitle('');
+                clearOptions();
+                clearSummary();
+                clearFooterButtons();
+                setStatus("");
+                setSessionInfo("");
+                hideBatchesSelection();
+
+                setLoading(false);
+                showQuestion();
+                
+            } catch (error) {
+                console.error('Ошибка загрузки слов:', error);
+                setStatus("Ошибка загрузки слов", "err");
+                setLoading(false);
+            }
+        }
+
+        function showQuestion() {
+            clearOptions();
+            clearSummary();
+            clearFooterButtons();
+            setStatus("");
+
+            if (!currentBatch.length || currentIndex >= currentBatch.length) {
+                finishSession();
+                return;
+            }
+
+            const q = currentBatch[currentIndex];
+            showQuestionProgress();
+
+            const box = document.getElementById("options");
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.textContent = opt;
+                btn.style.animationDelay = `${idx * 20}ms`;
+                btn.onclick = () => checkAnswer(idx, btn);
+                box.appendChild(btn);
+            });
+        }
+
+        function showQuestionProgress() {
+            const total = currentBatch.length;
+            const current = Math.min(currentIndex + 1, total);
+            const percent = total ? Math.round((current / total) * 100) : 0;
+            const el = document.getElementById("sessionInfo");
+
+            if (!el || !total) {
+                setSessionInfo("");
+                return;
+            }
+
+            const previousFill = el.querySelector(".question-progress-fill");
+            const previousWidth = previousFill ? previousFill.style.width : "0%";
+            const title = currentPOS || (isReviewMode ? "Отработка ошибок" : "Задание");
+
+            if (!el.querySelector(".question-progress")) {
+                el.innerHTML = `
+                    <div class="question-progress">
+                        <div class="question-progress-title"></div>
+                        <div class="question-progress-track">
+                            <div class="question-progress-fill" style="width: ${previousWidth}"></div>
+                        </div>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-card-accent" aria-hidden="true"></div>
+                        <img class="question-card-icon" alt="" src="${FIGMA_ASSETS.pencil}" aria-hidden="true">
+                        <div class="question-card-text">В каком слове <strong>верно</strong> поставлено ударение?</div>
+                    </div>
+                `;
+            }
+
+            const titleEl = el.querySelector(".question-progress-title");
+            if (titleEl) titleEl.textContent = title;
+
+            requestAnimationFrame(() => {
+                const fill = el.querySelector(".question-progress-fill");
+                if (fill) fill.style.width = `${percent}%`;
+            });
+        }
+
+        function checkAnswer(index, buttonEl) {
+            if (answered || !currentBatch.length || currentIndex >= currentBatch.length) return;
+            answered = true;
+
+            const q = currentBatch[currentIndex];
+            const isCorrect = index === q.correctIndex;
+            markWordAsSeen(q, isCorrect);
+            disableAllOptions();
+
+            if (isCorrect) {
+                buttonEl.classList.add("correct");
+                pendingQuestionAdvanceTimeout = setTimeout(() => {
+                    pendingQuestionAdvanceTimeout = null;
+                    answered = false;
+                    currentIndex++;
+                    showQuestion();
+                }, DELAY_AFTER_CORRECT);
+            } else {
+                buttonEl.classList.add("wrong");
+                highlightCorrect();
+                mistakes.push(q);
+                pendingQuestionAdvanceTimeout = setTimeout(() => {
+                    pendingQuestionAdvanceTimeout = null;
+                    answered = false;
+                    currentIndex++;
+                    showQuestion();
+                }, DELAY_AFTER_WRONG);
+            }
+        }
+
+        function launchConfetti() {
+    const target = document.querySelector(".summary-congrats.success-center");
+
+    if (!target) return;
+
+    const rect = target.getBoundingClientRect();
+
+    const colors = [
+        "#7C7FF2",
+        "#A7A9FF",
+        "#FFD166",
+        "#EF476F",
+        "#6EE7B7",
+        "#F9A8D4",
+        "#FFB86B"
+    ];
+
+    const centerY = rect.top + rect.height / 2;
+    const centerX = rect.left + rect.width / 2;
+
+    const burstPoints = [
+        { x: centerX - rect.width * 0.42, y: centerY - 42 },
+        { x: centerX - rect.width * 0.28, y: centerY + 18 },
+        { x: centerX + rect.width * 0.32, y: centerY - 36 },
+        { x: centerX + rect.width * 0.46, y: centerY + 10 }
+    ];
+
+    const totalWaves = 3;
+    const piecesPerBurst = 14;
+
+    for (let wave = 0; wave < totalWaves; wave++) {
+        burstPoints.forEach((point, pointIndex) => {
+            const delay = wave * 360 + pointIndex * 90 + Math.random() * 140;
+
+            setTimeout(() => {
+                for (let i = 0; i < piecesPerBurst; i++) {
+                    const piece = document.createElement("div");
+                    piece.className = "firework-piece";
+
+                    const angle = Math.random() * Math.PI * 2;
+
+                    // Разлёт тоже немного шире, чтобы залпы не выглядели комком.
+                    const distance = 42 + Math.random() * 120;
+
+                    const x = Math.cos(angle) * distance;
+                    const y = Math.sin(angle) * distance;
+
+                    const size = 4 + Math.random() * 7;
+
+                    piece.style.left = `${point.x + (Math.random() * 22 - 11)}px`;
+                    piece.style.top = `${point.y + (Math.random() * 18 - 9)}px`;
+                    piece.style.width = `${size}px`;
+                    piece.style.height = `${size}px`;
+                    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    piece.style.setProperty("--x", `${x}px`);
+                    piece.style.setProperty("--y", `${y}px`);
+                    piece.style.animationDuration = `${1500 + Math.random() * 900}ms`;
+
+                    document.body.appendChild(piece);
+
+                    setTimeout(() => piece.remove(), 2800);
+                }
+            }, delay);
+        });
+    }
+}
+
+        function finishSession() {
+            cancelPendingQuestionAdvance();
+            leaveQuestionScreen();
+            clearOptions();
+            clearSummary();
+            setStatus("");
+            setSessionInfo("");
+            setSubtitle("");
+            document.getElementById('backButton').classList.add('hidden');
+
+            const summary = document.getElementById("summary");
+            const footer = document.getElementById("footerButtons");
+            footer.innerHTML = "";
+
+            const buttonsWrap = document.createElement("div");
+            buttonsWrap.className = "result-buttons";
+
+            const sessionWasReview = isReviewMode;
+            const errors = mistakes.slice();
+            lastErrorsForReview = errors.slice();
+            const hasErrors = errors.length > 0;
+            const unresolvedErrors = currentPOS ? getUnresolvedErrorWordsByPOS(currentPOS) : [];
+            const shouldShowReviewButton = sessionWasReview ? hasErrors : unresolvedErrors.length > 0;
+
+            footer.classList.remove("final-success-footer", "final-error-footer", "final-finished-footer");
+            buttonsWrap.classList.remove("final-success-buttons", "final-error-buttons", "final-finished-buttons");
+
+            if (sessionWasReview && !hasErrors) {
+                setResultScreenState("finished");
+                showSuccessSummary("Всё отработано!", summary, "finished");
+                footer.classList.add("final-finished-footer");
+                buttonsWrap.classList.add("final-finished-buttons");
+            } else if (!sessionWasReview && !hasErrors) {
+                setResultScreenState("success");
+                showSuccessSummary(getRandomPerfectResultTitle(), summary, "perfect");
+                footer.classList.add("final-success-footer");
+                buttonsWrap.classList.add("final-success-buttons");
+            } else {
+                setResultScreenState("error");
+                const words = [...new Set(errors.map(q => q.correct))];
+                showErrorSummary(words, summary);
+                footer.classList.add("final-error-footer");
+                buttonsWrap.classList.add("final-error-buttons");
+            }
+
+            if (shouldShowReviewButton) {
+                const reviewBtn = makeResultBtn("Отработать слова", startReviewSession);
+                reviewBtn.classList.add("review-primary");
+                buttonsWrap.appendChild(reviewBtn);
+            }
+
+            if (currentPOS) {
+                buttonsWrap.appendChild(makeResultBtn("Ещё слова этой части речи", () => startNextTraining(currentPOS)));
+            }
+
+            buttonsWrap.appendChild(makeResultBtn("Выбрать другую часть речи", loadPartsOfSpeech));
+
+            const resultContent = summary.querySelector(".result-screen-content");
+            if (resultContent) {
+                resultContent.appendChild(buttonsWrap);
+            } else {
+                footer.appendChild(buttonsWrap);
+            }
+            isReviewMode = false;
+        }
+
+        function startReviewSession() {
+            cancelPendingQuestionAdvance();
+            const errorWords = getReviewWordsForCurrentSession();
+
+            if (!errorWords.length) {
+                setStatus("Нет ошибок для отработки 🎉", "err");
+                return;
+            }
+
+            enterQuestionScreen();
+            document.getElementById('backButton').classList.remove('hidden');
+            currentScreen = "question";
+            isReviewMode = true;
+            mistakes = [];
+            answered = false;
+
+            currentBatch = errorWords.slice(0, SESSION_WORD_LIMIT).map(prepareQuestion);
+            currentIndex = 0;
+
+            clearOptions();
+            clearSummary();
+            clearFooterButtons();
+            setStatus("");
+            setSessionInfo("");
+            setSubtitle('');
+
+            showQuestion();
+        }
+
+        function getReviewWordsForCurrentSession() {
+            if (!currentPOS) return [];
+
+            if (lastErrorsForReview.length) {
+                const wordsById = new Map(getAllWordsByPOS(currentPOS).map(word => [word.word_id, word]));
+                const usedIds = new Set();
+
+                return lastErrorsForReview
+                    .map(item => wordsById.get(item.word_id))
+                    .filter(Boolean)
+                    .filter(word => {
+                        if (usedIds.has(word.word_id)) return false;
+                        usedIds.add(word.word_id);
+                        return true;
+                    });
+            }
+
+            return getUnresolvedErrorWordsByPOS(currentPOS);
+        }
+
+       // Функция "Назад"
+function goBack() {
+    cancelPendingQuestionAdvance();
+
+    if (currentScreen === "teacherDashboard" || currentScreen === "teacherLogin") {
+        showStudentLogin();
+        return;
+    }
+
+    if (currentScreen === "studentPosSelection" || currentScreen === "studentMain" || currentScreen === "studentLogin") {
+        showStudentLogin();
+        return;
+    }
+
+    // В новой логике ребёнок не выбирает batch вручную.
+    // Кнопка назад из упражнения возвращает к выбору части речи.
+    loadPartsOfSpeech();
+}
+        // Вспомогательные функции
+        function setSubtitle(html) {
+            const el = document.getElementById("subtitle");
+            if (!html) {
+                el.style.display = "none";
+                el.innerHTML = "";
+            } else {
+                el.style.display = "block";
+                el.innerHTML = html;
+            }
+        }
+
+        function setStatus(msg, type) {
+            const el = document.getElementById("status");
+            el.textContent = msg || "";
+            el.className = "status";
+            if (type === "err") el.classList.add("err");
+        }
+
+        function setLoading(isLoading) {
+            document.getElementById("loaderOverlay").classList.toggle("hidden", !isLoading);
+        }
+
+        function clearOptions() {
+            const options = document.getElementById("options");
+            options.classList.remove("teacher-dashboard-options");
+            document.body.classList.remove("teacher-dashboard-screen");
+            options.innerHTML = "";
+        }
+
+        function clearSummary() {
+            document.getElementById("summary").innerHTML = "";
+        }
+
+        function clearFooterButtons() {
+            const footer = document.getElementById("footerButtons");
+            if (footer) footer.innerHTML = "";
+        }
+
+        function setSessionInfo(text) {
+            document.getElementById("sessionInfo").textContent = text || "";
+        }
+
+        function disableAllOptions() {
+            document.querySelectorAll(".option-btn").forEach(b => (b.disabled = true));
+        }
+
+        function highlightCorrect() {
+            const q = currentBatch[currentIndex];
+            document.querySelectorAll(".option-btn").forEach((b, idx) => {
+                if (idx === q.correctIndex) b.classList.add("correct");
+            });
+        }
+
+        function makeResultBtn(label, handler) {
+            const b = document.createElement("button");
+            b.className = "result-btn";
+            b.textContent = label;
+            b.onclick = handler;
+            return b;
+        }
+
+        function getRandomPerfectResultTitle() {
+            return PERFECT_RESULT_TITLES[Math.floor(Math.random() * PERFECT_RESULT_TITLES.length)];
+        }
+
+        function showSuccessSummary(text, container, mode) {
+            const content = document.createElement("div");
+            content.className = "result-screen-content";
+
+            const sparkleLayer = document.createElement("div");
+            sparkleLayer.className = "result-sparkle-layer";
+
+            const headline = document.createElement("div");
+            headline.className = "result-headline";
+
+            const sparkleLayout = [
+                { left: "7.03%", top: "74px", size: "22px", delay: "0s" },
+                { left: "19.92%", top: "46px", size: "14px", delay: "0.34s" },
+                { left: "60.84%", top: "39px", size: "14px", delay: "0.68s" },
+                { left: "44.14%", top: "28px", size: "18px", delay: "1.02s" },
+                { left: "73.44%", top: "85px", size: "12px", delay: "1.36s" },
+                { left: "87.89%", top: "36px", size: "20px", delay: "1.7s" },
+                { left: "7.03%", top: "264px", size: "16px", delay: "2.04s" },
+                { left: "89.84%", top: "264px", size: "16px", delay: "0.18s" },
+                { left: "48.05%", top: "254px", size: "10px", delay: "0.52s" },
+                { left: "77.44%", top: "259px", size: "18px", delay: "0.86s" },
+                { left: "29.98%", top: "73px", size: "12px", delay: "1.2s" },
+                { left: "26.56%", top: "224px", size: "20px", delay: "1.54s" },
+                { left: "87.89%", top: "155px", size: "14px", delay: "1.88s" },
+                { left: "52.93%", top: "97px", size: "18px", delay: "2.22s" },
+                { left: "12.7%", top: "162px", size: "12px", delay: "2.56s" }
+            ];
+            const sparkleSources = mode === "finished"
+                ? [
+                    "https://www.figma.com/api/mcp/asset/6a80ea68-390a-4524-86fc-0b563732ef15",
+                    "https://www.figma.com/api/mcp/asset/ade9417e-a3e9-443a-b2f5-2b514c992201",
+                    "https://www.figma.com/api/mcp/asset/ade9417e-a3e9-443a-b2f5-2b514c992201",
+                    "https://www.figma.com/api/mcp/asset/ae43e1d5-426e-4e3c-a80c-be77b54e29c3",
+                    "https://www.figma.com/api/mcp/asset/1e65410e-a1d3-4c76-b64e-4b3c7071ef7d",
+                    "https://www.figma.com/api/mcp/asset/c7a6a6d2-f8b1-4a6d-8352-7db11ff1e0fe",
+                    "https://www.figma.com/api/mcp/asset/7bcf89b1-92fe-4f6f-b474-00935b7f080c",
+                    "https://www.figma.com/api/mcp/asset/7bcf89b1-92fe-4f6f-b474-00935b7f080c",
+                    "https://www.figma.com/api/mcp/asset/d3456943-e49e-4408-bf80-08aeb8cbcec0",
+                    "https://www.figma.com/api/mcp/asset/339cf4e1-e3b4-4651-963f-016864f2d248",
+                    "https://www.figma.com/api/mcp/asset/724beef3-24df-443d-98b6-c2b7c92f4a73",
+                    "https://www.figma.com/api/mcp/asset/b0ad86d4-efdd-490e-bda3-fd77a4c7aa0f",
+                    "https://www.figma.com/api/mcp/asset/e0cfbb89-2508-4d9d-93ff-1896587639c9",
+                    "https://www.figma.com/api/mcp/asset/72b0b30a-6e0f-4523-84a9-ad1ad20b327b",
+                    "https://www.figma.com/api/mcp/asset/7e0a5d40-d9b0-4cb5-88cd-97c1cdf6172c"
+                ]
+                : [
+                    "https://www.figma.com/api/mcp/asset/62082525-c68f-4c99-b9a9-5fbce7d3fc1d",
+                    "https://www.figma.com/api/mcp/asset/a930e1e8-c06b-4e4e-93de-1dd5f769c0a8",
+                    "https://www.figma.com/api/mcp/asset/a930e1e8-c06b-4e4e-93de-1dd5f769c0a8",
+                    "https://www.figma.com/api/mcp/asset/12b352f7-05b1-4b59-939b-7fde241537b1",
+                    "https://www.figma.com/api/mcp/asset/fb9a041b-324a-4fd4-be20-cdd562b1f4e6",
+                    "https://www.figma.com/api/mcp/asset/0a0366d5-3458-439e-b6c8-1463a20e8c75",
+                    "https://www.figma.com/api/mcp/asset/781aba73-d725-4a31-a4b4-c44ca175202d",
+                    "https://www.figma.com/api/mcp/asset/781aba73-d725-4a31-a4b4-c44ca175202d",
+                    "https://www.figma.com/api/mcp/asset/d46c8e9f-9757-4e23-9f12-21619fffc49d",
+                    "https://www.figma.com/api/mcp/asset/dcba2c63-f30b-48b6-b233-ed5c61be806b",
+                    "https://www.figma.com/api/mcp/asset/c48a94fc-67d4-4e4f-a684-65f9104182db",
+                    "https://www.figma.com/api/mcp/asset/f88b2d24-aa99-4cd8-96f3-43dd22d3c931",
+                    "https://www.figma.com/api/mcp/asset/30e409e1-4dae-4862-be79-78dc9d5d6331",
+                    "https://www.figma.com/api/mcp/asset/fc08011e-9ee1-4086-a1cb-2a8a245c82af",
+                    "https://www.figma.com/api/mcp/asset/d2659070-61b9-4f40-9f13-28654f2f94de"
+                ];
+
+            sparkleLayout.forEach((sparkle, index) => {
+                const img = document.createElement("img");
+                img.className = "result-sparkle";
+                img.alt = "";
+                img.src = sparkleSources[index];
+                img.style.setProperty("--left", sparkle.left);
+                img.style.setProperty("--top", sparkle.top);
+                img.style.setProperty("--size", sparkle.size);
+                img.style.setProperty("--delay", sparkle.delay);
+                sparkleLayer.appendChild(img);
+            });
+
+            const ok = document.createElement("div");
+            ok.className = "summary-congrats success-center";
+            ok.textContent = text;
+            headline.appendChild(ok);
+            content.appendChild(sparkleLayer);
+            content.appendChild(headline);
+            container.appendChild(content);
+        }
+
+        function showErrorSummary(words, container) {
+            const content = document.createElement("div");
+            content.className = "result-screen-content";
+
+            const title = document.createElement("div");
+            title.className = "summary-subtitle";
+            title.textContent = words.length === 1 ? 
+                "Запомни, как произносится это слово" : 
+                "Запомни, как произносятся эти слова";
+            content.appendChild(title);
+
+            const wrap = document.createElement("div");
+            wrap.className = "summary-list-wrapper";
+            const ul = document.createElement("ul");
+            ul.className = "summary-list";
+
+            words.forEach(word => {
+                const li = document.createElement("li");
+                li.textContent = word;
+                ul.appendChild(li);
+            });
+
+            wrap.appendChild(ul);
+            content.appendChild(wrap);
+            container.appendChild(content);
+        }
+
+        function hideBatchesSelection() {
+            document.getElementById('batchesSelection').classList.add('hidden');
+            document.getElementById('options').classList.remove('hidden');
+        }
+
+        // Запуск приложения
+        window.addEventListener("load", init);
+    </script>
+</body>
+</html>
