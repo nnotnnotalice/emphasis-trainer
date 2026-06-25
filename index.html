@@ -72,13 +72,17 @@
             --teacher-archive: #a5a8ae;
             --teacher-archive-hover: #94979e;
             --teacher-on-color: #faf8f5;
-            background: var(--teacher-page-bg);
+            background:
+                linear-gradient(90deg, var(--teacher-header-from) 0%, var(--teacher-header-to) 100%) 0 0 / 100% 260px no-repeat,
+                var(--teacher-page-bg);
             overflow-x: hidden;
+            overscroll-behavior-y: none;
         }
 
         body.teacher-dashboard-screen .app {
             padding: 0;
             overflow-x: hidden;
+            overscroll-behavior-y: none;
         }
 
         body.teacher-dashboard-screen .main {
@@ -780,6 +784,12 @@
             opacity: 1;
         }
 
+        .pos-card.expanded .pos-practice-btn {
+            position: static;
+            width: 100%;
+            margin-top: 4px;
+        }
+
         .pos-problem-chips {
             min-height: 0;
             overflow: hidden;
@@ -1033,8 +1043,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            gap: 48px;
+            justify-content: flex-start;
+            gap: 42px;
+            padding-top: clamp(56px, 10vh, 96px);
             background: #faf8f5;
         }
 
@@ -1314,6 +1325,9 @@
         .teacher-dashboard-header {
             width: 100%;
             height: 260px;
+            position: sticky;
+            top: 0;
+            z-index: 3;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
@@ -1343,6 +1357,8 @@
 
         .teacher-content-container {
             width: min(1400px, calc(100% - 48px));
+            position: relative;
+            z-index: 4;
             display: flex;
             flex-direction: column;
             gap: 36px;
@@ -2128,6 +2144,12 @@
                 bottom: 20px;
             }
 
+            body.student-pos-selection-screen .pos-card.expanded .pos-practice-btn {
+                position: static;
+                width: 100%;
+                margin-top: 2px;
+            }
+
             body.student-pos-selection-screen .pos-card.expanded {
                 height: auto;
                 min-height: 0;
@@ -2259,7 +2281,7 @@
 
             .student-login-page {
                 gap: 32px;
-                padding: 0;
+                padding-top: clamp(42px, 8vh, 68px);
             }
 
             .student-login-title {
@@ -2712,13 +2734,26 @@
             }
 
             .question-card {
+                width: calc(100vw - 16px);
+                max-width: 420px;
                 min-height: 72px;
-                padding: 18px 20px;
+                padding: 20px 24px 20px 36px;
                 border-radius: 18px;
+                gap: 14px;
+            }
+
+            .question-card-accent {
+                width: 5px;
+            }
+
+            .question-card-icon {
+                width: 30px;
+                height: 30px;
             }
 
             .question-card-text {
-                font-size: 19px;
+                font-size: 23px;
+                line-height: 1.26;
             }
 
             body.question-screen .options {
@@ -4279,7 +4314,33 @@ body.final-error-screen .result-screen-content {
                 window.prompt("Скопируйте код ученика вручную", studentId);
             }
 
-            await showTeacherDashboard();
+            showTeacherNotice(teacherDashboardNotice);
+            teacherDashboardNotice = "";
+        }
+
+        function showTeacherNotice(message) {
+            if (!message) return;
+
+            const contentContainer = document.querySelector(".teacher-content-container");
+            if (!contentContainer) {
+                setStatus(message);
+                return;
+            }
+
+            let notice = contentContainer.querySelector(".teacher-notice");
+            if (!notice) {
+                notice = document.createElement("div");
+                notice.className = "teacher-notice";
+                const toolbar = contentContainer.querySelector(".teacher-actions");
+
+                if (toolbar && toolbar.nextSibling) {
+                    contentContainer.insertBefore(notice, toolbar.nextSibling);
+                } else {
+                    contentContainer.appendChild(notice);
+                }
+            }
+
+            notice.textContent = message;
         }
 
         async function archiveStudent(studentId) {
@@ -4596,9 +4657,13 @@ body.final-error-screen .result-screen-content {
                 actions.className = "teacher-card-actions";
 
                 const copyBtn = document.createElement("button");
+                copyBtn.type = "button";
                 copyBtn.className = "teacher-secondary-btn";
                 copyBtn.textContent = "Скопировать код";
-                copyBtn.onclick = async () => {
+                copyBtn.onclick = async event => {
+                    event.preventDefault();
+                    event.stopPropagation();
+
                     try {
                         await copyStudentCode(student.id);
                     } catch (error) {
@@ -4608,6 +4673,7 @@ body.final-error-screen .result-screen-content {
                 };
 
                 const renameBtn = document.createElement("button");
+                renameBtn.type = "button";
                 renameBtn.className = "teacher-secondary-btn";
                 renameBtn.textContent = "Переименовать";
                 renameBtn.onclick = async () => {
@@ -4622,6 +4688,7 @@ body.final-error-screen .result-screen-content {
                 };
 
                 const detachBtn = document.createElement("button");
+                detachBtn.type = "button";
                 detachBtn.className = "teacher-secondary-btn";
                 detachBtn.textContent = "Отвязать устройство";
                 detachBtn.onclick = async () => {
@@ -4640,6 +4707,7 @@ body.final-error-screen .result-screen-content {
                 };
 
                 const resetProgressBtn = document.createElement("button");
+                resetProgressBtn.type = "button";
                 resetProgressBtn.className = "teacher-secondary-btn subtle";
                 resetProgressBtn.textContent = "Сбросить прогресс";
                 resetProgressBtn.onclick = async () => {
@@ -4658,6 +4726,7 @@ body.final-error-screen .result-screen-content {
                 };
 
                 const archiveBtn = document.createElement("button");
+                archiveBtn.type = "button";
                 archiveBtn.className = "teacher-secondary-btn danger";
                 archiveBtn.textContent = "В архив";
                 archiveBtn.onclick = async () => {
@@ -4726,11 +4795,13 @@ body.final-error-screen .result-screen-content {
             });
 
             const refreshBtn = document.createElement("button");
+            refreshBtn.type = "button";
             refreshBtn.className = "teacher-toolbar-btn";
             refreshBtn.textContent = "Обновить";
             refreshBtn.onclick = showTeacherDashboard;
 
             const createStudentBtn = document.createElement("button");
+            createStudentBtn.type = "button";
             createStudentBtn.className = "teacher-primary-btn";
             createStudentBtn.textContent = "Создать ученика";
             createStudentBtn.onclick = async () => {
@@ -4746,6 +4817,7 @@ body.final-error-screen .result-screen-content {
             };
 
             const passwordResetBtn = document.createElement("button");
+            passwordResetBtn.type = "button";
             passwordResetBtn.className = "teacher-toolbar-btn";
             passwordResetBtn.textContent = "Сменить пароль";
             passwordResetBtn.onclick = async () => {
@@ -4760,6 +4832,7 @@ body.final-error-screen .result-screen-content {
             };
 
             const studentLoginBtn = document.createElement("button");
+            studentLoginBtn.type = "button";
             studentLoginBtn.className = "teacher-login-btn";
             studentLoginBtn.textContent = "Войти как ученик →";
             studentLoginBtn.onclick = signOutTeacher;
