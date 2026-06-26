@@ -1346,14 +1346,6 @@
             color: var(--teacher-on-color);
         }
 
-        .teacher-dashboard-subtitle {
-            margin: 0;
-            color: var(--teacher-on-color);
-            font-size: 18px;
-            line-height: normal;
-            font-weight: 400;
-        }
-
         .teacher-content-container {
             width: min(1400px, calc(100% - 48px));
             position: relative;
@@ -1898,10 +1890,6 @@
 
             .teacher-dashboard-title {
                 font-size: 32px;
-            }
-
-            .teacher-dashboard-subtitle {
-                font-size: 16px;
             }
 
             .teacher-content-container {
@@ -4774,12 +4762,7 @@ body.final-error-screen .result-screen-content {
             heading.className = "teacher-dashboard-title";
             heading.textContent = "Кабинет репетитора";
 
-            const subheading = document.createElement("p");
-            subheading.className = "teacher-dashboard-subtitle";
-            subheading.textContent = "Управление учениками и мониторинг прогресса";
-
             header.appendChild(heading);
-            header.appendChild(subheading);
 
             const contentContainer = document.createElement("div");
             contentContainer.className = "teacher-content-container";
