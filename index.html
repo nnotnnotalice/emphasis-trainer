@@ -73,7 +73,7 @@
             --teacher-archive-hover: #94979e;
             --teacher-on-color: #faf8f5;
             background:
-                linear-gradient(90deg, var(--teacher-header-from) 0%, var(--teacher-header-to) 100%) 0 0 / 100% 260px no-repeat,
+                linear-gradient(90deg, var(--teacher-header-from) 0%, var(--teacher-header-to) 100%) 0 0 / 100% 300px no-repeat,
                 var(--teacher-page-bg);
             overflow-x: hidden;
             overflow-y: auto;
@@ -1324,7 +1324,7 @@
 
         .teacher-dashboard-header {
             width: 100%;
-            height: 260px;
+            height: 300px;
             position: relative;
             z-index: 1;
             display: flex;
@@ -1332,7 +1332,7 @@
             align-items: flex-start;
             justify-content: flex-start;
             gap: 8px;
-            padding: 48px max(24px, calc((100vw - 1400px) / 2));
+            padding: 64px max(24px, calc((100vw - 1400px) / 2));
             background: linear-gradient(90deg, var(--teacher-header-from) 0%, var(--teacher-header-to) 100%);
             color: var(--teacher-on-color);
         }
@@ -1353,7 +1353,7 @@
             display: flex;
             flex-direction: column;
             gap: 36px;
-            margin-top: -60px;
+            margin-top: -48px;
             margin-right: auto;
             margin-left: auto;
         }
@@ -1884,8 +1884,8 @@
 
         @media (max-width: 900px) {
             .teacher-dashboard-header {
-                height: 220px;
-                padding: 36px 24px;
+                height: 260px;
+                padding: 48px 24px;
             }
 
             .teacher-dashboard-title {
@@ -1893,7 +1893,7 @@
             }
 
             .teacher-content-container {
-                margin-top: -48px;
+                margin-top: -36px;
             }
 
             .teacher-actions,
@@ -2187,8 +2187,8 @@
             }
 
             .teacher-dashboard-header {
-                height: 220px;
-                padding: 34px 18px;
+                height: 248px;
+                padding: 42px 18px;
             }
 
             .teacher-actions {
