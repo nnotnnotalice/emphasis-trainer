@@ -53,7 +53,7 @@
         }
 
         body.teacher-dashboard-screen {
-            --teacher-header-height: 280px;
+            --teacher-header-vpad: clamp(20px, 5vh, 64px);
             --teacher-header-padding-x: max(24px, calc((100vw - 1400px) / 2));
             --teacher-content-gap: 32px;
             --teacher-page-bg: #faf8f5;
@@ -76,7 +76,7 @@
             --teacher-archive-hover: #94979e;
             --teacher-on-color: #faf8f5;
             background:
-                linear-gradient(90deg, var(--teacher-header-from) 0%, var(--teacher-header-to) 100%) 0 0 / 100% var(--teacher-header-height) no-repeat,
+                linear-gradient(90deg, var(--teacher-header-from) 0%, var(--teacher-header-to) 100%) 0 0 / 100% calc(var(--teacher-header-vpad) * 2 + 56px) no-repeat,
                 var(--teacher-page-bg);
             overflow-x: hidden;
             overflow-y: auto;
@@ -89,7 +89,7 @@
         }
 
         body.teacher-dashboard-screen .main {
-            width: auto;
+            width: 100%;
             padding-top: 0;
         }
 
@@ -1327,7 +1327,6 @@
 
         .teacher-dashboard-header {
             width: 100%;
-            height: var(--teacher-header-height);
             position: relative;
             z-index: 1;
             display: flex;
@@ -1335,7 +1334,7 @@
             align-items: flex-start;
             justify-content: center;
             gap: 8px;
-            padding: 0 var(--teacher-header-padding-x);
+            padding: var(--teacher-header-vpad) var(--teacher-header-padding-x);
             background: linear-gradient(90deg, var(--teacher-header-from) 0%, var(--teacher-header-to) 100%);
             color: var(--teacher-on-color);
         }
@@ -1891,7 +1890,6 @@
 
         @media (max-width: 1180px) {
             body.teacher-dashboard-screen {
-                --teacher-header-height: 260px;
                 --teacher-content-gap: 28px;
             }
 
@@ -1932,7 +1930,6 @@
 
         @media (max-width: 900px) {
             body.teacher-dashboard-screen {
-                --teacher-header-height: 240px;
                 --teacher-content-gap: 24px;
             }
 
@@ -2075,7 +2072,6 @@
 
         @media (max-width: 640px) {
             body.teacher-dashboard-screen {
-                --teacher-header-height: 224px;
                 --teacher-header-padding-x: 18px;
                 --teacher-content-gap: 22px;
             }
