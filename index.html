@@ -528,7 +528,7 @@
             overflow: hidden;
         }
 
-        .student-header-avatar img {
+        .student-header-avatar svg {
             width: 28px;
             height: 28px;
             display: block;
@@ -570,10 +570,12 @@
 
         body.student-pos-selection-screen .back-btn::before {
             content: "";
-            width: 36px;
-            height: 36px;
+            width: 18px;
+            height: 18px;
             display: block;
-            background: url("https://www.figma.com/api/mcp/asset/7bd03888-7413-4baa-8811-0c655395ee6f") center / contain no-repeat;
+            border-left: 3px solid currentColor;
+            border-bottom: 3px solid currentColor;
+            transform: translateX(4px) rotate(45deg);
         }
 
         body.student-pos-selection-screen .back-btn:hover {
@@ -759,7 +761,7 @@
             justify-content: center;
         }
 
-        .pos-alert-icon img {
+        .pos-alert-icon svg {
             width: 16px;
             height: 16px;
             display: block;
@@ -840,13 +842,13 @@
             background: #f43d48;
         }
 
-        .pos-practice-btn img {
+        .pos-practice-btn svg {
             width: 26px;
             height: 26px;
             display: block;
         }
 
-        .pos-chevron img {
+        .pos-chevron svg {
             width: 16px;
             height: 16px;
             display: block;
@@ -2143,7 +2145,7 @@
                 height: 24px;
             }
 
-            .student-header-avatar img {
+            .student-header-avatar svg {
                 width: 24px;
                 height: 24px;
             }
@@ -2161,8 +2163,8 @@
             }
 
             body.student-pos-selection-screen .back-btn::before {
-                width: 30px;
-                height: 30px;
+                width: 16px;
+                height: 16px;
             }
 
             body.student-pos-selection-screen .main {
@@ -2213,7 +2215,7 @@
                 }
 
                 .student-header-avatar,
-                .student-header-avatar img {
+                .student-header-avatar svg {
                     width: 22px;
                     height: 22px;
                 }
@@ -2669,10 +2671,12 @@
 
         body.question-screen .back-btn::before {
             content: "";
-            width: 24px;
-            height: 24px;
+            width: 14px;
+            height: 14px;
             display: block;
-            background: url("https://www.figma.com/api/mcp/asset/540c5afc-a104-40e6-ad92-b7b679b9bcb6") center / contain no-repeat;
+            border-left: 2.5px solid currentColor;
+            border-bottom: 2.5px solid currentColor;
+            transform: translateX(3px) rotate(45deg);
         }
 
         body.question-screen .back-btn:hover {
@@ -3133,10 +3137,31 @@ body.final-error-screen .result-screen-content {
     display: block;
     pointer-events: none;
     opacity: 0;
+    color: var(--sparkle-color, #fccc6b);
     transform-origin: center;
     animation:
         sparkleAppear 760ms cubic-bezier(0.16, 1, 0.3, 1) var(--delay) both,
         sparkleTwinkle 2.45s ease-in-out calc(var(--delay) + 780ms) infinite;
+}
+
+.result-sparkle::before,
+.result-sparkle::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    background: currentColor;
+    border-radius: 999px;
+}
+
+.result-sparkle::before {
+    width: 34%;
+    height: 100%;
+}
+
+.result-sparkle::after {
+    width: 100%;
+    height: 34%;
 }
 
 @keyframes sparkleAppear {
@@ -3335,15 +3360,25 @@ body.final-error-screen .result-screen-content {
 
         // Ссылка на опубликованную Google Таблицу с контентом
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTDdC5lavnQYQbH_FusZ_u7Kaxe-PpGP5A4ERKWV3MVdyJWHKuAxYZ6ivOTQr6d3e2_A_hxDdiQw-yH/pub?gid=413569060&single=true&output=csv";
-        const FIGMA_ASSETS = {
-            avatar: "https://www.figma.com/api/mcp/asset/408fc647-be61-47f3-991c-08edd884b12a",
-            alertCircle: "https://www.figma.com/api/mcp/asset/092a276f-3a8b-48ff-84aa-006ddb77c049",
-            chevronDown: "https://www.figma.com/api/mcp/asset/af0970d3-05d2-4e98-8f3f-dc181c72bc9f",
-            chevronUp: "https://www.figma.com/api/mcp/asset/34ca1974-d809-456a-8213-2338fdffdc83",
-            quizBack: "https://www.figma.com/api/mcp/asset/540c5afc-a104-40e6-ad92-b7b679b9bcb6",
-            pencil: "https://www.figma.com/api/mcp/asset/14bc25c7-2c09-47fc-aa1f-1703ee12e795",
-            play: "https://www.figma.com/api/mcp/asset/7b48470a-6b51-43c6-af59-a57fa5e2c435"
+        const ICON_SVGS = {
+            avatar: '<svg viewBox="0 0 28 28" aria-hidden="true" focusable="false"><circle cx="14" cy="10.5" r="4.4" fill="currentColor"/><path d="M5.9 23.2c1.3-4.2 4-6.3 8.1-6.3s6.8 2.1 8.1 6.3" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>',
+            alertCircle: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 7.5v5.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="16.6" r="1.25" fill="currentColor"/></svg>',
+            chevronDown: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6.5 9 5.5 5.5L17.5 9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+            chevronUp: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6.5 15 5.5-5.5L17.5 15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+            pencil: '<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M8 22.8 21.9 8.9a3.2 3.2 0 0 1 4.5 4.5L12.5 27.3 6.9 28.8 8 22.8Z" fill="#fccc6b" stroke="#111827" stroke-width="2" stroke-linejoin="round"/><path d="m19.7 11.1 4.5 4.5" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round"/></svg>',
+            play: '<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M11.5 8.2v15.6c0 1.4 1.5 2.2 2.7 1.5l12.3-7.8c1.1-.7 1.1-2.3 0-3L14.2 6.7c-1.2-.7-2.7.1-2.7 1.5Z" fill="currentColor"/></svg>'
         };
+
+        function createIcon(name) {
+            const template = document.createElement("template");
+            template.innerHTML = ICON_SVGS[name].trim();
+            return template.content.firstElementChild;
+        }
+
+        function iconMarkup(name, className = "") {
+            const svg = ICON_SVGS[name] || "";
+            return className ? svg.replace("<svg ", `<svg class="${className}" `) : svg;
+        }
 
         // UID методиста из Firebase Authentication.
         const TEACHER_UID = "NDBX67iGclQjJvLcIXLGUyLuSXr1";
@@ -3919,10 +3954,7 @@ body.final-error-screen .result-screen-content {
             const avatar = document.createElement("span");
             avatar.className = "student-header-avatar";
             avatar.setAttribute("aria-hidden", "true");
-            const avatarImg = document.createElement("img");
-            avatarImg.alt = "";
-            avatarImg.src = FIGMA_ASSETS.avatar;
-            avatar.appendChild(avatarImg);
+            avatar.appendChild(createIcon("avatar"));
 
             const code = document.createElement("span");
             code.textContent = studentId;
@@ -4649,10 +4681,7 @@ body.final-error-screen .result-screen-content {
                     const alertIcon = document.createElement("span");
                     alertIcon.className = "pos-alert-icon";
                     alertIcon.setAttribute("aria-hidden", "true");
-                    const alertImg = document.createElement("img");
-                    alertImg.alt = "";
-                    alertImg.src = FIGMA_ASSETS.alertCircle;
-                    alertIcon.appendChild(alertImg);
+                    alertIcon.appendChild(createIcon("alertCircle"));
 
                     const labelText = document.createElement("span");
                     labelText.textContent = "Проблемные слова";
@@ -4663,10 +4692,7 @@ body.final-error-screen .result-screen-content {
                     const chevron = document.createElement("span");
                     chevron.className = "pos-chevron";
                     chevron.setAttribute("aria-hidden", "true");
-                    const chevronImg = document.createElement("img");
-                    chevronImg.alt = "";
-                    chevronImg.src = isProblemsExpanded ? FIGMA_ASSETS.chevronUp : FIGMA_ASSETS.chevronDown;
-                    chevron.appendChild(chevronImg);
+                    chevron.appendChild(createIcon(isProblemsExpanded ? "chevronUp" : "chevronDown"));
 
                     toggle.appendChild(label);
                     toggle.appendChild(chevron);
@@ -5175,15 +5201,15 @@ async function init() {
                             if (openToggle) {
                                 openToggle.setAttribute("aria-expanded", "false");
                                 openToggle.setAttribute("aria-label", "Показать проблемные слова");
-                                const openChevronImg = openToggle.querySelector(".pos-chevron img");
-                                if (openChevronImg) openChevronImg.src = FIGMA_ASSETS.chevronDown;
+                                const openChevron = openToggle.querySelector(".pos-chevron");
+                                if (openChevron) openChevron.replaceChildren(createIcon("chevronDown"));
                             }
                         });
 
                         card.classList.toggle("expanded", shouldExpand);
                         toggle.setAttribute("aria-expanded", String(shouldExpand));
                         toggle.setAttribute("aria-label", `${shouldExpand ? "Скрыть" : "Показать"} проблемные слова: ${pos}`);
-                        chevronImg.src = shouldExpand ? FIGMA_ASSETS.chevronUp : FIGMA_ASSETS.chevronDown;
+                        chevron.replaceChildren(createIcon(shouldExpand ? "chevronUp" : "chevronDown"));
                     };
 
                     const label = document.createElement("span");
@@ -5192,10 +5218,7 @@ async function init() {
                     const alertIcon = document.createElement("span");
                     alertIcon.className = "pos-alert-icon";
                     alertIcon.setAttribute("aria-hidden", "true");
-                    const alertImg = document.createElement("img");
-                    alertImg.alt = "";
-                    alertImg.src = FIGMA_ASSETS.alertCircle;
-                    alertIcon.appendChild(alertImg);
+                    alertIcon.appendChild(createIcon("alertCircle"));
 
                     const labelText = document.createElement("span");
                     labelText.textContent = "Проблемные слова";
@@ -5206,10 +5229,7 @@ async function init() {
                     const chevron = document.createElement("span");
                     chevron.className = "pos-chevron";
                     chevron.setAttribute("aria-hidden", "true");
-                    const chevronImg = document.createElement("img");
-                    chevronImg.alt = "";
-                    chevronImg.src = isExpanded ? FIGMA_ASSETS.chevronUp : FIGMA_ASSETS.chevronDown;
-                    chevron.appendChild(chevronImg);
+                    chevron.appendChild(createIcon(isExpanded ? "chevronUp" : "chevronDown"));
 
                     toggle.appendChild(label);
                     toggle.appendChild(chevron);
@@ -5242,11 +5262,7 @@ async function init() {
                 practiceButton.className = "pos-practice-btn";
                 practiceButton.setAttribute("aria-label", `Начать тренировку: ${pos}`);
                 practiceButton.onclick = () => startPOSSelection(pos);
-                const playImg = document.createElement("img");
-                playImg.alt = "";
-                playImg.src = FIGMA_ASSETS.play;
-                playImg.setAttribute("aria-hidden", "true");
-                practiceButton.appendChild(playImg);
+                practiceButton.appendChild(createIcon("play"));
 
                 card.appendChild(header);
                 card.appendChild(progressWrap);
@@ -5389,7 +5405,7 @@ async function init() {
                     </div>
                     <div class="question-card">
                         <div class="question-card-accent" aria-hidden="true"></div>
-                        <img class="question-card-icon" alt="" src="${FIGMA_ASSETS.pencil}" aria-hidden="true">
+                        ${iconMarkup("pencil", "question-card-icon")}
                         <div class="question-card-text">В каком слове <strong>верно</strong> поставлено ударение?</div>
                     </div>
                 `;
@@ -5815,62 +5831,20 @@ function goBack() {
             ];
             const isMobileResult = window.matchMedia("(max-width: 760px)").matches;
             const sparkleLayout = isMobileResult ? mobileSparkleLayout : desktopSparkleLayout;
-            const sparkleSources = mode === "finished"
-                ? [
-                    "https://www.figma.com/api/mcp/asset/9403cf25-776e-4192-a8c8-55283efc385a",
-                    "https://www.figma.com/api/mcp/asset/0b74f01b-7a77-4907-8d6f-04230aa7af96",
-                    "https://www.figma.com/api/mcp/asset/739d569e-be89-416b-a8b6-89bdc95e1ee7",
-                    "https://www.figma.com/api/mcp/asset/6913e902-1e3f-4090-9904-70b8b7b7e0a7",
-                    "https://www.figma.com/api/mcp/asset/d0345831-9dc2-40e0-94fd-951fe2b0f386",
-                    "https://www.figma.com/api/mcp/asset/967a165d-c71e-4f5b-aefb-b6e3bf80ad9c",
-                    "https://www.figma.com/api/mcp/asset/10f60259-ebd4-4982-a55c-731c195c050b",
-                    "https://www.figma.com/api/mcp/asset/a0d3150d-6d2e-4081-bd22-acc495462331",
-                    "https://www.figma.com/api/mcp/asset/f62b1df9-7fff-4e0d-a377-b1783a6bef27",
-                    "https://www.figma.com/api/mcp/asset/7a1ebd1d-d7df-4e7b-aafe-09eb05f03161",
-                    "https://www.figma.com/api/mcp/asset/58d691d6-262a-48ac-bc55-7a5372635b06",
-                    "https://www.figma.com/api/mcp/asset/6576159e-5a6b-4ba0-a972-32fa03116f80",
-                    "https://www.figma.com/api/mcp/asset/3360b200-d4d7-47b2-88c6-64a95c6baef5",
-                    "https://www.figma.com/api/mcp/asset/7bec7350-c6df-4783-af4a-c71c912baf03",
-                    "https://www.figma.com/api/mcp/asset/306fbf02-a2a1-45ab-a39f-a291b9246fef",
-                    "https://www.figma.com/api/mcp/asset/15f3a512-420a-4109-bd1c-e58cd029ab4e",
-                    "https://www.figma.com/api/mcp/asset/4b003dcf-5698-48c9-94f2-8e52d2cfed4f",
-                    "https://www.figma.com/api/mcp/asset/28b8412a-5bf8-43ae-8683-bec441edeccd",
-                    "https://www.figma.com/api/mcp/asset/b63ac69e-f79f-4141-9194-5b319c09ef81",
-                    "https://www.figma.com/api/mcp/asset/aee091c6-8dd5-47e6-8139-f8721862751e"
-                ]
-                : [
-                    "https://www.figma.com/api/mcp/asset/165d9520-3bf5-4163-a311-ea4195f68bce",
-                    "https://www.figma.com/api/mcp/asset/ae2469dc-a0e5-44e4-9d57-e175abfda9e3",
-                    "https://www.figma.com/api/mcp/asset/e3565735-ff37-45a0-ae16-c2ef01b42104",
-                    "https://www.figma.com/api/mcp/asset/2821d208-5d90-4a81-aa3f-db3b6006cac6",
-                    "https://www.figma.com/api/mcp/asset/5236f06c-8f43-4941-ad0d-eae3c6048b9b",
-                    "https://www.figma.com/api/mcp/asset/5fe8254a-43b1-4b44-9ca0-6acac32ab068",
-                    "https://www.figma.com/api/mcp/asset/0b51f204-461c-4b07-b642-c0020caba32c",
-                    "https://www.figma.com/api/mcp/asset/727738ce-5f93-42c1-b55d-a693e170bae7",
-                    "https://www.figma.com/api/mcp/asset/55ab3e97-0268-4e41-80e2-0df911ac29f5",
-                    "https://www.figma.com/api/mcp/asset/8647cc0e-4ea5-45d8-87bb-c1d0c744bd9b",
-                    "https://www.figma.com/api/mcp/asset/b66b38c7-33ec-4cd5-9010-9668bb201934",
-                    "https://www.figma.com/api/mcp/asset/1f494571-f211-4d5a-b0cb-104a453aee75",
-                    "https://www.figma.com/api/mcp/asset/e8845d78-f55d-413d-9820-c432331b1c27",
-                    "https://www.figma.com/api/mcp/asset/4ba89230-bb4e-4719-8020-14f75dcc93c3",
-                    "https://www.figma.com/api/mcp/asset/cc3103aa-5fa1-4cf4-83b3-94dfa0f6d468",
-                    "https://www.figma.com/api/mcp/asset/fc301093-06f8-4401-8b8d-00b1837ce366",
-                    "https://www.figma.com/api/mcp/asset/b4cbb16e-2a8f-4892-9a52-d65bf137d600",
-                    "https://www.figma.com/api/mcp/asset/2fc35f04-fe5f-496d-9b5b-6f47f23ac7ee",
-                    "https://www.figma.com/api/mcp/asset/a5c84cda-8e44-4364-a250-16379a3ba83a",
-                    "https://www.figma.com/api/mcp/asset/e5f1a192-88d4-4fed-bed2-212cfdd79a53"
-                ];
+            const sparkleColors = mode === "finished"
+                ? ["#fccc6b", "#ff4852", "#2fbf71", "#3f58bb"]
+                : ["#fccc6b", "#ff8f3d", "#ff4852"];
 
             sparkleLayout.forEach((sparkle, index) => {
-                const img = document.createElement("img");
-                img.className = "result-sparkle";
-                img.alt = "";
-                img.src = sparkleSources[index % sparkleSources.length];
-                img.style.setProperty("--left", sparkle.left);
-                img.style.setProperty("--top", sparkle.top);
-                img.style.setProperty("--size", sparkle.size);
-                img.style.setProperty("--delay", `${(index % (isMobileResult ? 8 : 12)) * (isMobileResult ? 0.055 : 0.065)}s`);
-                sparkleLayer.appendChild(img);
+                const sparkleEl = document.createElement("span");
+                sparkleEl.className = "result-sparkle";
+                sparkleEl.setAttribute("aria-hidden", "true");
+                sparkleEl.style.setProperty("--left", sparkle.left);
+                sparkleEl.style.setProperty("--top", sparkle.top);
+                sparkleEl.style.setProperty("--size", sparkle.size);
+                sparkleEl.style.setProperty("--delay", `${(index % (isMobileResult ? 8 : 12)) * (isMobileResult ? 0.055 : 0.065)}s`);
+                sparkleEl.style.setProperty("--sparkle-color", sparkleColors[index % sparkleColors.length]);
+                sparkleLayer.appendChild(sparkleEl);
             });
 
             const ok = document.createElement("div");
