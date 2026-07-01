@@ -573,9 +573,7 @@
             width: 18px;
             height: 18px;
             display: block;
-            border-left: 3px solid currentColor;
-            border-bottom: 3px solid currentColor;
-            transform: translateX(4px) rotate(45deg);
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M22 12H2M12 22L2 12L12 2' stroke='%23FFF9E9' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
         }
 
         body.student-pos-selection-screen .back-btn:hover {
@@ -2674,9 +2672,7 @@
             width: 14px;
             height: 14px;
             display: block;
-            border-left: 2.5px solid currentColor;
-            border-bottom: 2.5px solid currentColor;
-            transform: translateX(3px) rotate(45deg);
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M22 12H2M12 22L2 12L12 2' stroke='%23FFF9E9' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
         }
 
         body.question-screen .back-btn:hover {
@@ -3137,31 +3133,12 @@ body.final-error-screen .result-screen-content {
     display: block;
     pointer-events: none;
     opacity: 0;
-    color: var(--sparkle-color, #fccc6b);
+    background: var(--sparkle-color, #fccc6b);
+    clip-path: polygon(50% 0, 62.37% 37.63%, 100% 50%, 62.37% 62.37%, 50% 100%, 37.63% 62.37%, 0 50%, 37.63% 37.63%);
     transform-origin: center;
     animation:
         sparkleAppear 760ms cubic-bezier(0.16, 1, 0.3, 1) var(--delay) both,
         sparkleTwinkle 2.45s ease-in-out calc(var(--delay) + 780ms) infinite;
-}
-
-.result-sparkle::before,
-.result-sparkle::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    margin: auto;
-    background: currentColor;
-    border-radius: 999px;
-}
-
-.result-sparkle::before {
-    width: 34%;
-    height: 100%;
-}
-
-.result-sparkle::after {
-    width: 100%;
-    height: 34%;
 }
 
 @keyframes sparkleAppear {
@@ -3361,12 +3338,13 @@ body.final-error-screen .result-screen-content {
         // Ссылка на опубликованную Google Таблицу с контентом
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTDdC5lavnQYQbH_FusZ_u7Kaxe-PpGP5A4ERKWV3MVdyJWHKuAxYZ6ivOTQr6d3e2_A_hxDdiQw-yH/pub?gid=413569060&single=true&output=csv";
         const ICON_SVGS = {
-            avatar: '<svg viewBox="0 0 28 28" aria-hidden="true" focusable="false"><circle cx="14" cy="10.5" r="4.4" fill="currentColor"/><path d="M5.9 23.2c1.3-4.2 4-6.3 8.1-6.3s6.8 2.1 8.1 6.3" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>',
-            alertCircle: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 7.5v5.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="16.6" r="1.25" fill="currentColor"/></svg>',
-            chevronDown: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6.5 9 5.5 5.5L17.5 9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-            chevronUp: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6.5 15 5.5-5.5L17.5 15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-            pencil: '<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M8 22.8 21.9 8.9a3.2 3.2 0 0 1 4.5 4.5L12.5 27.3 6.9 28.8 8 22.8Z" fill="#fccc6b" stroke="#111827" stroke-width="2" stroke-linejoin="round"/><path d="m19.7 11.1 4.5 4.5" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round"/></svg>',
-            play: '<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M11.5 8.2v15.6c0 1.4 1.5 2.2 2.7 1.5l12.3-7.8c1.1-.7 1.1-2.3 0-3L14.2 6.7c-1.2-.7-2.7.1-2.7 1.5Z" fill="currentColor"/></svg>'
+            avatar: '<svg viewBox="0 0 28 28" aria-hidden="true" focusable="false"><rect width="28" height="28" rx="14" fill="#233CA1"/><circle cx="14" cy="10.5" r="4.5" fill="#FAF8F5"/><ellipse cx="14" cy="25" rx="10" ry="7" fill="#FAF8F5"/></svg>',
+            alertCircle: '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8.00021 5.33308V7.99996M8.00021 10.6668H8.00688M14.6674 7.99996C14.6674 11.6822 11.6824 14.6672 8.00021 14.6672C4.31801 14.6672 1.33301 11.6822 1.33301 7.99996C1.33301 4.31777 4.31801 1.33276 8.00021 1.33276C11.6824 1.33276 14.6674 4.31777 14.6674 7.99996Z" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/></svg>',
+            chevronDown: '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 6L8 10L12 6" stroke="#6B7280" stroke-width="2" stroke-linecap="round"/></svg>',
+            chevronUp: '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M12 10L8 6L4 10" stroke="#6B7280" stroke-width="2" stroke-linecap="round"/></svg>',
+            chevronLeft: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 12H2M12 22L2 12L12 2" stroke="#FFF9E9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+            pencil: '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M10.0004 3.33273L12.6674 5.99935M14.1168 4.54096C14.4693 4.18858 14.6673 3.71062 14.6674 3.21222C14.6675 2.71382 14.4695 2.23581 14.1171 1.88334C13.7647 1.53087 13.2867 1.33283 12.7882 1.33276C12.2898 1.3327 11.8117 1.53063 11.4592 1.88301L2.56107 10.7822C2.40627 10.9365 2.29179 11.1265 2.22771 11.3355L1.34697 14.2368C1.32973 14.2945 1.32843 14.3557 1.3432 14.414C1.35797 14.4724 1.38825 14.5256 1.43084 14.5681C1.47342 14.6106 1.52673 14.6408 1.58509 14.6555C1.64346 14.6702 1.7047 14.6688 1.76234 14.6515L4.66459 13.7715C4.87339 13.708 5.06341 13.5942 5.21798 13.4401L14.1168 4.54096Z" stroke="#FCCC6B" stroke-width="2" stroke-linecap="round"/></svg>',
+            play: '<svg viewBox="0 0 26 26" aria-hidden="true" focusable="false"><path d="M5.70734 4.33151C5.51639 4.66147 5.4159 5.03596 5.41602 5.41717V20.5828C5.4159 20.964 5.51639 21.3385 5.70734 21.6685C5.89829 21.9984 6.17294 22.2722 6.50355 22.4621C6.83416 22.652 7.20903 22.7513 7.5903 22.75C7.97158 22.7487 8.34577 22.6468 8.67508 22.4547L21.6767 14.8719C22.0044 14.681 22.2762 14.4075 22.4651 14.0786C22.6539 13.7498 22.7531 13.3772 22.7528 12.998C22.7525 12.6188 22.6526 12.2463 22.4632 11.9178C22.2738 11.5893 22.0015 11.3163 21.6734 11.126L8.67508 3.54529C8.34577 3.35316 7.97158 3.25131 7.5903 3.25001C7.20903 3.24872 6.83416 3.34803 6.50355 3.53792C6.17294 3.72781 5.89829 4.00155 5.70734 4.33151Z" fill="#FFF9E9"/></svg>'
         };
 
         function createIcon(name) {
@@ -4617,9 +4595,7 @@ body.final-error-screen .result-screen-content {
                 expandBtn.type = "button";
                 expandBtn.setAttribute("aria-expanded", isExpanded ? "true" : "false");
                 expandBtn.setAttribute("aria-label", isExpanded ? "Свернуть карточку ученика" : "Раскрыть карточку ученика");
-                expandBtn.innerHTML = isExpanded
-                    ? '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-                    : '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                expandBtn.appendChild(createIcon(isExpanded ? "chevronUp" : "chevronDown"));
                 expandBtn.onclick = event => {
                     event.stopPropagation();
                     toggleTeacherStudentCard(student.id);
@@ -5773,67 +5749,45 @@ function goBack() {
             const headline = document.createElement("div");
             headline.className = "result-headline";
 
-            const desktopSparkleLayout = [
-                { left: "5%", top: "7%", size: "20px" },
-                { left: "15%", top: "4%", size: "12px" },
-                { left: "28%", top: "8%", size: "16px" },
-                { left: "42%", top: "5%", size: "10px" },
-                { left: "58%", top: "7%", size: "18px" },
-                { left: "72%", top: "4%", size: "14px" },
-                { left: "86%", top: "8%", size: "16px" },
-                { left: "96%", top: "5%", size: "10px" },
-                { left: "10%", top: "18%", size: "12px" },
-                { left: "22%", top: "15%", size: "14px" },
-                { left: "78%", top: "16%", size: "12px" },
-                { left: "92%", top: "19%", size: "18px" },
-                { left: "4%", top: "31%", size: "14px" },
-                { left: "15%", top: "34%", size: "18px" },
-                { left: "85%", top: "32%", size: "18px" },
-                { left: "96%", top: "35%", size: "10px" },
-                { left: "7%", top: "47%", size: "18px" },
-                { left: "18%", top: "51%", size: "10px" },
-                { left: "82%", top: "49%", size: "14px" },
-                { left: "94%", top: "45%", size: "20px" },
-                { left: "5%", top: "62%", size: "12px" },
-                { left: "16%", top: "68%", size: "16px" },
-                { left: "84%", top: "66%", size: "16px" },
-                { left: "96%", top: "61%", size: "12px" },
-                { left: "10%", top: "79%", size: "14px" },
-                { left: "23%", top: "84%", size: "10px" },
-                { left: "37%", top: "78%", size: "16px" },
-                { left: "51%", top: "86%", size: "18px" },
-                { left: "65%", top: "79%", size: "12px" },
-                { left: "79%", top: "85%", size: "14px" },
-                { left: "92%", top: "80%", size: "18px" },
-                { left: "6%", top: "92%", size: "10px" },
-                { left: "31%", top: "93%", size: "14px" },
-                { left: "48%", top: "95%", size: "10px" },
-                { left: "70%", top: "93%", size: "16px" },
-                { left: "96%", top: "92%", size: "10px" }
+            const sparkleLayout = [
+                { left: "4.39%", top: "5.86%", size: "20px", color: "#FCCC6B" },
+                { left: "16.99%", top: "4.17%", size: "12px", color: "#22C55E" },
+                { left: "30.47%", top: "6.77%", size: "16px", color: "#FF6B94" },
+                { left: "14.36%", top: "63.41%", size: "24px", color: "#FF6B94" },
+                { left: "49.51%", top: "3.91%", size: "10px", color: "#3F58BB" },
+                { left: "17.58%", top: "48.83%", size: "10px", color: "#3F58BB" },
+                { left: "66.50%", top: "5.99%", size: "18px", color: "#FFA301" },
+                { left: "45.41%", top: "13.80%", size: "18px", color: "#FFA301" },
+                { left: "34.67%", top: "33.59%", size: "18px", color: "#FFA301" },
+                { left: "79.98%", top: "35.81%", size: "24px", color: "#FFA301" },
+                { left: "80.37%", top: "4.30%", size: "14px", color: "#22C55E" },
+                { left: "93.26%", top: "7.42%", size: "10px", color: "#FF6B94" },
+                { left: "66.41%", top: "67.06%", size: "10px", color: "#FF6B94" },
+                { left: "9.28%", top: "15.63%", size: "10px", color: "#FFA301" },
+                { left: "23.73%", top: "13.41%", size: "14px", color: "#3F58BB" },
+                { left: "74.61%", top: "14.19%", size: "12px", color: "#FCCC6B" },
+                { left: "90.04%", top: "15.89%", size: "16px", color: "#22C55E" },
+                { left: "13.57%", top: "31.51%", size: "16px", color: "#22C55E" },
+                { left: "2.83%", top: "31.77%", size: "12px", color: "#FF6B94" },
+                { left: "4.49%", top: "45.70%", size: "18px", color: "#FCCC6B" },
+                { left: "3.42%", top: "60.55%", size: "10px", color: "#3F58BB" },
+                { left: "92.09%", top: "27.73%", size: "14px", color: "#FFA301" },
+                { left: "94.73%", top: "42.32%", size: "10px", color: "#22C55E" },
+                { left: "92.97%", top: "56.25%", size: "16px", color: "#FF6B94" },
+                { left: "49.51%", top: "69.01%", size: "16px", color: "#FF6B94" },
+                { left: "91.70%", top: "69.53%", size: "12px", color: "#FCCC6B" },
+                { left: "7.03%", top: "77.08%", size: "16px", color: "#3F58BB" },
+                { left: "21.00%", top: "82.68%", size: "10px", color: "#FFA301" },
+                { left: "37.40%", top: "79.82%", size: "14px", color: "#FF6B94" },
+                { left: "53.81%", top: "83.46%", size: "18px", color: "#22C55E" },
+                { left: "32.91%", top: "66.54%", size: "18px", color: "#22C55E" },
+                { left: "83.40%", top: "47.66%", size: "18px", color: "#22C55E" },
+                { left: "55.96%", top: "31.77%", size: "18px", color: "#22C55E" },
+                { left: "69.73%", top: "80.60%", size: "12px", color: "#FCCC6B" },
+                { left: "80.37%", top: "62.63%", size: "12px", color: "#FCCC6B" },
+                { left: "86.13%", top: "78.39%", size: "16px", color: "#3F58BB" },
+                { left: "95.21%", top: "85.29%", size: "10px", color: "#FF6B94" }
             ];
-            const mobileSparkleLayout = [
-                { left: "9%", top: "13%", size: "18px" },
-                { left: "22%", top: "8%", size: "14px" },
-                { left: "46%", top: "6%", size: "18px" },
-                { left: "68%", top: "9%", size: "16px" },
-                { left: "90%", top: "12%", size: "18px" },
-                { left: "12%", top: "28%", size: "16px" },
-                { left: "88%", top: "27%", size: "12px" },
-                { left: "8%", top: "43%", size: "12px" },
-                { left: "92%", top: "42%", size: "18px" },
-                { left: "15%", top: "61%", size: "14px" },
-                { left: "86%", top: "60%", size: "12px" },
-                { left: "23%", top: "77%", size: "10px" },
-                { left: "50%", top: "83%", size: "14px" },
-                { left: "78%", top: "76%", size: "12px" },
-                { left: "9%", top: "91%", size: "14px" },
-                { left: "91%", top: "90%", size: "10px" }
-            ];
-            const isMobileResult = window.matchMedia("(max-width: 760px)").matches;
-            const sparkleLayout = isMobileResult ? mobileSparkleLayout : desktopSparkleLayout;
-            const sparkleColors = mode === "finished"
-                ? ["#fccc6b", "#ff4852", "#2fbf71", "#3f58bb"]
-                : ["#fccc6b", "#ff8f3d", "#ff4852"];
 
             sparkleLayout.forEach((sparkle, index) => {
                 const sparkleEl = document.createElement("span");
@@ -5842,8 +5796,8 @@ function goBack() {
                 sparkleEl.style.setProperty("--left", sparkle.left);
                 sparkleEl.style.setProperty("--top", sparkle.top);
                 sparkleEl.style.setProperty("--size", sparkle.size);
-                sparkleEl.style.setProperty("--delay", `${(index % (isMobileResult ? 8 : 12)) * (isMobileResult ? 0.055 : 0.065)}s`);
-                sparkleEl.style.setProperty("--sparkle-color", sparkleColors[index % sparkleColors.length]);
+                sparkleEl.style.setProperty("--delay", `${(index % 12) * 0.065}s`);
+                sparkleEl.style.setProperty("--sparkle-color", sparkle.color);
                 sparkleLayer.appendChild(sparkleEl);
             });
 
