@@ -213,7 +213,7 @@
             z-index: 30;
         }
 
-        .back-btn svg {
+        .back-btn img {
             width: 75px;
             height: 75px;
             display: block;
@@ -222,10 +222,6 @@
         .back-btn:hover {
             transform: translateY(-2px) scale(1.03);
             box-shadow: none;
-        }
-
-        .back-btn svg path {
-            fill: currentColor;
         }
 
         .back-btn:active,
@@ -528,7 +524,7 @@
             overflow: hidden;
         }
 
-        .student-header-avatar svg {
+        .student-header-avatar img {
             width: 28px;
             height: 28px;
             display: block;
@@ -562,7 +558,7 @@
             height: 44px;
         }
 
-        body.student-pos-selection-screen .back-btn svg {
+        body.student-pos-selection-screen .back-btn img {
             width: 34px;
             height: 34px;
             display: none;
@@ -573,7 +569,7 @@
             width: 18px;
             height: 18px;
             display: block;
-            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M22 12H2M12 22L2 12L12 2' stroke='%23FFF9E9' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+            background: url("./assets/icons/chevron-left.svg") center / contain no-repeat;
         }
 
         body.student-pos-selection-screen .back-btn:hover {
@@ -759,7 +755,7 @@
             justify-content: center;
         }
 
-        .pos-alert-icon svg {
+        .pos-alert-icon img {
             width: 16px;
             height: 16px;
             display: block;
@@ -840,13 +836,13 @@
             background: #f43d48;
         }
 
-        .pos-practice-btn svg {
+        .pos-practice-btn img {
             width: 26px;
             height: 26px;
             display: block;
         }
 
-        .pos-chevron svg {
+        .pos-chevron img {
             width: 16px;
             height: 16px;
             display: block;
@@ -1071,7 +1067,7 @@
             box-shadow: 0 8px 8px rgba(99, 102, 241, 0.25);
         }
 
-        .student-login-icon svg {
+        .student-login-icon img {
             width: 42px;
             height: 36px;
             display: block;
@@ -1177,11 +1173,10 @@
             background: #faf8f5;
         }
 
-        .teacher-login-input-shell svg {
+        .teacher-login-input-shell img {
             width: 20px;
             height: 20px;
             flex: 0 0 20px;
-            color: #94a3b8;
         }
 
         .teacher-login-input {
@@ -2093,7 +2088,7 @@
                 font-size: 0;
             }
 
-            .back-btn svg {
+            .back-btn img {
                 width: 58px;
                 height: 58px;
             }
@@ -2146,7 +2141,7 @@
                 height: 24px;
             }
 
-            .student-header-avatar svg {
+            .student-header-avatar img {
                 width: 24px;
                 height: 24px;
             }
@@ -2158,7 +2153,7 @@
                 height: 42px;
             }
 
-            body.student-pos-selection-screen .back-btn svg {
+            body.student-pos-selection-screen .back-btn img {
                 width: 30px;
                 height: 30px;
             }
@@ -2216,7 +2211,7 @@
                 }
 
                 .student-header-avatar,
-                .student-header-avatar svg {
+                .student-header-avatar img {
                     width: 22px;
                     height: 22px;
                 }
@@ -2477,7 +2472,7 @@
             padding: 0;
         }
 
-        body.question-screen .back-btn svg {
+        body.question-screen .back-btn img {
             width: 75px;
             height: 75px;
         }
@@ -2529,7 +2524,7 @@
                 height: 58px;
             }
 
-            body.question-screen .back-btn svg {
+            body.question-screen .back-btn img {
                 width: 58px;
                 height: 58px;
             }
@@ -2653,7 +2648,7 @@
             z-index: 35 !important;
         }
 
-        body.question-screen .back-btn svg {
+        body.question-screen .back-btn img {
             display: none !important;
         }
 
@@ -2662,7 +2657,7 @@
             width: 14px;
             height: 14px;
             display: block;
-            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M22 12H2M12 22L2 12L12 2' stroke='%23FFF9E9' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+            background: url("./assets/icons/chevron-left.svg") center / contain no-repeat;
         }
 
         body.question-screen .back-btn:hover {
@@ -3259,9 +3254,7 @@ body.final-error-screen .result-screen-content {
 <body class="app-booting">
     <div class="app">
         <button id="backButton" class="back-btn hidden" aria-label="Назад">
-            <svg width="75" height="75" viewBox="0 0 75 75" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M63.9375 38C63.9375 42.3234 60.4501 45.4931 57.6887 45.4931L40.047 45.4931C38.6663 45.4931 37.5681 46.615 37.7818 47.9791C38.399 51.9198 39.8583 56.7287 37.4209 59.0785C35.4337 60.9942 32.2684 60.9378 30.3509 58.9525L13.4645 41.4687C11.5952 39.5333 11.5952 36.4667 13.4645 34.5313L30.3509 17.0475C32.2684 15.0622 35.4337 15.0058 37.4209 16.9215C39.8582 19.2713 38.399 24.0802 37.7818 28.0209C37.5681 29.385 38.6663 30.5069 40.047 30.5069L57.6887 30.507C60.4501 30.507 63.9375 33.5815 63.9375 38Z" fill="currentColor"/>
-            </svg>
+            <img src="./assets/icons/back-large.svg" alt="" aria-hidden="true">
         </button>
         <header id="appHeader" class="app-header">
             <h1>Тренажёр по ударениям</h1>
@@ -3327,25 +3320,31 @@ body.final-error-screen .result-screen-content {
 
         // Ссылка на опубликованную Google Таблицу с контентом
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTDdC5lavnQYQbH_FusZ_u7Kaxe-PpGP5A4ERKWV3MVdyJWHKuAxYZ6ivOTQr6d3e2_A_hxDdiQw-yH/pub?gid=413569060&single=true&output=csv";
-        const ICON_SVGS = {
-            avatar: '<svg viewBox="0 0 28 28" aria-hidden="true" focusable="false"><rect width="28" height="28" rx="14" fill="#233CA1"/><circle cx="14" cy="10.5" r="4.5" fill="#FAF8F5"/><ellipse cx="14" cy="25" rx="10" ry="7" fill="#FAF8F5"/></svg>',
-            alertCircle: '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8.00021 5.33308V7.99996M8.00021 10.6668H8.00688M14.6674 7.99996C14.6674 11.6822 11.6824 14.6672 8.00021 14.6672C4.31801 14.6672 1.33301 11.6822 1.33301 7.99996C1.33301 4.31777 4.31801 1.33276 8.00021 1.33276C11.6824 1.33276 14.6674 4.31777 14.6674 7.99996Z" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/></svg>',
-            chevronDown: '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 6L8 10L12 6" stroke="#6B7280" stroke-width="2" stroke-linecap="round"/></svg>',
-            chevronUp: '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M12 10L8 6L4 10" stroke="#6B7280" stroke-width="2" stroke-linecap="round"/></svg>',
-            chevronLeft: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 12H2M12 22L2 12L12 2" stroke="#FFF9E9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-            pencil: '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M10.0004 3.33273L12.6674 5.99935M14.1168 4.54096C14.4693 4.18858 14.6673 3.71062 14.6674 3.21222C14.6675 2.71382 14.4695 2.23581 14.1171 1.88334C13.7647 1.53087 13.2867 1.33283 12.7882 1.33276C12.2898 1.3327 11.8117 1.53063 11.4592 1.88301L2.56107 10.7822C2.40627 10.9365 2.29179 11.1265 2.22771 11.3355L1.34697 14.2368C1.32973 14.2945 1.32843 14.3557 1.3432 14.414C1.35797 14.4724 1.38825 14.5256 1.43084 14.5681C1.47342 14.6106 1.52673 14.6408 1.58509 14.6555C1.64346 14.6702 1.7047 14.6688 1.76234 14.6515L4.66459 13.7715C4.87339 13.708 5.06341 13.5942 5.21798 13.4401L14.1168 4.54096Z" stroke="#FCCC6B" stroke-width="2" stroke-linecap="round"/></svg>',
-            play: '<svg viewBox="0 0 26 26" aria-hidden="true" focusable="false"><path d="M5.70734 4.33151C5.51639 4.66147 5.4159 5.03596 5.41602 5.41717V20.5828C5.4159 20.964 5.51639 21.3385 5.70734 21.6685C5.89829 21.9984 6.17294 22.2722 6.50355 22.4621C6.83416 22.652 7.20903 22.7513 7.5903 22.75C7.97158 22.7487 8.34577 22.6468 8.67508 22.4547L21.6767 14.8719C22.0044 14.681 22.2762 14.4075 22.4651 14.0786C22.6539 13.7498 22.7531 13.3772 22.7528 12.998C22.7525 12.6188 22.6526 12.2463 22.4632 11.9178C22.2738 11.5893 22.0015 11.3163 21.6734 11.126L8.67508 3.54529C8.34577 3.35316 7.97158 3.25131 7.5903 3.25001C7.20903 3.24872 6.83416 3.34803 6.50355 3.53792C6.17294 3.72781 5.89829 4.00155 5.70734 4.33151Z" fill="#FFF9E9"/></svg>'
+        const ICON_PATHS = {
+            avatar: "./assets/icons/avatar.svg",
+            alertCircle: "./assets/icons/alert-circle.svg",
+            chevronDown: "./assets/icons/chevron-down.svg",
+            chevronUp: "./assets/icons/chevron-up.svg",
+            pencil: "./assets/icons/pencil.svg",
+            play: "./assets/icons/play.svg",
+            book: "./assets/icons/book.svg",
+            mail: "./assets/icons/mail.svg",
+            lock: "./assets/icons/lock.svg",
+            eyeOpen: "./assets/icons/eye-open.svg",
+            eyeClosed: "./assets/icons/eye-closed.svg"
         };
 
         function createIcon(name) {
-            const template = document.createElement("template");
-            template.innerHTML = ICON_SVGS[name].trim();
-            return template.content.firstElementChild;
+            const img = document.createElement("img");
+            img.src = ICON_PATHS[name];
+            img.alt = "";
+            img.setAttribute("aria-hidden", "true");
+            return img;
         }
 
         function iconMarkup(name, className = "") {
-            const svg = ICON_SVGS[name] || "";
-            return className ? svg.replace("<svg ", `<svg class="${className}" `) : svg;
+            const classAttr = className ? ` class="${className}"` : "";
+            return `<img${classAttr} src="${ICON_PATHS[name]}" alt="" aria-hidden="true">`;
         }
 
         // UID методиста из Firebase Authentication.
@@ -3977,7 +3976,7 @@ body.final-error-screen .result-screen-content {
 
             const icon = document.createElement("div");
             icon.className = "student-login-icon";
-            icon.innerHTML = '<svg viewBox="0 0 42 36" aria-hidden="true" focusable="false"><path d="M8 6.5h9.5c2.2 0 4 1.8 4 4v19c0-2.2-1.8-4-4-4H8V6.5Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M34 6.5h-9.5c-2.2 0-4 1.8-4 4v19c0-2.2 1.8-4 4-4H34V6.5Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>';
+            icon.appendChild(createIcon("book"));
 
             const title = document.createElement("h1");
             title.className = "student-login-title";
@@ -4121,7 +4120,7 @@ body.final-error-screen .result-screen-content {
 
             const icon = document.createElement("div");
             icon.className = "student-login-icon";
-            icon.innerHTML = '<svg viewBox="0 0 42 36" aria-hidden="true" focusable="false"><path d="M8 6.5h9.5c2.2 0 4 1.8 4 4v19c0-2.2-1.8-4-4-4H8V6.5Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M34 6.5h-9.5c-2.2 0-4 1.8-4 4v19c0-2.2 1.8-4 4-4H34V6.5Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>';
+            icon.appendChild(createIcon("book"));
 
             const title = document.createElement("h1");
             title.className = "student-login-title";
@@ -4149,7 +4148,7 @@ body.final-error-screen .result-screen-content {
 
             const emailShell = document.createElement("div");
             emailShell.className = "teacher-login-input-shell";
-            emailShell.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6.5h16v11H4v-11Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m4.8 7.3 7.2 5.4 7.2-5.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            emailShell.appendChild(createIcon("mail"));
 
             const emailInput = document.createElement("input");
             emailInput.className = "teacher-login-input";
@@ -4169,7 +4168,7 @@ body.final-error-screen .result-screen-content {
 
             const passwordShell = document.createElement("div");
             passwordShell.className = "teacher-login-input-shell";
-            passwordShell.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="10" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+            passwordShell.appendChild(createIcon("lock"));
 
             const passwordInput = document.createElement("input");
             passwordInput.className = "teacher-login-input password-masked";
@@ -4184,14 +4183,12 @@ body.final-error-screen .result-screen-content {
             passwordEyeBtn.className = "teacher-login-eye-btn";
             passwordEyeBtn.type = "button";
             passwordEyeBtn.setAttribute("aria-label", "Показать пароль");
-            const eyeOpenIcon = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.8 12s3.2-5 9.2-5 9.2 5 9.2 5-3.2 5-9.2 5-9.2-5-9.2-5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
-            const eyeClosedIcon = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.2 4.8 20.8 19.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9.7 7.4A10.2 10.2 0 0 1 12 7c6 0 9.2 5 9.2 5a16.7 16.7 0 0 1-2.8 3.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.2 14.4A2.4 2.4 0 0 1 9.6 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M6.6 8.7A16.9 16.9 0 0 0 2.8 12s3.2 5 9.2 5c1.1 0 2.1-.2 3-.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-            passwordEyeBtn.innerHTML = eyeClosedIcon;
+            passwordEyeBtn.appendChild(createIcon("eyeClosed"));
             passwordEyeBtn.onclick = () => {
                 const shouldShow = passwordInput.classList.contains("password-masked");
                 passwordInput.classList.toggle("password-masked", !shouldShow);
                 passwordEyeBtn.setAttribute("aria-label", shouldShow ? "Скрыть пароль" : "Показать пароль");
-                passwordEyeBtn.innerHTML = shouldShow ? eyeOpenIcon : eyeClosedIcon;
+                passwordEyeBtn.replaceChildren(createIcon(shouldShow ? "eyeOpen" : "eyeClosed"));
                 passwordInput.focus();
             };
             passwordShell.appendChild(passwordEyeBtn);
