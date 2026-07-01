@@ -1428,6 +1428,16 @@
             border: 1px solid transparent;
             background: transparent;
             color: var(--teacher-accent);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .teacher-login-btn img {
+            width: 20px;
+            height: 20px;
+            flex: 0 0 20px;
         }
 
         .teacher-primary-btn:hover,
@@ -2598,6 +2608,7 @@
 
         body.question-screen .question-progress-title {
             width: auto !important;
+            max-width: calc(100vw - 160px) !important;
             margin: 0 !important;
             padding: 0 !important;
             color: #fff9e9 !important;
@@ -2636,10 +2647,10 @@
 
         body.question-screen .back-btn {
             position: fixed !important;
-            top: 28px !important;
-            left: 40px !important;
-            width: 24px !important;
-            height: 24px !important;
+            top: 24px !important;
+            left: 34px !important;
+            width: 38px !important;
+            height: 38px !important;
             padding: 0 !important;
             color: #fff9e9 !important;
             background: transparent !important;
@@ -2654,8 +2665,8 @@
 
         body.question-screen .back-btn::before {
             content: "";
-            width: 14px;
-            height: 14px;
+            width: 30px;
+            height: 30px;
             display: block;
             background: url("./assets/icons/chevron-left.svg") center / contain no-repeat;
         }
@@ -2777,23 +2788,24 @@
             }
 
             body.question-screen .question-progress-title {
-                font-size: 25px !important;
+                max-width: calc(100vw - 132px) !important;
+                font-size: clamp(18px, 5.2vw, 25px) !important;
                 white-space: nowrap !important;
             }
 
             body.question-screen .question-progress-title.long-title {
-                max-width: calc(100vw - 156px) !important;
+                max-width: calc(100vw - 132px) !important;
                 margin-left: auto !important;
                 margin-right: auto !important;
-                font-size: clamp(21px, 5.7vw, 25px) !important;
-                line-height: 1.08 !important;
-                white-space: normal !important;
+                font-size: clamp(18px, 5.2vw, 25px) !important;
+                line-height: normal !important;
+                white-space: nowrap !important;
                 overflow-wrap: normal;
             }
 
             body.question-screen .back-btn {
-                top: 27px !important;
-                left: 24px !important;
+                top: 22px !important;
+                left: 18px !important;
             }
 
             .question-card {
@@ -2847,8 +2859,8 @@
 
             @media (max-width: 390px) {
                 body.question-screen .question-progress-title.long-title {
-                    max-width: calc(100vw - 138px) !important;
-                    font-size: 20px !important;
+                    max-width: calc(100vw - 116px) !important;
+                    font-size: clamp(16px, 4.8vw, 20px) !important;
                 }
             }
         }
@@ -3331,7 +3343,8 @@ body.final-error-screen .result-screen-content {
             mail: "./assets/icons/mail.svg",
             lock: "./assets/icons/lock.svg",
             eyeOpen: "./assets/icons/eye-open.svg",
-            eyeClosed: "./assets/icons/eye-closed.svg"
+            eyeClosed: "./assets/icons/eye-closed.svg",
+            doorExit: "./assets/icons/door-exit.svg"
         };
 
         function createIcon(name) {
@@ -4896,7 +4909,8 @@ body.final-error-screen .result-screen-content {
             const studentLoginBtn = document.createElement("button");
             studentLoginBtn.type = "button";
             studentLoginBtn.className = "teacher-login-btn";
-            studentLoginBtn.textContent = "Войти как ученик →";
+            studentLoginBtn.appendChild(createIcon("doorExit"));
+            studentLoginBtn.appendChild(document.createTextNode("Войти как ученик"));
             studentLoginBtn.onclick = signOutTeacher;
 
             const toolbarActions = document.createElement("div");
@@ -5704,23 +5718,13 @@ function goBack() {
         }
 
         function renderQuestionProgressTitle(titleEl, title) {
-            const wrappedTitles = {
-                "Прилагательные и причастия": ["Прилагательные", "и причастия"],
-                "Деепричастия и наречия": ["Деепричастия", "и наречия"]
-            };
-            const titleParts = wrappedTitles[title];
+            const longTitles = new Set([
+                "Прилагательные и причастия",
+                "Деепричастия и наречия"
+            ]);
 
-            titleEl.classList.toggle("long-title", Boolean(titleParts));
-            titleEl.textContent = "";
-
-            if (!titleParts) {
-                titleEl.textContent = title;
-                return;
-            }
-
-            titleEl.appendChild(document.createTextNode(titleParts[0]));
-            titleEl.appendChild(document.createElement("br"));
-            titleEl.appendChild(document.createTextNode(titleParts[1]));
+            titleEl.classList.toggle("long-title", longTitles.has(title));
+            titleEl.textContent = title;
         }
 
         function getRandomPerfectResultTitle() {
